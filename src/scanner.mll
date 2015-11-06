@@ -15,7 +15,6 @@ rule token = parse
 | '}'									 { RBRACE }
 | ';'									 { SEMICOL }
 | ':'									 { COLON }
-| '|'									 { BAR }
 | ','									 { COMMA }
 | '.'									 { DOT }
 | '+'									 { PLUS }
@@ -31,23 +30,18 @@ rule token = parse
 | "++"								 { INC }
 | "--"								 { DEC }
 | '='									 { ASN }
+| "&&"                 { AND }
+| "||"                 { OR }
+| '!'                  { NOT }
 | "=="                 { EQ }
 | "!="                 { NEQ }
 | '<'                  { LT }
 | "<="                 { LEQ }
 | ">"                  { GT }
 | ">="                 { GEQ }
-| "&&"                 { AND }
-| "||"                 { OR }
-| '!'                  { NOT }
-| "int"								 { INT }
-| "float"							 { FLOAT }
-| "bool"							 { BOOL }
-| "str"								 { STR }
 | "tbl"								 { TBL }
 | "rec"								 { REC }
 | "fld"								 { FLD }
-| "none"							 { NONE }
 | "if"                 { IF }
 | "else"               { ELSE }
 | "for"                { FOR }
@@ -56,11 +50,16 @@ rule token = parse
 | "continue"           { CONTINUE }
 | "return"             { RETURN }
 | "void" 							 { VOID }
+| "int"								 { INT }
+| "float"							 { FLOAT }
+| "bool"							 { BOOL }
+| "str"								 { STR }
+| "none"							 { NONE }
 | "true" 							 { BOOL_LIT(true) }
 | "false"              { BOOL_LIT(false) }
 | (digit)+ as lit 		 { INT_LIT(int_of_string lit) }
 | ((digit)*'.'(digit)+ | (digit)+'.') as lit
-											 { FLOAT_LIT(lit) }
+											 { FLOAT_LIT(float_of_string lit) }
 | '"' ([^ '"' '\\' '\n' '\r' '\t']* ('\\' ['\\' '"' 'n' 'r' 't'])* as lit) '"'
 											 { STR_LIT(lit) }
 | letter (letter | digit | '_')* as lit 
