@@ -2,7 +2,6 @@
 
 let digit = ['0' - '9']
 let letter = ['a'-'z' 'A'-'Z']
-let identifier = letter (letter | digit | '_')*
 
 rule token = parse
 	[' ' '\t' '\r' '\n'] { token lexbuf }
