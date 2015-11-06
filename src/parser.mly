@@ -16,6 +16,7 @@
 %token NONE
 %token EOF
 
+%nonassoc NOELSE
 %nonassoc ELSE
 %left COMMA
 %right ASN INC DEC ADDEQ SUBEQ MULEQ DIVEQ MODEQ
@@ -27,3 +28,8 @@
 %left PLUS MINUS
 %left TIMES DIVIDE MOD
 %right NOT
+
+%start program
+%type <Ast.program> program
+
+%%
