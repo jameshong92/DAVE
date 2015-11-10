@@ -1,12 +1,14 @@
 (*ast.ml*)
 (*Binary Operators (In Order): +, -, *, /, %, ^, ==, !=, <, >, >=, <=, &&, ||*)
-type op = Add | Sub | Multi | Div | Mod | Exp | Equal | Neq | Lt | Gt | Leq | Geq | And | Or
+type binop = Add | Sub | Multi | Div | Mod | Exp | Equal | Neq | Lt | Gt | Leq | Geq | And | Or
 (*Unary Operators (Before Operand) (In Order): ++, --, !, -*)
 type preunop = Incbef | Decbef | Not | Neg
 (*Unary Operators (After Operand) (In Order): ++, --*)
 type sufunop = Incaft | Decaft
+(*Assignment Operators = += -= *= /= %=*)
+type asnop = Asn | Addeq | Subeq | Muleq | Diveq | Modeq
 (*Supported Datatypes*)
-type datatype = Int | Float | String | Bool
+type datatype = Int | Float | String | Bool | Rec | Tbl | Fld | Void
 (*Arguments*)
 type arg = datatype * string
 (*Types of References*)
@@ -22,7 +24,7 @@ type expr =
 	| StringLit of string
 	| BoolLit of bool
 	| Var of datatype * expr
-	| Binop of expr * op * expr
+	| Binop of expr * binop * expr
 	| PrefixUnop of preunop * expr
 	| SuffixUnop of expr * sufunop
 	| Array of string * datatype * expr list
@@ -59,8 +61,30 @@ type func_decl = {
 type program = stmt list * func_decl list
 
 
+(*Printing AST*)
+let string_of_binop = function
+	Add -> "+"
+| Sub -> "-"
+| Multi -> "*"
+| Div -> "/"
+| Mod -> "%"
+| Exp -> "^"
+| Equal -> "=="
+| Neq -> "!="
+| Lt -> "<"
+| Gt -> ">"
+| Leq -> "<="
+| Geq -> "<="
+| And -> "&&"
+| Or -> "||"
 
-
+let string_of_asnop = function
+	Asn -> "="
+| Addeq -> "+="
+| Subeq -> "-="
+| Muleq -> "*="
+| Diveq -> "/="
+| Modeq -> "%="
 
 
 
