@@ -39,9 +39,8 @@ rule token = parse
 | "<="                 { LEQ }
 | ">"                  { GT }
 | ">="                 { GEQ }
-| "tbl"								 { TBL }
-| "rec"								 { REC }
-| "fld"								 { FLD }
+| "tbl" | "rec" | "fld" as keyword 
+											 { VAR_TYPE(keyword) }
 | "if"                 { IF }
 | "else"               { ELSE }
 | "for"                { FOR }
@@ -49,11 +48,8 @@ rule token = parse
 | "break"              { BREAK }
 | "continue"           { CONTINUE }
 | "return"             { RETURN }
-| "void" 							 { VOID }
-| "int"								 { INT }
-| "float"							 { FLOAT }
-| "bool"							 { BOOL }
-| "str"								 { STR }
+| "void" | "int" | "float" | "bool" | "str" as primtype 
+											 { PRIMITIVE_TYPE(primtype) }
 | "none"							 { NONE }
 | "true" 							 { BOOL_LIT(true) }
 | "false"              { BOOL_LIT(false) }

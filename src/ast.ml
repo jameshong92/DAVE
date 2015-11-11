@@ -1,6 +1,7 @@
 (*ast.ml*)
+exception Invalid_type of string
 (*Binary Operators (In Order): +, -, *, /, %, ^, ==, !=, <, >, >=, <=, &&, ||*)
-type binop = Add | Sub | Mul | Div | Mod | Exp | Equal | Neq | Lt | Gt | Leq | Geq | And | Or
+type binop = Add | Sub | Mul | Div | Mod | Exp | Eq | Neq | Lt | Gt | Leq | Geq | And | Or
 (*Unary Operators (Before Operand) (In Order): !, -*)
 type unop = Not | Neg
 (*Unary Operators (After Operand) (In Order): ++, --*)
@@ -8,7 +9,7 @@ type postop = Inc | Dec
 (*Assignment Operators = += -= *= /= %=*)
 type asnop = Asn | Addeq | Subeq | Muleq | Diveq | Modeq
 (*Supported Datatypes*)
-type datatype = Int | Float | String | Bool | Rec | Tbl | Fld | Void
+type datatype = Int | Float | String | Bool | Fld | Tbl | Rec | Void | ArrayType of datatype
 (*Arguments*)
 type arg = datatype * string
 (*Types of References*)
@@ -19,43 +20,53 @@ type ref = ARef | RecRef | FldRef | TblRef
 (*Critical: Refer to the Issue List Before Proceed*)
 type id = Id of string
 
-type lvalue =
-	Var of id
-	| ArrayElem of id * expr list
-and expr = 
+type literal =
 	IntLit of int
 	| FloatLit of float
 	| StringLit of string
 	| BoolLit of bool
+
+type lvalue =
+	Var of id
+	| Array of id * expr
+	| Access of expr * id
+
+and expr = 
+	Range of expr * expr
 	| Binop of expr * binop * expr
-	| AssignOp of lvalue * binop * expr
-	| Unop of uop * expr
+	| Unop of unop * expr
 	| Postop of lvalue * postop
-	| ArrayRange of expr * expr
-	| Ref of id * ref * expr list
+	| AssignOp of lvalue * asnop * expr
 	| Assign of lvalue * expr
+	| Lval of lvalue
+	| Cast of datatype * expr
+	| CastFld of expr * string
+	| CastTbl of datatype * datatype
 	| FuncCall of id * expr list
+	(* | Ref of id * ref * expr list *)
 	(*Tbl = a list of Rec | a list of Fld*)
 	| Tbl of expr list
-	(*Rec = Name of the Rec * (Datatype of Each Component * Name of Each Component) * Value of Each Component*)
+	(*Rec = list of id (key) * Value of Each Component*)
 	(*Supplemental: Store Values of Each Component in the Format of String When Coding the Parser*)
-	| Rec of datatype * expr list
-	(*Fld = Name of the Field * Datatype of the Field * Values of the List*)
-	| Fld of id * datatype * expr list
-	| Lval of lvalue
+	| Rec of id * literal list
+	(*Fld = Values of the List * Name of the Field*)
+	| Fld of expr * string
 	| Noexpr
 
-and var_decl = VarDecl of datatype * expr
+type decl = 
+	VarDecl of datatype * expr
+	| AssignDecl of datatype * id * expr
+	| ArrayDecl of datatype * expr * id
 
 (*Statement*)
 type stmt = 
-	Block of stmt list
-	| Expr of expr
+	Expr of expr
 	| Return of expr
+	| Block of stmt list
 	| If of expr * stmt * stmt
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
-	| Localvar of var_decl
+	| VarDeclStmt of decl
 
 (*Function Declaration*)
 type func_decl = {
@@ -66,7 +77,10 @@ type func_decl = {
 }
 
 (*Programs*)
-type program = stmt list * func_decl list
+type program = {
+	gdecls : stmt list;
+	fdecls : func_decl list
+}
 
 
 (*Printing AST*)
@@ -77,7 +91,7 @@ let string_of_binop = function
 | Div -> "/"
 | Mod -> "%"
 | Exp -> "^"
-| Equal -> "=="
+| Eq -> "=="
 | Neq -> "!="
 | Lt -> "<"
 | Gt -> ">"
@@ -94,7 +108,16 @@ let string_of_asnop = function
 | Diveq -> "/="
 | Modeq -> "%="
 
-
+let type_of_string = function
+	"int" -> Int
+	| "float" -> Float
+	| "bool" -> Bool
+	| "str" -> String
+	| "fld" -> Fld
+	| "rec" -> Rec
+	| "tbl" -> Tbl
+	| "void" -> Void
+	| dtype -> raise (Invalid_type dtype)
 
 
 
