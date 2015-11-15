@@ -2,8 +2,8 @@ open Ast
 
 exception Not_now of string
 
-type i_datatype = Ivoid | Iint | Idouble | Istring | Ibool
-           | Iint_array | Idouble_array | Istring_array
+type i_datatype = Ivoid | Iint | Ifloat | Istring | Ibool
+           | Iint_array | Ifloat_array | Istring_array
 
 type i_struct = Istruct
 
