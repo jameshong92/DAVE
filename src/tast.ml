@@ -7,12 +7,10 @@ type i_datatype = Ivoid | Iint | Ifloat | Istring | Ibool
 
 type i_struct = Istruct
 
-type i_id = Iid of string
-
 type i_var = i_datatype * string
 
 type i_lvalue = 
-    IVar of id
+    I_id of string
   | IArray of i_id * i_expr
   | IAccess of i_expr * i_id 
 and i_expr = 
