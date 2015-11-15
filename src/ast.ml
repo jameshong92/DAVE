@@ -45,13 +45,14 @@ and expr =
 	| Tbl of expr list
 	(*Rec = list of id (key) * Value of Each Component*)
 	(*Supplemental: Store Values of Each Component in the Format of String When Coding the Parser*)
-	| Rec of id * exp list
+	| Rec of expr list
+	| RecRef of id * expr
 	(*Fld = Values of the List * Name of the Field*)
-	| Fld of expr * string
+	| Fld of expr list * string
 	| Noexpr
 
 type decl =
-	VarDecl of datatype * expr
+	VarDecl of datatype * id
 	| AssignDecl of datatype * id * expr
 	| ArrayDecl of datatype * expr * id
 
@@ -69,15 +70,15 @@ type stmt =
 
 (*Function Declaration*)
 type func_decl = {
-	fname : string;
-	formals : arg list;
-	body: stmt list;
+	fname : id;
+	formals : decl list;
+	body: stmt;
 	return_type : datatype;
 }
 
 (*Programs*)
 type program = {
-	gdecls : stmt list;
+	gdecls : decl list;
 	fdecls : func_decl list;
 }
 

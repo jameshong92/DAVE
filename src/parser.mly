@@ -96,8 +96,8 @@ expr:
 															{ Cast($1, $3) }
 	| FLD LPAREN expr COMMA STR_LIT RPAREN
 															{ CastFld($3, $5) }
-	| TBL LPAREN VAR_TYPE COMMA VAR_TYPE RPAREN
-															{ CastTbl($3, %5) }
+	| TBL LPAREN datatype COMMA datatype RPAREN 
+															{ CastTbl($3, $5) }
 	| literal 									{ $1 }
 	| tbl_lit 									{ Tbl($1) }
 
@@ -122,11 +122,11 @@ rec_lit_list:
 
 rec_lit:
 	LBRACE rec_init RBRACE 			{ Rec(List.rev $2) }
-
+/* rec a = {a: 'james', b: 1} */
 rec_init:
-	id COLON literal 						{ [$1, $3] }
+	id COLON literal 						{ [RecRef($1, $3)] }
 	| rec_init COMMA id COLON literal
-															{ [$3, $5] :: $1 }
+															{ RecRef($3, $5) :: $1 }
 
 fld_lit_list:
 	fld_lit_list COMMA fld_lit 	{ $3 :: $1 }
@@ -134,7 +134,7 @@ fld_lit_list:
 
 fld_lit:
 	FLD LPAREN actuals_list COMMA STR_LIT RPAREN
-															{ Fld(List.rev $3) }
+															{ Fld(List.rev $3, $5) }
 
 actuals_opt:
 	/* nothing */ 							{ [] }
@@ -155,7 +155,7 @@ fdecl:
 															{ {
 																	fname = $2;
 																	formals = $4;
-																	body = List.rev $7;
+																	body = Block(List.rev $7);
 																	return_type = $1
 															} }
 
@@ -173,7 +173,7 @@ vdecl:
 	datatype id SEMICOL 				{ VarDecl($1, $2) }
 	| datatype id ASN expr SEMICOL
 															{ AssignDecl($1, $2, $4) }
-	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL
+	| datatype LBRACK expr RBRACK id SEMICOL
 															{ ArrayDecl($1, $3, $5) }
 
 expr_opt:
@@ -191,11 +191,11 @@ stmt:
 	| IF LPAREN expr RPAREN stmt ELSE stmt
 															{ If($3, $5, $7) }
 	| IF LPAREN expr RPAREN stmt %prec NOELSE
-															{ If($3, $5, Noexpr) }
+															{ If($3, $5, Block([])) }
 	| FOR LPAREN expr_opt SEMICOL expr_opt SEMICOL expr_opt RPAREN stmt
 															{ For($3, $5, $7, $9) }
 	| WHILE LPAREN expr RPAREN stmt
 															{ While($3, $5) }
-	| vdecl SEMICOL 						{ VarDeclStmt($1) }
 	| CONTINUE SEMICOL					{ Continue }
 	| BREAK SEMICOL							{ Break }
+	| vdecl 										{ VarDeclStmt($1) }
