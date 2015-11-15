@@ -60,9 +60,9 @@ type stmt =
 	Expr of expr
 	| Return of expr
 	| Block of stmt list
-	| If of expr * stmt * stmt
-	| For of expr * expr * expr * stmt
-	| While of expr * stmt
+	| If of expr * stmt list * stmt list
+	| For of expr * expr * expr * stmt list
+	| While of expr * stmt list
 	| VarDeclStmt of decl
 	| Continue
 	| Break
