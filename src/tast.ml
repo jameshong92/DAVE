@@ -11,17 +11,15 @@ type i_id = Iid of string
 
 type i_var = i_datatype * string
 
-type i_literal = 
-    Iintlit of int
-  | IFloatlit of float
-  | IStringlit of string
-  | IBoollit of bool
-
 type i_lvalue = 
     IVar of id
   | IArray of i_id * i_expr
   | IAccess of i_expr * i_id 
 and i_expr = 
+    Iintlit of int
+  | IFloatlit of float
+  | IStringlit of string
+  | IBoollit of bool
   | IArray of i_expr list
   | IUnop of unop * iexpr
   | IPostop of i_expr * postop 
