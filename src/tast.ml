@@ -2,26 +2,24 @@ open Ast
 
 exception Not_now of string
 
-type i_datatype = Ivoid | Iint | Idouble | Istring | Ibool
-           | Iint_array | Idouble_array | Istring_array
+type i_datatype = Ivoid | Iint | Ifloat | Istring | Ibool
+           | Iint_array | Ifloat_array | Istring_array
 
 type i_struct = Istruct
 
-type i_id = Iid of string
-
 type i_var = i_datatype * string
 
-type i_literal = 
+type i_id = IId of string
+
+type i_lvalue = 
+    IId of i_id
+  | IIndex of i_id * i_expr
+  | IAccess of i_expr * i_id 
+and i_expr = 
     Iintlit of int
   | IFloatlit of float
   | IStringlit of string
   | IBoollit of bool
-
-type i_lvalue = 
-    IVar of id
-  | IArray of i_id * i_expr
-  | IAccess of i_expr * i_id 
-and i_expr = 
   | IArray of i_expr list
   | IUnop of unop * iexpr
   | IPostop of i_expr * postop 
