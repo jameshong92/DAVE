@@ -33,7 +33,7 @@ and i_expr =
 
 type i_stmt = 
     IEmpty
-  | IVarDec of ivar_dec
+  | IVarDec of i_var_decl
   | Iexpr of i_expr
   | IReturn of i_expr
   | IBreak
@@ -44,7 +44,7 @@ type i_stmt =
   | IBlock of i_stmt list
   | IDisp of i_expr (* cout << e << endl *)
 
-type i_var_decls = 
+type i_var_decl = 
   | IVardecl of i_datatype * i_expr
   | IAccessdecl of i_datatype * i_id * i_expr
   | IArraydecl of i_datatype * i_expr * id
