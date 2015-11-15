@@ -9,8 +9,10 @@ type i_struct = Istruct
 
 type i_var = i_datatype * string
 
+type i_id = IId of string
+
 type i_lvalue = 
-    IId of string
+    IId of i_id
   | IIndex of i_id * i_expr
   | IAccess of i_expr * i_id 
 and i_expr = 
