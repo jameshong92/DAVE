@@ -1,14 +1,14 @@
 %{ open Ast %}
 
-%token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK 
+%token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
 %token SEMICOL COMMA DOT COLON
 %token ADDEQ SUBEQ MULEQ DIVEQ MODEQ
 %token PLUS MINUS TIMES DIVIDE MOD INC DEC EXP
 %token ASN AND OR NOT
-%token EQ NEQ LT LEQ GT GEQ 
+%token EQ NEQ LT LEQ GT GEQ
 %token CONTINUE BREAK IF ELSE FOR WHILE RETURN
 %token FLD TBL
-%token <int> INT_LIT 
+%token <int> INT_LIT
 %token <float> FLOAT_LIT
 %token <bool> BOOL_LIT
 %token <string> STR_LIT ID VAR_TYPE PRIMITIVE_TYPE
@@ -43,13 +43,13 @@ id:
 datatype:
 	PRIMITIVE_TYPE 							{ type_of_string $1 }
 	| VAR_TYPE 									{ type_of_string $1 }
-	| PRIMITIVE_TYPE LBRACK RBRACK 
+	| PRIMITIVE_TYPE LBRACK RBRACK
 															{ ArrayType(type_of_string $1) }
 
 /* id[index_list], expr.id */
 lvalue:
 	id 													{ Var($1) }
-	| id LBRACK index_list RBRACK 
+	| id LBRACK index_list RBRACK
 															{ Array($1, $3) }
 	| expr DOT id 							{ Access($1, $3) }
 
@@ -92,7 +92,7 @@ expr:
 
 	| LPAREN expr RPAREN 				{ $2 }
 
-	| datatype LPAREN expr RPAREN 
+	| datatype LPAREN expr RPAREN
 															{ Cast($1, $3) }
 	| FLD LPAREN expr COMMA STR_LIT RPAREN
 															{ CastFld($3, $5) }
@@ -101,7 +101,7 @@ expr:
 	| literal 									{ $1 }
 	| tbl_lit 									{ Tbl($1) }
 
-	| id LPAREN actuals_opt RPAREN 	
+	| id LPAREN actuals_opt RPAREN
 															{ FuncCall($1, $3) }
 
 literal:
@@ -125,7 +125,7 @@ rec_lit:
 
 rec_init:
 	id COLON literal 						{ [$1, $3] }
-	| rec_init COMMA id COLON literal 
+	| rec_init COMMA id COLON literal
 															{ [$3, $5] :: $1 }
 
 fld_lit_list:
@@ -133,7 +133,7 @@ fld_lit_list:
 	| fld_lit 									{ [$1] }
 
 fld_lit:
-	FLD LPAREN actuals_list COMMA STR_LIT RPAREN 
+	FLD LPAREN actuals_list COMMA STR_LIT RPAREN
 															{ Fld(List.rev $3) }
 
 actuals_opt:
@@ -151,8 +151,8 @@ program:
   | program fdecl 						{ { gdecls = $1.gdecls; fdecls = $2 :: $1.fdecls } }
 
 fdecl:
-	datatype id LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE 
-															{ { 
+	datatype id LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
+															{ {
 																	fname = $2;
 																	formals = $4;
 																	body = List.rev $7;
@@ -166,14 +166,14 @@ formals_opt:
 /* TODO: modify formal_list if doing in c++ */
 formal_list:
 	datatype id 								{ [VarDecl($1, $2)] }
-	| formal_list COMMA datatype id 	
+	| formal_list COMMA datatype id
 															{ VarDecl($3, $4) :: $1 }
 
 vdecl:
 	datatype id SEMICOL 				{ VarDecl($1, $2) }
-	| datatype id ASN expr SEMICOL											
+	| datatype id ASN expr SEMICOL
 															{ AssignDecl($1, $2, $4) }
-	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL 	
+	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL
 															{ ArrayDecl($1, $3, $5) }
 
 expr_opt:
@@ -188,12 +188,14 @@ stmt:
 	expr SEMICOL 								{ Expr($1) }
 	| RETURN expr SEMICOL 			{ Return($2) }
 	| LBRACE stmt_list RBRACE 	{ Block(List.rev $2) }
-	| IF LPAREN expr RPAREN stmt ELSE stmt 		
+	| IF LPAREN expr RPAREN stmt ELSE stmt
 															{ If($3, $5, $7) }
-	| IF LPAREN expr RPAREN stmt %prec NOELSE 
+	| IF LPAREN expr RPAREN stmt %prec NOELSE
 															{ If($3, $5, Noexpr) }
-	| FOR LPAREN expr_opt SEMICOL expr_opt SEMICOL expr_opt RPAREN stmt 
+	| FOR LPAREN expr_opt SEMICOL expr_opt SEMICOL expr_opt RPAREN stmt
 															{ For($3, $5, $7, $9) }
-	| WHILE LPAREN expr RPAREN stmt 
+	| WHILE LPAREN expr RPAREN stmt
 															{ While($3, $5) }
 	| vdecl SEMICOL 						{ VarDeclStmt($1) }
+	| CONTINUE SEMICOL					{ Continue }
+	| BREAK SEMICOL							{ Break }

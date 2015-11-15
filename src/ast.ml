@@ -30,8 +30,7 @@ type lvalue =
 	Var of id
 	| Array of id * expr
 	| Access of expr * id
-
-and expr = 
+and expr =
 	Range of expr * expr
 	| Binop of expr * binop * expr
 	| Unop of unop * expr
@@ -53,13 +52,13 @@ and expr =
 	| Fld of expr * string
 	| Noexpr
 
-type decl = 
+type decl =
 	VarDecl of datatype * expr
 	| AssignDecl of datatype * id * expr
 	| ArrayDecl of datatype * expr * id
 
 (*Statement*)
-type stmt = 
+type stmt =
 	Expr of expr
 	| Return of expr
 	| Block of stmt list
@@ -67,6 +66,8 @@ type stmt =
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| VarDeclStmt of decl
+	| Continue
+	| Break
 
 (*Function Declaration*)
 type func_decl = {
@@ -79,7 +80,7 @@ type func_decl = {
 (*Programs*)
 type program = {
 	gdecls : stmt list;
-	fdecls : func_decl list
+	fdecls : func_decl list;
 }
 
 
@@ -118,16 +119,3 @@ let type_of_string = function
 	| "tbl" -> Tbl
 	| "void" -> Void
 	| dtype -> raise (Invalid_type dtype)
-
-
-
-
-
-
-
-
-
-
-
-
-
