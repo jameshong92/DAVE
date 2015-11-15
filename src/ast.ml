@@ -13,7 +13,7 @@ type datatype = Int | Float | String | Bool | Fld | Tbl | Rec | Void | ArrayType
 (*Arguments*)
 type arg = datatype * string
 (*Types of References*)
-type ref = ARef | RecRef | FldRef | TblRef
+(* type ref = ARef | RecRef | FldRef | TblRef *)
 
 
 (*Expression*)
@@ -37,8 +37,8 @@ and expr =
 	| Assign of lvalue * expr
 	| Lval of lvalue
 	| Cast of datatype * expr
-	| CastFld of expr * string
-	| CastTbl of datatype * datatype
+	(*| CastFld of expr * string
+	| CastTbl of datatype * datatype *)
 	| FuncCall of id * expr list
 	(* | Ref of id * ref * expr list *)
 	(*Tbl = a list of Rec | a list of Fld*)
