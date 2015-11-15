@@ -20,18 +20,16 @@ type ref = ARef | RecRef | FldRef | TblRef
 (*Critical: Refer to the Issue List Before Proceed*)
 type id = Id of string
 
-type literal =
-	IntLit of int
-	| FloatLit of float
-	| StringLit of string
-	| BoolLit of bool
-
 type lvalue =
 	Var of id
 	| Array of id * expr
 	| Access of expr * id
 and expr =
-	Range of expr * expr
+	IntLit of int
+	| FloatLit of float
+	| StringLit of string
+	| BoolLit of bool
+	| Range of expr * expr
 	| Binop of expr * binop * expr
 	| Unop of unop * expr
 	| Postop of lvalue * postop
@@ -47,7 +45,7 @@ and expr =
 	| Tbl of expr list
 	(*Rec = list of id (key) * Value of Each Component*)
 	(*Supplemental: Store Values of Each Component in the Format of String When Coding the Parser*)
-	| Rec of id * literal list
+	| Rec of id * exp list
 	(*Fld = Values of the List * Name of the Field*)
 	| Fld of expr * string
 	| Noexpr
