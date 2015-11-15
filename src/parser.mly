@@ -96,8 +96,8 @@ expr:
 															{ Cast($1, $3) }
 	| FLD LPAREN expr COMMA STR_LIT RPAREN
 															{ CastFld($3, $5) }
-	| TBL LPAREN datatype COMMA datatype RPAREN 
-															{ CastTbl($3, $5) }
+	| TBL LPAREN VAR_TYPE COMMA VAR_TYPE RPAREN 
+															{ CastTbl(type_of_string $3, type_of_string $5) }
 	| literal 									{ $1 }
 	| tbl_lit 									{ Tbl($1) }
 
@@ -173,8 +173,8 @@ vdecl:
 	datatype id SEMICOL 				{ VarDecl($1, $2) }
 	| datatype id ASN expr SEMICOL
 															{ AssignDecl($1, $2, $4) }
-	| datatype LBRACK expr RBRACK id SEMICOL
-															{ ArrayDecl($1, $3, $5) }
+	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL
+															{ ArrayDecl(type_of_string $1, $3, $5) }
 
 expr_opt:
 	/* nothing */ 							{ Noexpr }
