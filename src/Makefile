@@ -2,7 +2,7 @@
 #
 # The Caml sources (including camlyacc and camllex source files)
 
-SOURCES = parser.mly scanner.mll ast.ml
+SOURCES = parser.mly scanner.mll ast.ml sast.ml
 
 EXEC = foo
 

@@ -2,4 +2,6 @@ parser.cmo : ast.cmo parser.cmi
 parser.cmx : ast.cmx parser.cmi
 ast.cmo :
 ast.cmx :
+sast.cmo : ast.cmo
+sast.cmx : ast.cmx
 parser.cmi : ast.cmo
