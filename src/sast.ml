@@ -4,14 +4,18 @@ exception Invalid_use of string
 
 type s_expr_value =
     S_Id of string
-  | S_Var of s_expr
-  | S_Array of s_expr * s_expr
-  | S_Access of s_expr * s_expr
+  | S_Intlit of int
+  | S_Floatlit of float
+  | S_Stringlit of string
+  | S_Boollit of bool 
+  | S_Array of s_expr list
+  | S_Access of s_expr * string
+  | S_Index of string * s_expr
   | S_Range of s_expr * s_expr
   | S_Binop of s_expr * binop * s_expr
   | S_Unop of unop * s_expr
   | S_Postop of s_expr * postop
-  | S_Assignop of s_expr * asnop * s_expr
+  | S_AssignOp of s_expr * asnop * s_expr
   | S_Assign of s_expr * s_expr
   | S_Cast of datatype * s_expr
   | S_CastFld of s_expr * string
