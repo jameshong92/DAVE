@@ -7,7 +7,7 @@
 %token ASN AND OR NOT
 %token EQ NEQ LT LEQ GT GEQ
 %token CONTINUE BREAK IF ELSE FOR WHILE RETURN
-%token FLD TBL
+%token FLD TBL REC
 %token <int> INT_LIT
 %token <float> FLOAT_LIT
 %token <bool> BOOL_LIT
@@ -111,6 +111,11 @@ literal:
 	| FLOAT_LIT 								{ FloatLit($1) }
 	| STR_LIT 									{ StringLit($1) }
 	| BOOL_LIT 									{ BoolLit($1) }
+	| LBRACK literal_list RBRACK { ArrayLit(List.rev $2) }
+
+literal_list:
+	literal 										{ [$1] }
+	| literal_list COMMA literal { $3 :: $1 }
 
 tbl_lit:
 	TBL LPAREN rec_lit_list RPAREN
@@ -123,8 +128,8 @@ rec_lit_list:
 	| rec_lit 									{ [$1] }
 
 rec_lit:
-	LBRACE rec_init RBRACE 			{ Rec(List.rev $2) }
-/* rec a = {a: 'james', b: 1} */
+	REC LBRACE rec_init RBRACE 			{ Rec(List.rev $3) }
+
 rec_init:
 	id COLON literal 						{ [RecRef($1, $3)] }
 	| rec_init COMMA id COLON literal
