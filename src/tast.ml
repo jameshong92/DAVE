@@ -20,17 +20,19 @@ and i_expr =
   | IStringlit of string
   | IBoollit of bool
   | IArray of i_expr list
-  | IUnop of unop * iexpr
-  | IPostop of i_expr * postop 
-  | IAssgin of i_expr * i_expr
+  | IUnop of unop * i_expr
+  | IPostop of i_expr * postop
+  | IAssign of i_expr * i_expr
   | IAssignOp of i_expr * asnop * i_expr
   | IBinop of i_expr * binop * i_expr
   | ILval of i_lvalue
+  | ICall of string * i_expr list
   | No_expr
 
 type i_stmt = 
     IEmpty
   | IVarDec of i_var_decl
+  | IStructDec of string * i_expr list 
   | Iexpr of i_expr
   | IReturn of i_expr
   | IBreak
@@ -41,13 +43,11 @@ type i_stmt =
   | IBlock of i_stmt
   | IDisp of i_expr (* cout << e << endl *)
 
-type i_var_decl = 
-  | IVardecl of i_datatype * i_expr
-  | IArraydecl of i_datatype * i_expr * i_id
+type i_var_decl = i_datatype * string * i_expr list
 
 type i_struct_decl = {
 	i_sname : string;
-	i_vars : i_var list; 
+	i_vars : i_var list;
 }
 
 type i_func_def = {
