@@ -43,7 +43,7 @@ type i_stmt =
   | IBlock of i_stmt
   | IDisp of i_expr (* cout << e << endl *)
 
-type i_var_decl = i_datatype * string * i_expr list
+type i_var_decl = i_datatype * string * i_expr
 
 type i_struct_decl = {
 	i_sname : string;
