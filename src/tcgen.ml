@@ -41,6 +41,7 @@ let rec gen_expr exp = match exp with
   | IPostop (e, op) -> (sprintf "( %s %s )" (gen_expr e) (gen_postop op))
   | ILval x -> (gen_lval x)
   | IArray el -> (sprintf "%s" (gen_array "," el))
+  | Icall (s, el) -> (sprintf "( %s(%s) )" s (gen_array "," el))
 and gen_array op el = match el with
     [] -> ""
   | [e] -> gen_expr e
@@ -73,7 +74,7 @@ and gen_stmts stmts = match stmts with
 let rec gen_args op args = match args with
     [] -> ""
   | [a] -> sprintf "%s %s" (gen_datatype a.i_vtype) (a.i_vname)
-  | a::b::tl -> (sprintf "%s %s%s" (gen_datatype a.i_vtype) a.i_vname ^ (gen_args op (b::tl))
+  | a::b::tl -> (sprintf "%s %s%s" (gen_datatype a.i_vtype) (a.i_vname) ^ (gen_args op (b::tl))
 let rec gen_func_defs fundefs = match fundefs with
     [] -> []
   | hd :: tl -> (if hd.i_body != [] then
@@ -82,9 +83,9 @@ let rec gen_func_defs fundefs = match fundefs with
                  else ([sprintf "extern %s %s(%s);" (gen_datatype hd.i_return) hd.i_fname (gen_args "," hd.i_args)])
                 )@(gen_func_defs tl)
 
-let rec gen_i_struct_vars svars = match svars with
+let rec gen_i_struct_vars s_vars = match s_vars with
     [] -> ""
-  | hd :: tl -> sprintf "%s %s ;" (gen_datatype hd.i_vtype) (hd.i_vname)  
+  | hd :: tl -> (sprintf "%s %s ; " (gen_datatype hd.i_vtype) (hd.i_vname) ^ (gen_i_struct_vars tl))
 let rec gen_struct_decls structs = match structs with
     [] -> []
   | hd :: tl -> ([sprintf "struct %s {" hd.i_sname] @(gen_i_struct_vars hd.i_struct_vars)@ ["} %s" hd.i_sname])
@@ -107,6 +108,3 @@ let compile oc prg =
     in 
     let all = head_lines @ var_lines @ struct_lines @ func_lines in
     List.iter (fun line -> fprintf oc "%s\n" line) all
-
-
-
