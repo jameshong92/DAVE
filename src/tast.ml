@@ -36,7 +36,7 @@ type i_stmt =
   | Iexpr of i_expr
   | IReturn of i_expr
   | IBreak
-  | Icontinue
+  | IContinue
   | IIf of i_expr * i_stmt list * i_stmt list
   | IFor of i_stmt * i_expr * i_expr * i_stmt list
   | IWhile of i_expr * i_stmt list
