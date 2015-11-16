@@ -52,7 +52,7 @@ let rec gen_var_decls vars = match vars with
   | hd::tl -> (gen_var_decl hd) :: (gen_var_decls tl)
 and gen_var_decl var = 
   let t, s, e = var in match t with
-    Iint_array | Ifloat_array | Istring_array -> sprintf "%s %s[] = %s;" (gen_datatype t) s (gen_expr e)
+    Iint_array | Ifloat_array | Istring_array -> sprintf "%s %s[] = { %s };" (gen_datatype t) s (gen_expr e)
     | t -> sprintf "%s %s = %s;" (gen_datatype t) s (gen_expr e)
 
 let rec gen_stmt stmt = match stmt with
