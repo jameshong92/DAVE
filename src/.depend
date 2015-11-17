@@ -4,6 +4,8 @@ parser.cmo : ast.cmo parser.cmi
 parser.cmx : ast.cmx parser.cmi
 sast.cmo : ast.cmo
 sast.cmx : ast.cmx
-dave.cmo : parser.cmi ast.cmo
-dave.cmx : parser.cmx ast.cmx
+astcompile.cmo : sast.cmo ast.cmo
+astcompile.cmx : sast.cmx ast.cmx
+dave.cmo : parser.cmi astcompile.cmo ast.cmo
+dave.cmx : parser.cmx astcompile.cmx ast.cmx
 parser.cmi : ast.cmo

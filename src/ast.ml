@@ -51,6 +51,7 @@ and expr =
 	(*Fld = Values of the List * Name of the Field*)
 	| Fld of expr list * string
 	| Noexpr
+	| None
 
 type decl =
 	VarDecl of datatype * id
@@ -152,6 +153,7 @@ let rec string_of_expr = function
 | RecRef(id, exp) -> "RecRef( " ^ string_of_id id ^ ":" ^ string_of_expr exp ^ " )"
 | Fld(exps, lit) -> "Fld([" ^ String.concat "; " (List.map string_of_expr exps) ^ "], '" ^ lit ^ "' )"
 | Noexpr -> "Noexpr"
+| None -> "NULL"
 
 and string_of_lvalue = function
 	Var(lit) -> "Var( " ^ string_of_id lit ^ " )"
