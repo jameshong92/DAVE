@@ -128,7 +128,6 @@ let rec string_of_datatype = function
 | Fld -> "fld"
 | Void -> "void"
 | ArrayType(datatype) -> "ArrayType( " ^ string_of_datatype datatype ^ " )"
-| _ -> "invalid_type"
 
 let string_of_id = function
 	Id(id) -> "Id( " ^ id ^ " )"

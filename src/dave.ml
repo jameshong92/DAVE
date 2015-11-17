@@ -11,4 +11,3 @@ let _ =
 	Ast -> print_string (Ast.string_of_program program) 
 	| Astcompile ->
 			Astcompile.compile "dave.cc" program
-	| _ -> print_string "Unrecognized option"
