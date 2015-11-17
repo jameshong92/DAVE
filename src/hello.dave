@@ -8,11 +8,15 @@ int main() {
 	bool is_continue = true;
 
 	int d = 1;
+	int e = 0;
 	while (is_continue) {
 		if (d > 10)
 			break;
 		print("in while loop");
+		e += d;
 		d += 1;
 	}
+	print("printing sum of 1 to 10:");
+	print(e);
 	return 0;
 }

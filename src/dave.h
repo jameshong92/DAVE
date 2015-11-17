@@ -1,5 +1,5 @@
-#ifndef __LIBPRINT_H_
-#define __LIBPRINT_H_
+#ifndef __DAVE_H_
+#define __DAVE_H_
 
 #include <iostream>
 #include <string>
