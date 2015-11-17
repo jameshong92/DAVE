@@ -69,6 +69,7 @@ type stmt =
 	| VarDeclStmt of decl
 	| Continue
 	| Break
+	| EmptyStmt
 
 (*Function Declaration*)
 type func_decl = {
@@ -174,6 +175,7 @@ let rec string_of_stmt = function
 | VarDeclStmt(var) -> "VarDeclStmt( " ^ (string_of_decl var) ^ " )"
 | Continue -> "Continue;\n"
 | Break -> "Break\n"
+| EmptyStmt -> "EmptyStmt\n"
 
 let string_of_func_decl funcdecl = "Function( return type: (" 
 	^ string_of_datatype funcdecl.return_type ^ ") name: \"" 

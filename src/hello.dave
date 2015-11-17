@@ -1,8 +1,18 @@
 int main() {
 	str a = "hello world!";
 	int c;
-	for (c=0; c< 9; c++) {
+	// this is a single line comment
+	for (c = 0; c < 10; c++) {
 		print(a);
+	}
+	bool is_continue = true;
+
+	int d = 1;
+	while (is_continue) {
+		if (d > 10)
+			break;
+		print("in while loop");
+		d += 1;
 	}
 	return 0;
 }

@@ -92,12 +92,15 @@ let rec gen_stmt = function
   Expr(exp) -> "(" ^ (string_of_expr exp) ^ ");"
 | Return(exp) -> "return " ^ string_of_expr exp ^ ";"
 | Block(stmt_list) -> "{\n" ^ (String.concat "\n" (List.map gen_stmt stmt_list)) ^ "\n}\n"
-| If(exp, stmt1, stmt2) -> "if (" ^ (string_of_expr exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "\nelse " ^ (gen_stmt stmt2)
+| If(exp, stmt1, stmt2) -> (if stmt2 == EmptyStmt then
+  "if (" ^ (string_of_expr exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "\n" else
+  "if (" ^ (string_of_expr exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "\nelse " ^ (gen_stmt stmt2))
 | For(init, test, after, stmt) -> "for (" ^ string_of_expr init ^ "; " ^ string_of_expr test ^ "; " ^ string_of_expr after ^ ") " ^ gen_stmt stmt
 | While(test, stmt) -> "while (" ^ (string_of_expr test) ^ ") " ^ (gen_stmt stmt)
 | VarDeclStmt(decl) -> string_of_decl decl
 | Continue -> "continue;"
 | Break -> "break;"
+| EmptyStmt -> ";"
 
 let string_of_func_decl funcdecl = 
   string_of_datatype funcdecl.return_type ^ " "

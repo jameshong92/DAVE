@@ -198,7 +198,7 @@ stmt:
 	| IF LPAREN expr RPAREN stmt ELSE stmt
 															{ If($3, $5, $7) }
 	| IF LPAREN expr RPAREN stmt %prec NOELSE
-															{ If($3, $5, Block([])) }
+															{ If($3, $5, EmptyStmt) }
 	| FOR LPAREN expr_opt SEMICOL expr_opt SEMICOL expr_opt RPAREN stmt
 															{ For($3, $5, $7, $9) }
 	| WHILE LPAREN expr RPAREN stmt

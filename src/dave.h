@@ -18,6 +18,10 @@ void print(string n) {
 	cout << n << endl;
 }
 
+void print(const char *n) {
+	cout << string(n) << endl;
+}
+
 void print(bool v) {
 	cout << (v ? "true" : "false") << endl;
 }

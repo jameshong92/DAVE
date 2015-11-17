@@ -4,3 +4,5 @@ scanner.ml
 *.cmo
 *.cmi
 dave
+src/a.out
+src/dave.cc
