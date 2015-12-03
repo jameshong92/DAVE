@@ -1,5 +1,5 @@
-{ 
-	open Parser 
+{
+	open Parser
 }
 
 let digit = ['0' - '9']
@@ -41,7 +41,7 @@ rule token = parse
 | "<="                 { LEQ }
 | ">"                  { GT }
 | ">="                 { GEQ }
-| "tbl" | "rec" | "fld" as keyword 
+| "tbl" | "rec" | "fld" as keyword
 											 { VAR_TYPE(keyword) }
 | "if"                 { IF }
 | "else"               { ELSE }
@@ -50,7 +50,7 @@ rule token = parse
 | "break"              { BREAK }
 | "continue"           { CONTINUE }
 | "return"             { RETURN }
-| "void" | "int" | "float" | "bool" | "str" as primtype 
+| "void" | "int" | "float" | "bool" | "str" as primtype
 											 { PRIMITIVE_TYPE(primtype) }
 | "none"							 { NONE }
 | "true" 							 { BOOL_LIT(true) }
@@ -60,7 +60,7 @@ rule token = parse
 											 { FLOAT_LIT(float_of_string lit) }
 | '"' ([^ '"' '\\' '\n' '\r' '\t']* ('\\' ['\\' '"' 'n' 'r' 't'])* as lit) '"'
 											 { STR_LIT(lit) }
-| letter (letter | digit | '_')* as lit 
+| letter (letter | digit | '_')* as lit
 											 { ID(lit) }
 | eof 								 { EOF }
 | _ as c               { raise (Failure("Found illegal character: " ^ Char.escaped c)) }

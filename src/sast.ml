@@ -43,9 +43,15 @@ type s_stmt =
   | S_VarDeclStmt of s_decl
   | S_Continue
   | S_Break
+  | S_EmptyStmt
+
+type s_func_sig = {
+  s_fname : string;
+  s_formals : s_decl list;
+}
 
 type s_func_decl = {
-  s_fname : s_expr;
+  s_fname : string;
   s_formals : s_decl list;
   s_body: s_stmt;
   s_return_type : datatype;
