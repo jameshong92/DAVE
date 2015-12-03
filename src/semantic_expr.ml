@@ -12,7 +12,17 @@ let check_unop unop s_expr =
   | Neg -> (match s_expr with
         Int, _ -> Int, ret
       | Float, _ -> Float, ret
-      | _, _ -> raise (Invalid_use "unary \"-\": bad operand type"))
+      | _, _ -> raise (Invalid_use "unary \"-\" bad operand type"))
+
+let check_postop s_expr postop =
+  let ret = S_Postop(s_expr postop) in
+  match postop with
+    Inc -> (match s_expr with
+        Int, _ -> Int, ret
+      | _, _ -> raise (Invalid_use "\"++\" bad operand type"))
+  | Dec -> (match s_expr with
+        Int, _ -> Int, ret
+      | _, _ -> raise (Invalid_use "\"--\" bad operand type"))
 
 let check_binop s_expr1 binop s_expr2 =
   let t1, _ = s_expr1 in
