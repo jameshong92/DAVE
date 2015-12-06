@@ -177,15 +177,15 @@ let rec string_of_stmt = function
 | Break -> "Break\n"
 | EmptyStmt -> "EmptyStmt\n"
 
-let string_of_func_decl funcdecl = "Function( return type: (" 
-	^ string_of_datatype funcdecl.return_type ^ ") name: \"" 
-	^ string_of_id funcdecl.fname ^ "\" formals: (" 
+let string_of_func_decl funcdecl = "Function( return type: ("
+	^ string_of_datatype funcdecl.return_type ^ ") name: \""
+	^ string_of_id funcdecl.fname ^ "\" formals: ("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
-  ^ ") {\n" 
+  ^ ") {\n"
 	^ string_of_stmt funcdecl.body ^ "\n}"
 
-let string_of_program prgm = "Program( " 
-	^ (String.concat "\n" (List.map string_of_decl prgm.gdecls)) ^ "\n\n" 
+let string_of_program prgm = "Program( "
+	^ (String.concat "\n" (List.map string_of_decl prgm.gdecls)) ^ "\n\n"
 	^ (String.concat "\n\n" (List.map string_of_func_decl prgm.fdecls)) ^ "\n)\n"
 
 let type_of_string = function

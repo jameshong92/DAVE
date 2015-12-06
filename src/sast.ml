@@ -4,10 +4,10 @@ exception Invalid_use of string
 
 type s_expr_value =
     S_Id of string
-  | S_Intlit of int
-  | S_Floatlit of float
-  | S_Stringlit of string
-  | S_Boollit of bool
+  | S_IntLit of int
+  | S_FloatLit of float
+  | S_StringLit of string
+  | S_BoolLit of bool
   | S_Array of s_expr list
   | S_Access of s_expr * string
   | S_Index of string * s_expr
@@ -30,7 +30,7 @@ and s_expr = datatype * s_expr_value
 
 type s_decl =
     S_VarDecl of datatype * s_expr
-  | S_AssignDecl of datatype * s_expr * s_expr
+  | S_AssignDecl of datatype * s_expr * s_expr (* Differentiate? *)
   | S_ArrayDecl of datatype * s_expr * s_expr
 
 type s_stmt =
@@ -45,9 +45,9 @@ type s_stmt =
   | S_Break
   | S_EmptyStmt
 
-type s_func_sig = {
-  s_fname : string;
-  s_formals : s_decl list;
+type func_sig = {
+  sig_fname : string;
+  sig_formals : s_decl list;
 }
 
 type s_func_decl = {
