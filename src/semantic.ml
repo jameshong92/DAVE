@@ -7,6 +7,8 @@ open Printf
 
 (* find the type of a @name in @var_table
    return: (true, dtype) on found, (false, _) on not_found *)
+
+   (* to be changed *)
 let find_var var_table name =
   try
     let t, _, _ = List.find (fun (_,b,_) -> b = name) var_table in
@@ -95,52 +97,30 @@ and check_expr ftbl vtbl exp = match exp with
   | FuncCall(fn, xl) -> check_call ftbl vtbl fn xl
 
 
-(* check variable definition list,
+(* check variable declaration list,
    while building variable table
-   return a svar_def list *)
-let rec check_var_decls ftbl vtbl var_decls = match var_decls with
+   return a s_decl list *)
+let rec check_var_decls ftbl vtbl decls = match decls with
     [] -> vtbl
-  | hd::tl -> let new_var_decl = (
-    let new_v, init_e = (
+  | hd::tl -> let new_decl = (
+    let s_t, s_i, s_e = (
       match hd with
-        VarNoInit v -> v, (svar_init_sexpr v.vtype)
-      | VarInit (v, e) -> v, (check_expr ftbl vtbl e))
+        VarDecl (t, id) -> t, id
+      | AssignDecl (t, id, expr) -> t, id, expr
+      | ArrayDecl (t, expr, id) -> t, expr, id
     in
-    let new_type, new_name = new_v.vtype, new_v.vname in
+    let s_type, s_id, s_expr = s_t, s_i, s_e in
     let _ =
       let f, _ = find_var vtbl new_name in
-      if not f then () else raise (Invalid_use (new_v.vname ^ " defined twice"))
+      if not f then () else raise (Invalid_use (s_i ^ " defined twice"))
     in
-    let new_type =
-      if eq_t new_type (fst init_e) then new_type
+    let s_type =
+      if eq_t s_type (fst s_expr) then s_type
       else raise (Invalid_use "variable and expression type mismatch")
     in
-    [(new_type, new_name, init_e)] )
+    [(s_type, s_id, s_e)] )
     in
-    (check_var_decls ftbl (vtbl@new_vardec) tl)
-
-(* get svar locals from var list, check all var with incremental vtbl, but not returning a merged vtbl *)
-let rec check_local_var_def ftbl vtbl local_var_list = match local_var_list with
-    [] -> []
-  | hd::tl -> let new_vardec = (
-    let new_v, init_e = (
-      match hd with
-        VarNoInit v -> v, (svar_init_sexpr v.vtype)
-      | VarInit (v, e) -> v, (check_expr ftbl vtbl e))
-    in
-    let new_type, new_name = new_v.vtype, new_v.vname in
-    let _ =
-      let f, _ = find_var vtbl new_name in
-      if not f then () else raise (Invalid_use (new_v.vname ^ " defined twice"))
-    in
-    let new_type =
-      if eq_t new_type (fst init_e) then new_type
-      else raise (Invalid_use "variable and expression type mismatch")
-    in
-    [(new_type, new_name, init_e)] )
-    in
-    (new_vardec @ (check_local_var_def ftbl (new_vardec@vtbl) tl))
-
+    (check_var_decls ftbl (vtbl@new_decl) tl)
 
 (* check statement list.
    return: sstmt list *)
