@@ -28,10 +28,7 @@ type s_expr_value =
   | S_Noexpr
 and s_expr = datatype * s_expr_value
 
-type s_decl =
-    S_VarDecl of datatype * s_expr
-  | S_AssignDecl of datatype * s_expr * s_expr (* Differentiate? *)
-  | S_ArrayDecl of datatype * s_expr * s_expr
+type s_decl = datatype * id * s_expr
 
 type s_stmt =
     S_Expr of s_expr
@@ -46,7 +43,7 @@ type s_stmt =
   | S_EmptyStmt
 
 type func_sig = {
-  sig_fname : string;
+  sig_fname : id;
   sig_formals : s_decl list;
 }
 

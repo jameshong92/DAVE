@@ -20,6 +20,12 @@ type arg = datatype * string
 (*Critical: Refer to the Issue List Before Proceed*)
 type id = Id of string
 
+(*Varaible Definition*)
+type var = {
+	vtype: datatype;
+	vname: id;
+}
+
 type lvalue =
 	Var of id
 	| Array of id * expr
@@ -53,10 +59,15 @@ and expr =
 	| Noexpr
 	| None
 
+(*
 type decl =
 	VarDecl of datatype * id
 	| AssignDecl of datatype * id * expr
 	| ArrayDecl of datatype * expr * id
+*)
+type decl =
+	VarDecl of var
+	| AssignDecl of var * expr
 
 (*Statement*)
 type stmt =
