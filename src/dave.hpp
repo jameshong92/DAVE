@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 
 using namespace std;
@@ -142,6 +143,138 @@ public:
                         t[j].f_string.push_back(newrec.r[i].content_string);
                     } 
                     break;
+                }
+            }
+        }
+    }
+    tbl(tbl source1, tbl source2, bool ishorizonal) {
+        if (ishorizonal) {
+            if (source1.col_length != source2.col_length) {
+                cout << "combine failed!" << endl;
+                exit(1);
+            }
+            col_length = source1.col_length;
+            row_length = source1.row_length + source2.row_length;
+            t = source1.t;
+            for (int i=0; i<source2.row_length; i++) {
+                t.push_back(source2.t[i]);
+            }
+        } else {
+            if (source1.row_length != source2.row_length) {
+                cout << "combine failed!" << endl;
+                exit(1);
+            }
+            col_length = source1.col_length + source2.col_length;
+            row_length = source1.row_length;
+            t = source1.t;
+            for (int i=0; i<source2.row_length; i++) {
+                for (int j=0; j<source1.row_length; j++) {
+                    if (source2.t[i].name.compare(t[j].name) == 0) {
+                        for (int k=0; k< source2.t[i].length; k++) {
+                            if (source2.t[i].type == 0) {
+                                t[j].f_int.push_back(source2.t[i].f_int[k]);
+                            } else if (source2.t[i].type == 1) {
+                                t[j].f_double.push_back(source2.t[i].f_double[k]);
+                            } else if (source2.t[i].type == 2) {
+                                t[j].f_string.push_back(source2.t[i].f_string[k]); 
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    tbl(tbl original, int col, int row, int newele) {
+        if (col > original.col_length || row > original.row_length) {
+            cout << "reset failed!" << endl;
+            exit(1);
+        }
+        col_length = original.col_length;
+        row_length = original.row_length;
+        t = original.t;
+        t[row-1].f_int[col-1] = newele;
+    }
+    tbl(tbl original, int col, int row, double newele) {
+        if (col > original.col_length || row > original.row_length) {
+            cout << "reset failed!" << endl;
+            exit(1);
+        }
+        col_length = original.col_length;
+        row_length = original.row_length;
+        t = original.t;
+        t[row-1].f_double[col-1] = newele;
+    }
+    tbl(tbl original, int col, int row, string newele) {
+        if (col > original.col_length || row > original.row_length) {
+            cout << "reset failed!" << endl;
+            exit(1);
+        }
+        col_length = original.col_length;
+        row_length = original.row_length;
+        t = original.t;
+        t[row-1].f_string[col-1] = newele;
+    }
+    tbl(tbl original, int row, string type) {
+        col_length = original.col_length;
+        row_length = original.row_length;
+        t = original.t;
+        int newtype;
+        if (type.compare("int") == 0) {
+            newtype = 0;
+        } else if (type.compare("doulbe") == 0) {
+            newtype = 1;
+        } else if (type.compare("string") == 0) {
+            newtype = 2;
+        }
+        if (t[row-1].type != newtype) {
+            if (newtype == 2) {
+                if (t[row-1].type == 0) {
+                    t[row-1].type = 2;
+                    for (int i=0; i<col_length; i++) {
+                        stringstream strStream;
+                        strStream << t[row-1].f_int[i];
+                        string s = strStream.str();
+                        t[row-1].f_string.push_back(s);
+                    }
+                }
+                if (t[row-1].type == 1) {
+                    t[row-1].type = 2;
+                    for (int i=0; i<col_length; i++) {
+                        stringstream strStream;
+                        strStream << t[row-1].f_double[i];
+                        string s = strStream.str();
+                        t[row-1].f_string.push_back(s);
+                        cout << t[row-1].f_string[i] << endl;
+                    }
+                }
+            }
+            else if (t[row-1].type == 2) {
+                if (newtype == 0) {
+                    t[row-1].type = 0;
+                    for (int i=0; i<col_length; i++) {
+                        char temp[10];
+                        strcpy(temp, t[row-1].f_string[i].c_str());
+                        t[row-1].f_int[i] = atoi(temp);
+                    }
+                }
+                if (newtype == 1) {
+                    t[row-1].type = 1;
+                    for (int i=0; i<row_length; i++) {
+                        char temp[10];
+                        strcpy(temp, t[row-1].f_string[i].c_str());
+                        t[row-1].f_int[i] = atof(temp);
+                    }
+                }     
+            } else if (newtype == 1) {
+                t[row-1].type = 1;
+                for (int i=0; i<row_length; i++) {
+                    t[row-1].f_double[i] = (double) t[row-1].f_int[i];
+                }
+            } else if (newtype == 0) {
+                t[row-1].type = 0;
+                for (int i=0; i<row_length; i++) {
+                    t[row-1].f_int[i] = (int) t[row-1].f_double[i];
                 }
             }
         }
@@ -298,11 +431,37 @@ int main(int argc, char const *argv[]) {
     cout << s;
     tbl n = tbl(s, b);
     // sample definition of binding (kind 1)
+    cout << "result of binding1 is:" << endl;
     cout << n;
-    tuple m[] = {tuple (21, "age"), tuple ("Micheal", "name"), tuple ("99.99","value")};
+    tuple m[] = {tuple (21, "age"), tuple ("Micheal", "name")};
+    tuple y[] = {tuple (48, "age"), tuple ("Edwards", "name")};
     rec w = rec (m, getArrayLen(m));
-    s = tbl(s, w);
+    rec p = rec (y, getArrayLen(m));
+    rec q[] = {w,p};
+    tbl x = tbl(q, getArrayLen(q), q[0].length);
+    cout << x;
+    tbl z = tbl(s, w);
     // sample definition of binding (kind 2)
-    cout << s;
+    cout << "result of binding2 is:" << endl;
+    cout << z;
+    tbl st = tbl(s, t, true);
+    // sample definition of binding (kind 3)
+    cout << "result of binding3 is:" << endl;
+    cout << st;
+    tbl sx = tbl(s, x, false);
+    // sample definition of binding (kind 4)
+    cout << "result of binding4 is:" << endl;
+    cout << sx;
+    tbl ss = tbl(sx, 1, 2, "Cesc");
+    // sample definition of changing (kind 4)
+    cout << "result of changing is:" << endl;
+    cout << ss;
+    tbl sx1 = tbl(sx, 1, "string");
+    cout << "result of conversion is:" << endl;
+    cout << sx1;
+    tbl sx2 = tbl(sx1, 1, "int");
+    cout << "result of conversion is:" << endl;
+    cout << sx2;
+    // sample of data type conversion
     return 0; 
-} */
+}  */
