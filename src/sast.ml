@@ -57,4 +57,5 @@ type s_func_decl = {
 type s_program = {
   s_gdecls : s_decl list;
   s_fdecls : s_func_decl list;
+  s_sdecls : s_stmt list;
 }

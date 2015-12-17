@@ -94,6 +94,7 @@ type func_decl = {
 type program = {
 	gdecls : decl list;
 	fdecls : func_decl list;
+	sdecls : stmt list;
 }
 
 

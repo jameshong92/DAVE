@@ -70,6 +70,12 @@ let s_var_init_s_expr var = match var with
   | String -> String, S_StringLit ""
   | Void -> raise (Invalid_use "cannot define a void-type variable")
 
+
+(*Convert Variable List into Decl List*)
+let var_to_decl var_list =
+  let var_to_decl v = v.vtype,, v.name, (s_var_init_s_expr v.vtype) in
+  List.map var_to_decl var_list
+
 (* check expr,
    return a s_expr *)
 let rec check_lvalue ftbl vtbl lv = match lv with
@@ -83,17 +89,17 @@ and check_call ftbl vtbl fn exp_list =
   if found && not (is_func_dec fnsg) then fnsg.s_return_type, S_FuncCall(fn, s_exp_list)
   else raise (Invalid_use ("function " ^ fn ^ " not defined"))
 and check_expr ftbl vtbl exp = match exp with
-    IntLit x -> Int, SIntval x
-  | DoubleLit x -> Double, S_DoubleLit x
+  Id x -> String, S_Id x
+  | IntLit x -> Int, S_IntLit x
+  | FloatLit x -> Float, S_FloatLit x
   | StringLit x -> String, S_StringLit x
   | BoolLit x -> Bool, S_BoolLit x
-  | Lvalue lv -> check_lvalue ftbl vtbl lv
   | Binop(e1, bop, e2) -> check_binop bop
-                            (check_expr ftbl vtbl e1)
-                            (check_expr ftbl vtbl e2)
+                          (check_expr ftbl vtbl e1)
+                          (check_expr ftbl vtbl e2)
   | Unaop(uop, x) -> check_uniop uop (check_expr ftbl vtbl x)
   | Assign(lv, x) -> check_assign (check_lvalue ftbl vtbl lv)
-                       (check_expr ftbl vtbl x)
+                      (check_expr ftbl vtbl x)
   | FuncCall(fn, xl) -> check_call ftbl vtbl fn xl
 
 
@@ -103,70 +109,50 @@ and check_expr ftbl vtbl exp = match exp with
 let rec check_var_decls ftbl vtbl decls = match decls with
     [] -> vtbl
   | hd::tl -> let new_decl = (
-    let s_t, s_i, s_e = (
+    let new_var, new_expr = (
       match hd with
-        VarDecl (t, id) -> t, id
-      | AssignDecl (t, id, expr) -> t, id, expr
-      | ArrayDecl (t, expr, id) -> t, expr, id
+        VarDecl var -> var, (s_var_init_s_expr var.vtype)
+      | AssignDecl (var, expr) -> var, (check_expr ftbl vtbl expr)
+    )
     in
-    let s_type, s_id, s_expr = s_t, s_i, s_e in
+    let new_type, new_name = new_var.vtype, new_var.vname in
     let _ =
       let f, _ = find_var vtbl new_name in
-      if not f then () else raise (Invalid_use (s_i ^ " defined twice"))
+      if not f then () else raise (Invalid_use (new_var.vname ^ " defined twice"))
     in
-    let s_type =
-      if eq_t s_type (fst s_expr) then s_type
+    let new_type =
+      if eq_t new_type (fst new_expr) then new_type
       else raise (Invalid_use "variable and expression type mismatch")
     in
-    [(s_type, s_id, s_e)] )
+    [(new_type, new_name, new_expr)] )
     in
     (check_var_decls ftbl (vtbl@new_decl) tl)
 
 (* check statement list.
    return: sstmt list *)
-let rec check_condstmts ftbl vtbl ret_type loop_flag cs = match cs with(* translate a list of elif *)
-    [] -> []
-  | hd::tl -> let _, sstmts = (check_stmts ftbl vtbl ret_type false false loop_flag hd.stmts) in
-    { scond = (check_expr ftbl vtbl hd.cond) ;
-      sstmts
-    } :: (check_condstmts ftbl vtbl ret_type loop_flag tl )
-and check_stmts ftbl vtbl ret_type main_flag ret_flag loop_flag stmts= match stmts with
+let rec check_stmts ftbl vtbl ret_type main_flag ret_flag loop_flag stmts= match stmts with
     [] -> ret_flag,[]
   | hd::tl ->
     let flag0, flist0 =
       ( match hd with
-          Empty -> ret_flag, SEmpty
-        | Expr e -> ret_flag, SExpr (check_expr ftbl vtbl e)
+        Expr e -> ret_flag, S_Expr (check_expr ftbl vtbl e)
         | Return e ->
           let ret = check_expr ftbl vtbl e in
           if fst ret == ret_type
-          then (if (main_flag) then true,SReturn ret else false,SReturn ret)
+          then (if (main_flag) then true, S_Return ret else false,S_Return ret)
           else raise (Invalid_use "mismatch with function's return type")
-        | If (c, cl, ss) -> let _, check_ss = check_stmts ftbl vtbl ret_type false ret_flag loop_flag ss  in
-          ret_flag, SIf ((List.hd (check_condstmts ftbl vtbl ret_type loop_flag [c] )),
-                         (check_condstmts ftbl vtbl ret_type loop_flag cl),
-                         check_ss
-                        )
-        | CntFor (s, e, ss) -> (
-            let f, st = find_var vtbl s in
-            let et, e = check_expr ftbl vtbl e in
-            let _, sss = check_stmts ftbl vtbl ret_type false ret_flag true ss  in
-            let _ = if f then () else raise (Invalid_use (s ^ "undefined")) in
-            let et_t = match et with
-                IntMat -> Int
-              | DoubleMat -> Double
-              | StringMat -> String
-              | _ -> raise (Invalid_use "must be loop in a mat")
-            in
-            if eq_t et_t st then ret_flag, SCntFor (s, (et, e), sss)
-            else raise (Invalid_use "loop variable type mismatch") )
-        | CndFor cs -> ret_flag,SCndFor (List.hd (check_condstmts ftbl vtbl ret_type true [cs]))
-        | Disp e -> ret_flag, SDisp (check_expr ftbl vtbl e)
-        | Continue -> if(loop_flag) then ret_flag, SContinue else raise (Invalid_use "Continue should only be used inside a loop")
-        | Break -> if(loop_flag) then ret_flag, SBreak else raise (Invalid_use "Break should only be used inside a loop")
+        | Block (stmt_list) ->
+        | If
+        | For
+        | While
+        | VarDeclStmt
+        | Continue -> if (loop_flag) then ret_flag, S_Continue else raise (Invalid_use "Continue should only be used inside a loop")
+        | Break -> if (loop_flag) then ret_flag, S_Break else raise (Invalid_use "Break should only be used inside a loop")
+        | EmptyStmt -> ret_flag, S_EmptyStmt
       ) in
     let flag1, flist1 = check_stmts ftbl vtbl ret_type main_flag ret_flag loop_flag tl
     in flag0||flag1 , flist0::flist1
+
 
 
 (* check_func_decl
@@ -179,22 +165,19 @@ let check_func_decl new_ftbl ftbl new_func_decl =
     sig_formals = fn.formals
   } in
   let new_fnsg = sig_func new_func_decl in (* signature *)
-  let new_ret = new_func_decl.return_type in (* return type *)
-  (*let _ = print_func_sig new_fnsg in*)
+  let new_return = new_func_decl.return_type in (* return type *)
   let new_fname = new_func_decl.fname in (* name *)
   let new_formals = new_func_decl.formals in (* arguments *)
-  (* check local variables & build variable table *)
-  let formal_decl = new_formals in
   let full_ftbl = ftbl @ new_ftbl in
-  let vtbl = (arg_decl@new_local) in
+  let vtbl = new_formals in
   (* check statements *)
-  let flag, new_fstmts = check_stmts full_ftbl vtbl new_ret true false false new_func_decl.body in
+  let flag, new_fstmts = check_stmts full_ftbl vtbl new_return true false false new_func_decl.body in
   let new_sfun_decl = { s_fname = new_fname;
                        s_formals = new_formals;
                        s_body = new_fstmts;
-                       s_return_type = new_ret } in
-  let _ = if (new_sret != Void && not (is_func_dec new_sfun_decl) && not flag)
-    then raise (Invalid_use ("Function '" ^ new_sname ^ "' return statement missing"))
+                       s_return_type = new_return } in
+  let _ = if (new_return != Void && not (is_func_dec new_sfun_decl) && not flag)
+    then raise (Invalid_use ("Function '" ^ new_fname ^ "' return statement missing"))
     else ()
   in
   let found, _ = find_func (=) (ftbl) new_fnsg in
@@ -204,13 +187,13 @@ let check_func_decl new_ftbl ftbl new_func_decl =
     false, false -> new_ftbl @ [new_sfun_decl]
   | false, true ->  if (is_func_dec fbodynew) && not (is_func_dec new_sfun_decl)
                     then begin
-                      if fbodynew.sreturn = new_sret then
+                      if fbodynew.s_return_type = new_return then
                         (list_rep fbodynew new_sfun_decl new_ftbl)
                       else
-                        raise (Invalid_use ("Function '" ^ new_sname ^ "' return type different with declaration"))
+                        raise (Invalid_use ("Function '" ^ new_fname ^ "' return type different with declaration"))
                     end
-                    else raise (Invalid_use ("Function '" ^ new_sname ^ "' already defined"))
-  | true, _ -> raise (Invalid_use ("Function '" ^ new_sname ^ "' already defined"))
+                    else raise (Invalid_use ("Function '" ^ new_fname ^ "' already defined"))
+  | true, _ -> raise (Invalid_use ("Function '" ^ new_fname ^ "' already defined"))
 
 
 (* check function definition list
@@ -230,16 +213,16 @@ let check need_dec_extern extern_funs prg =
   let func_table =
     let func_table_0 = extern_funs in (* init function table (should be built-in functions)
                                       and init new function table (user-defined & empty) *)
-    check_func_decls [] func_table_0 prg.pfuns
+    check_func_decls [] func_table_0 prg.f_decls
   in
   let full_ftbl =  lib_funs @ extern_funs @ func_table in
   let var_table =
     let var_table_0 = [] in    (* init variable table as empty *)
-    check_var_decls full_ftbl var_table_0 prg.pvars
+    check_var_decls full_ftbl var_table_0 prg.gdecls
   in
   let _, stm_lines =            (* statements *)
-    check_stmts full_ftbl var_table Int true true false prg.pstms
+    check_stmts full_ftbl var_table Int true true false prg.s_sdecls
   in
   match need_dec_extern with
-    IMP -> { s_fdecls = func_table; s_gdecls = [] }
-  | _ -> { s_fdecls = func_table; s_gdecls = var_table }
+    IMP -> { s_fdecls = func_table; s_gdecls = []; s_sdecls = [] }
+  | _ -> { s_fdecls = func_table; s_gdecls = var_table; s_sdecls = stm_lines  }
