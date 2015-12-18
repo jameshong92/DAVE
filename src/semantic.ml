@@ -73,7 +73,7 @@ let s_var_init_s_expr var = match var with
 
 (*Convert Variable List into Decl List*)
 let var_to_decl var_list =
-  let var_to_decl v = v.vtype,, v.name, (s_var_init_s_expr v.vtype) in
+  let var_to_decl v = v.vtype, v.name, (s_var_init_s_expr v.vtype) in
   List.map var_to_decl var_list
 
 (* check expr,
@@ -141,11 +141,11 @@ let rec check_stmts ftbl vtbl ret_type main_flag ret_flag loop_flag stmts= match
           if fst ret == ret_type
           then (if (main_flag) then true, S_Return ret else false,S_Return ret)
           else raise (Invalid_use "mismatch with function's return type")
-        | Block (stmt_list) ->
-        | If
-        | For
-        | While
-        | VarDeclStmt
+        | Block (stmt_list) -> raise (Invalid_use "update needed") (* TODO: update stmt *)
+        | If (cond, e, s) -> raise (Invalid_use "update needed") (* TODO: update stmt *)
+        | For (e1, e2, s) -> raise (Invalid_use "update needed") (* TODO: update stmt *)
+        | While (e, s) -> raise (Invalid_use "update needed") (* TODO: update stmt *)
+        | VarDeclStmt (v) -> raise (Invalid_use "update needed") (* TODO: update stmt *)
         | Continue -> if (loop_flag) then ret_flag, S_Continue else raise (Invalid_use "Continue should only be used inside a loop")
         | Break -> if (loop_flag) then ret_flag, S_Break else raise (Invalid_use "Break should only be used inside a loop")
         | EmptyStmt -> ret_flag, S_EmptyStmt
@@ -162,7 +162,8 @@ let rec check_stmts ftbl vtbl ret_type main_flag ret_flag loop_flag stmts= match
 let check_func_decl new_ftbl ftbl new_func_decl =
   let sig_func fn = {
     sig_fname = fn.fname;
-    sig_formals = fn.formals
+    (* sig_formals = fn.formals *)
+    sig_formals = List.map (fun v -> v.vtype) fn.args
   } in
   let new_fnsg = sig_func new_func_decl in (* signature *)
   let new_return = new_func_decl.return_type in (* return type *)
@@ -172,7 +173,8 @@ let check_func_decl new_ftbl ftbl new_func_decl =
   let vtbl = new_formals in
   (* check statements *)
   let flag, new_fstmts = check_stmts full_ftbl vtbl new_return true false false new_func_decl.body in
-  let new_sfun_decl = { s_fname = new_fname;
+  let new_sfun_decl = { 
+                       s_fname = new_fname;
                        s_formals = new_formals;
                        s_body = new_fstmts;
                        s_return_type = new_return } in
@@ -213,16 +215,16 @@ let check need_dec_extern extern_funs prg =
   let func_table =
     let func_table_0 = extern_funs in (* init function table (should be built-in functions)
                                       and init new function table (user-defined & empty) *)
-    check_func_decls [] func_table_0 prg.f_decls
+    check_func_decls [] func_table_0 prg.fdecls
   in
   let full_ftbl =  lib_funs @ extern_funs @ func_table in
   let var_table =
     let var_table_0 = [] in    (* init variable table as empty *)
     check_var_decls full_ftbl var_table_0 prg.gdecls
   in
-  let _, stm_lines =            (* statements *)
+(*TODO: REMOVE COMMENT IF STMT NECESSARY   let _, stm_lines =            (* statements *)
     check_stmts full_ftbl var_table Int true true false prg.s_sdecls
-  in
+  in *)
   match need_dec_extern with
-    IMP -> { s_fdecls = func_table; s_gdecls = []; s_sdecls = [] }
-  | _ -> { s_fdecls = func_table; s_gdecls = var_table; s_sdecls = stm_lines  }
+    IMP -> { s_fdecls = func_table; s_gdecls = [](*TODO: REMOVE COMMENT IF STMT NECESSARY ; s_sdecls = [] *) }
+  | _ -> { s_fdecls = func_table; s_gdecls = var_table(*TODO: REMOVE COMMENT IF STMT NECESSARY ; s_sdecls = stm_lines *)  }

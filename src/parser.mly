@@ -158,7 +158,7 @@ program:
   | program fdecl 						{ { gdecls = $1.gdecls; fdecls = $2 :: $1.fdecls } }
 
 fdecl:
-	datatype id LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
+	datatype ID LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
 															{ {
 																	fname = $2;
 																	formals = $4;
@@ -172,14 +172,14 @@ formals_opt:
 
 /* TODO: modify formal_list if doing in c++ */
 formal_list:
-	datatype id 								{ [VarDecl($1, $2)] }
+	datatype id 								{ [VarDecl({vtype=$1; vname=$2})] }
 	| formal_list COMMA datatype id
-															{ VarDecl($3, $4) :: $1 }
+															{ VarDecl({vtype=$3; vname=$4}) :: $1 }
 
 vdecl:
-	datatype id SEMICOL 				{ VarDecl($1, $2) }
+	datatype id SEMICOL 				{ VarDecl({vtype=$1; vname=$2}) }
 	| datatype id ASN expr SEMICOL
-															{ AssignDecl($1, $2, $4) }
+															{ AssignDecl({vtype=$1; vname=$2}, $4) }
 	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL
 															{ ArrayDecl(type_of_string $1, $3, $5) }
 

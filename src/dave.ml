@@ -1,4 +1,4 @@
-type action = Ast | Astcompile
+type action = Ast | Astcompile (* | Semantic *)
 
 let _ =
 	let action = if Array.length Sys.argv > 1 then
@@ -9,5 +9,6 @@ let _ =
 	let program = Parser.program Scanner.token lexbuf in
 	match action with
 	Ast -> print_string (Ast.string_of_program program) 
+	(* | Sast -> Sast.print_program (Semantic.check program) *)
 	| Astcompile ->
 			Astcompile.compile "dave.cc" program

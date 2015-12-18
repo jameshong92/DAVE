@@ -1,4 +1,4 @@
-(* sub-routines called in shcek_expr in scheck.ml *)
+(* sub-routines called in schek_expr in scheck.ml *)
 open Ast
 open Sast
 open Printf
@@ -15,7 +15,7 @@ let check_unop unop s_expr =
       | _, _ -> raise (Invalid_use "unary \"-\" bad operand type"))
 
 let check_postop s_expr postop =
-  let ret = S_Postop(s_expr postop) in
+  let ret = S_Postop(s_expr, postop) in
   match postop with
     Inc -> (match s_expr with
         Int, _ -> Int, ret
@@ -134,4 +134,4 @@ let check_assign s_expr1 s_expr2 =
   | Int, Float -> Float, ret0
   | String, String -> String, ret0
   | Bool, Bool -> Bool, ret0
-  | x, y -> raise (Invalid_use (sprintf "%s : %s operand types invalid" (pt x) (pt y)))
+  | x, y -> raise (Invalid_use (sprintf "%s : %s operand types invalid" (string_of_datatype x) (string_of_datatype y)))

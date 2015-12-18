@@ -68,6 +68,7 @@ type decl =
 type decl =
 	VarDecl of var
 	| AssignDecl of var * expr
+	| ArrayDecl of datatype * expr * id
 
 (*Statement*)
 type stmt =
@@ -84,7 +85,7 @@ type stmt =
 
 (*Function Declaration*)
 type func_decl = {
-	fname : id;
+	fname : string;
 	formals : decl list;
 	body: stmt;
 	return_type : datatype;
@@ -94,7 +95,7 @@ type func_decl = {
 type program = {
 	gdecls : decl list;
 	fdecls : func_decl list;
-	sdecls : stmt list;
+	(* sdecls : stmt list; *)
 }
 
 
@@ -173,8 +174,8 @@ and string_of_lvalue = function
 | Access(exp, id) -> "Access( " ^ string_of_expr exp ^ " " ^ string_of_id id ^ " )"
 
 let string_of_decl = function
-	VarDecl(datatype, id) -> "VarDecl( " ^ string_of_datatype datatype ^ " " ^ string_of_id id ^ " )"
-| AssignDecl(datatype, id, exp) -> "AssignDecl( " ^ string_of_datatype datatype ^ " " ^ string_of_id id ^ " = " ^ string_of_expr exp ^ " )"
+	VarDecl(v) -> "VarDecl( " ^ string_of_datatype (v.vtype) ^ " " ^ string_of_id (v.vname) ^ " )"
+| AssignDecl(v, exp) -> "AssignDecl( " ^ string_of_datatype (v.vtype) ^ " " ^ string_of_id (v.vname) ^ " = " ^ string_of_expr exp ^ " )"
 | ArrayDecl(datatype, exp, id) -> "ArrayDecl( " ^ string_of_datatype datatype ^ "[ " ^ string_of_expr exp ^ " ]" ^ string_of_id id ^ " )"
 
 let rec string_of_stmt = function
@@ -191,9 +192,10 @@ let rec string_of_stmt = function
 
 let string_of_func_decl funcdecl = "Function( return type: ("
 	^ string_of_datatype funcdecl.return_type ^ ") name: \""
-	^ string_of_id funcdecl.fname ^ "\" formals: ("
+	^  funcdecl.fname ^ "\" formals: ("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
   ^ ") {\n"
+	(* ^ (String.concat "stmt:\n" (List.map string_of_stmt funcdecl.body)) *)
 	^ string_of_stmt funcdecl.body ^ "\n}"
 
 let string_of_program prgm = "Program( "

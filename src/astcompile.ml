@@ -79,12 +79,12 @@ and string_of_lvalue = function
 
 
 let string_of_decl = function
-  VarDecl(dtype, id) -> (match dtype with
-  ArrayType(t) -> (string_of_datatype t) ^ string_of_id id ^ "[];"
-  | _ -> (string_of_datatype dtype) ^ " " ^ string_of_id id ^ ";")
-| AssignDecl(dtype, id, exp) -> (match dtype with
-  ArrayType(t) -> string_of_datatype t ^ " " ^ string_of_id id ^ "[] = " ^ string_of_expr exp ^ ";"
-  | _ -> string_of_datatype dtype ^ " " ^ string_of_id id ^ " = " ^ string_of_expr exp ^ ";")
+  VarDecl(v) -> (match v.vtype with
+  ArrayType(t) -> (string_of_datatype t) ^ string_of_id v.vname ^ "[];"
+  | _ -> (string_of_datatype v.vtype) ^ " " ^ string_of_id v.vname ^ ";")
+| AssignDecl(v, exp) -> (match v.vtype with
+  ArrayType(t) -> string_of_datatype t ^ " " ^ string_of_id v.vname ^ "[] = " ^ string_of_expr exp ^ ";"
+  | _ -> string_of_datatype v.vtype ^ " " ^ string_of_id v.vname ^ " = " ^ string_of_expr exp ^ ";")
 | ArrayDecl(dtype, exp, id) -> string_of_datatype dtype ^ " " ^ string_of_id id ^ "[" ^ string_of_expr exp ^ "];"
 
 
@@ -104,7 +104,7 @@ let rec gen_stmt = function
 
 let string_of_func_decl funcdecl = 
   string_of_datatype funcdecl.return_type ^ " "
-  ^ string_of_id funcdecl.fname ^ "("
+  ^ funcdecl.fname ^ "("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
   ^ ") {\n"
   ^ gen_stmt funcdecl.body ^ "\n}"
