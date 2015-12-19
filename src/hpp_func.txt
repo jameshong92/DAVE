@@ -2,7 +2,7 @@ tuple a = tuple(data, string name);
 data can be int, double or string, name is a string.
 
 rec b = rec(tuple array, int length);
-tuple array or tuple vector are both ok, the length parameter is added for convinence.
+tuple array or tuple vector are both ok, the length parameter is added for convinence. All the arrays mentioned could be changed to vector, but maybe we dont utilize vector in our dave, just use to help the library inner operation.
 I think that it could be written as rec b = rec(array) in dave and translate into
 rec b = rec(array, getArrayLen(array)) in c++, or I could make some change.
 
