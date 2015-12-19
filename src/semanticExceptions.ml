@@ -1,0 +1,20 @@
+exception Main_not_found_err
+exception Duplicate_function_err
+exception Duplicate_variable_err
+exception Stmt_list_err
+exception Not_implemented_err
+exception Type_err of string
+exception Arr_err
+exception Access_err
+exception Var_type_err
+exception Init_type_err
+exception No_func_err of string
+exception No_variable_err
+exception Return_type_err
+exception Current_not_found
+exception Err_s_check_stmt_if
+exception Err_s_check_stmt_for
+exception Err_s_check_stmt_while
+exception Invalid_type
+exception Invalid_statement
+exception Invalid_func_err of string

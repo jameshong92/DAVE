@@ -2,7 +2,7 @@
 #
 # The Caml sources (including camlyacc and camllex source files)
 
-SOURCES = ast.ml parser.mly scanner.mll sast.ml semanticAnalysis.ml compile.ml dave.ml
+SOURCES = ast.ml parser.mly scanner.mll semanticExceptions.ml sast.ml semanticAnalysis.ml compile.ml dave.ml
 
 EXEC = dave
 

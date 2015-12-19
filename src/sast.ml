@@ -43,6 +43,40 @@ type s_program = {
 }
 
 (* printing for debugging purposes *)
+
+let rec string_of_s_stmt = function
+    S_Block(stmt_list) -> (String.concat "\n" (List.map string_of_s_stmt stmt_list)) ^ "\n"
+  | S_Expr(expr) -> "Expr( " ^ (string_of_s_expr expr) ^ " )"
+  | S_Return(expr) -> "Return( " ^ (string_of_s_expr expr) ^ " )"
+  | S_VarDeclStmt(var) -> "VarDecl( " ^ (string_of_s_var_decl var) ^ " )"
+  | S_If(expr, stmt1, stmt2) -> "if (" ^ (string_of_s_expr expr) ^ ")\n" ^ (string_of_s_stmt stmt1) ^ (string_of_s_stmt stmt2) ^ " )"
+  | S_For(init, test, after, stmt) -> "for (" ^ string_of_s_expr init ^ ", " ^ string_of_s_expr test ^ ", " ^ string_of_s_expr after ^ ") {\n" ^ string_of_s_stmt stmt ^ "\n}"
+  | S_While(test, stmt) -> "while( " ^ (string_of_s_expr test) ^ " ) {\n" ^ (string_of_s_stmt stmt) ^ "\n}"
+  | S_Continue -> "continue;\n"
+  | S_Break -> "break;\n"
+  | S_EmptyStmt -> "EmptyStmt"
+
+and string_of_s_expr expr = "T_Expr( " ^ (string_of_expr expr.exp) ^ " type : "
+^ (string_of_s_var_type expr.typ) ^ " )\n"
+
+and string_of_s_var_type vartype = "ptype: " ^ string_of_datatype vartype.s_ptype
+^ "; dimension_length: " ^ string_of_int (List.length vartype.s_dimension)
+
+and string_of_s_var_decl vardecl = "S_Var( name: " ^ vardecl.s_vname ^ "; " ^
+string_of_s_var_type vardecl.s_vtype ^ "; " ^ string_of_s_expr vardecl.s_vinit  ^ " )"
+
+and string_of_s_func_decl funcdecl = "Function ( type: (" ^ string_of_s_var_type
+funcdecl.s_return_type ^ ") name: \"" ^ funcdecl.s_fname ^ "\" formals: " ^
+(String.concat ", " (List.map string_of_s_var_decl funcdecl.s_formals)) ^ ")
+{\n" ^ string_of_s_stmt funcdecl.s_body ^ "\n}"
+
+let string_of_program prog = "Sast_Program_Start\n" ^ (String.concat "\n" (List.map
+string_of_s_var_decl prog.s_gdecls)) ^ "\n\n" ^
+    (String.concat "\n\n" (List.map string_of_s_func_decl prog.s_fdecls)) ^
+    "\nProgram_END\n"
+
+
+
 (* let rec string_of_datatype = function
   Int -> "int"
 | Float -> "float"
@@ -84,8 +118,8 @@ let string_of_asnop = function
 | Subeq -> "-="
 | Muleq -> "*="
 | Diveq -> "/="
-| Modeq -> "%=" *)
-(* 
+| Modeq -> "%="
+
 let string_of_id = function
   Id(id) -> id
 

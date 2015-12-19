@@ -7,3 +7,4 @@ sast.ml
 scanner.mll
 scanner.mll
 semanticAnalysis.ml
+semanticExceptions.ml

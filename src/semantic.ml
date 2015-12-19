@@ -1,4 +1,4 @@
-(* Static Semantic Check
+(* (* Static Semantic Check
    Input AST, output SAST *)
 open Ast
 open Sast
@@ -228,3 +228,4 @@ let check need_dec_extern extern_funs prg =
   match need_dec_extern with
     IMP -> { s_fdecls = func_table; s_gdecls = [](*TODO: REMOVE COMMENT IF STMT NECESSARY ; s_sdecls = [] *) }
   | _ -> { s_fdecls = func_table; s_gdecls = var_table(*TODO: REMOVE COMMENT IF STMT NECESSARY ; s_sdecls = stm_lines *)  }
+ *)

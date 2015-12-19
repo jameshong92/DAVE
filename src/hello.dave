@@ -5,19 +5,17 @@ int main() {
 	for (c = 0; c < 10; c++) {
 		print(a);
 	}
+	print(a);
 	bool is_continue = true;
 
 	int d = 1;
 	int e = 0;
-	while (is_continue) {
-		if (d > 10)
-			break;
-		print("in while loop");
-		e += d;
-		d += 1;
-	}
 	print("printing sum of 1 to 10:");
 	print(e);
+
+	if (e == 0) {
+		print("e is zero");
+	}
 
 	str[4] f;
 
