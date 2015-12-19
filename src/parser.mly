@@ -37,14 +37,29 @@
 /* Expressions */
 /* id */
 id:
-	ID 													{ Id($1) }
+	ID 													{ $1 }
 
 /* str int float bool rec fld tbl str[] int[] float[] bool[] */
 datatype:
-	PRIMITIVE_TYPE 							{ type_of_string $1 }
-	| VAR_TYPE 									{ type_of_string $1 }
-	| PRIMITIVE_TYPE LBRACK RBRACK
-															{ ArrayType(type_of_string $1) }
+	PRIMITIVE_TYPE							{
+																{
+																	ptype = type_of_string $1;
+																	dimension = []
+																}
+															}
+	| VAR_TYPE									{
+																{
+																	ptype = type_of_string $1;
+																	dimension = []
+																}
+															}
+	| PRIMITIVE_TYPE LBRACK expr_opt RBRACK
+															{ 
+																{
+																	ptype = type_of_string $1;
+																	dimension = [(if $3 == Noexpr then IntLit(0) else $3)];
+																}
+															}
 
 /* id[index_list], expr.id */
 lvalue:
@@ -86,8 +101,7 @@ expr:
 	| lvalue MULEQ expr 				{ AssignOp($1, Muleq, $3) }
 	| lvalue DIVEQ expr 				{ AssignOp($1, Diveq, $3) }
 	| lvalue MODEQ expr 				{ AssignOp($1, Modeq, $3) }
-
-	| lvalue ASN expr 					{ Assign($1, $3) }
+	| lvalue ASN expr 					{ AssignOp($1, Asn, $3) }
 	| lvalue 										{ Lval($1) }
 
 	| LPAREN expr RPAREN 				{ $2 }
@@ -158,7 +172,7 @@ program:
   | program fdecl 						{ { gdecls = $1.gdecls; fdecls = $2 :: $1.fdecls } }
 
 fdecl:
-	datatype id LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
+	datatype ID LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
 															{ {
 																	fname = $2;
 																	formals = $4;
@@ -172,16 +186,42 @@ formals_opt:
 
 /* TODO: modify formal_list if doing in c++ */
 formal_list:
-	datatype id 								{ [VarDecl($1, $2)] }
+	datatype id 								{[
+																{
+																	vname = $2;
+																	vtype = $1;
+																	vinit = Noexpr;
+																}]
+															}
 	| formal_list COMMA datatype id
-															{ VarDecl($3, $4) :: $1 }
+															{ ({
+																	vname = $4;
+																	vtype = $3;
+																	vinit = Noexpr;
+																}) :: $1 
+															}
 
 vdecl:
-	datatype id SEMICOL 				{ VarDecl($1, $2) }
+	datatype id SEMICOL 				{ 
+																{
+																	vname = $2;
+																	vtype = $1;
+																	vinit = Noexpr;
+																}
+															}
 	| datatype id ASN expr SEMICOL
-															{ AssignDecl($1, $2, $4) }
+															{ 
+																{
+																	vname = $2;
+																	vtype = $1;
+																	vinit = $4;
+																}
+															}
+/*	datatype id SEMICOL 				{ VarDecl({vtype=$1; vname=$2}) }
+	| datatype id ASN expr SEMICOL
+															{ AssignDecl({vtype=$1; vname=$2}, $4) }
 	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL
-															{ ArrayDecl(type_of_string $1, $3, $5) }
+															{ ArrayDecl(type_of_string $1, $3, $5) } */
 
 expr_opt:
 	/* nothing */ 							{ Noexpr }

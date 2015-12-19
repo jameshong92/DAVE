@@ -50,7 +50,7 @@ let string_of_asnop = function
 
 let rec list_of_dim v = match v with
   [] -> ""
-  | hd::tl -> "[" ^ string_of_expr hd ^ "]"
+  | hd::tl -> "[" ^ string_of_expr hd.exp ^ "]"
 
 and string_of_expr = function
   Range(exp1, exp2) -> "range(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
@@ -78,25 +78,32 @@ and string_of_expr = function
 
 and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 
-and string_of_var v id =
-let dimension = v.s_dimension in
-  match dimension with
-  [] -> string_of_datatype v.s_ptype ^ " " ^ id
-  | _ -> string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim v.s_dimension
-
 and string_of_vtype v =
+(*   if v.s_dimension == [] then
+    string_of_datatype v.s_ptype
+  else string_of_datatype v.s_ptype ^ list_of_dim (List.rev v.s_dimension) *)
 let dimension = v.s_dimension in
   match dimension with
   [] -> string_of_datatype v.s_ptype
   | _ -> string_of_datatype v.s_ptype ^ list_of_dim (List.rev v.s_dimension)
 
+and string_of_var v id =
+(*   if v.s_dimension == [] then
+    string_of_datatype v.s_ptype ^ " " ^ id
+  else
+    string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim (List.rev v.s_dimension) *)
+let dimension = v.s_dimension in
+  match dimension with
+  [] -> string_of_datatype v.s_ptype ^ " " ^ id
+  | _ -> string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim (List.rev v.s_dimension)
+
 let string_of_decl vdecl = 
-  let init = vdecl.s_vinit in
+  let init = vdecl.s_vinit.exp in
   match init with
     Noexpr ->
       (string_of_var vdecl.s_vtype vdecl.s_vname) ^ ";"
     | _ ->
-      (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit ^ ";"
+      (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
 
 let rec gen_stmt = function
   S_Expr(exp) -> "(" ^ (string_of_expr exp.exp) ^ ");"
@@ -113,16 +120,16 @@ let rec gen_stmt = function
 | S_EmptyStmt -> ";"
 
 let string_of_func_decl funcdecl = 
-  string_of_vtype funcdecl.return_type ^ " "
-  ^ funcdecl.fname ^ "("
-  ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
+  string_of_vtype funcdecl.s_return_type ^ " "
+  ^ funcdecl.s_fname ^ "("
+  ^ (String.concat ", " (List.map string_of_decl funcdecl.s_formals))
   ^ ") {\n"
-  ^ gen_stmt funcdecl.body ^ "\n}"
+  ^ gen_stmt funcdecl.s_body ^ "\n}"
 
 let string_of_program prg =
   "#include \"dave.h\"\nusing namespace std;\n"
-  ^ (String.concat "\n" (List.map string_of_decl prg.gdecls)) ^ "\n" 
-  ^ (String.concat "\n" (List.map string_of_func_decl prg.fdecls)) ^ "\n"
+  ^ (String.concat "\n" (List.map string_of_decl prg.s_gdecls)) ^ "\n" 
+  ^ (String.concat "\n" (List.map string_of_func_decl prg.s_fdecls)) ^ "\n"
 
 let compile oc prg = 
   let out_file = open_out oc in

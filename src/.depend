@@ -2,10 +2,16 @@ ast.cmo :
 ast.cmx :
 parser.cmo : ast.cmo parser.cmi
 parser.cmx : ast.cmx parser.cmi
+semanticExceptions.cmo :
+semanticExceptions.cmx :
 sast.cmo : ast.cmo
 sast.cmx : ast.cmx
-astcompile.cmo : sast.cmo ast.cmo
-astcompile.cmx : sast.cmx ast.cmx
-dave.cmo : parser.cmi astcompile.cmo ast.cmo
-dave.cmx : parser.cmx astcompile.cmx ast.cmx
+semanticAnalysis.cmo : semanticExceptions.cmo sast.cmo ast.cmo
+semanticAnalysis.cmx : semanticExceptions.cmx sast.cmx ast.cmx
+compile.cmo : sast.cmo ast.cmo
+compile.cmx : sast.cmx ast.cmx
+dave.cmo : semanticAnalysis.cmo scanner.cmo sast.cmo parser.cmi compile.cmo \
+    ast.cmo
+dave.cmx : semanticAnalysis.cmx scanner.cmx sast.cmx parser.cmx compile.cmx \
+    ast.cmx
 parser.cmi : ast.cmo
