@@ -50,7 +50,7 @@ let string_of_asnop = function
 
 let rec list_of_dim v = match v with
   [] -> ""
-  | hd::tl -> "[" ^ string_of_expr hd ^ "]"
+  | hd::tl -> "[4]" ^ (list_of_dim tl)
 
 and string_of_expr = function
   Range(exp1, exp2) -> "range(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
@@ -78,17 +78,17 @@ and string_of_expr = function
 
 and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 
-and string_of_var v id =
-let dimension = v.s_dimension in
-  match dimension with
-  [] -> string_of_datatype v.s_ptype ^ " " ^ id
-  | _ -> string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim v.s_dimension
-
 and string_of_vtype v =
 let dimension = v.s_dimension in
   match dimension with
   [] -> string_of_datatype v.s_ptype
   | _ -> string_of_datatype v.s_ptype ^ list_of_dim (List.rev v.s_dimension)
+
+and string_of_var v id =
+let dimension = v.s_dimension in
+  match dimension with
+  [] -> string_of_datatype v.s_ptype ^ " " ^ id
+  | _ -> string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim (List.rev v.s_dimension)
 
 let string_of_decl vdecl = 
   let init = vdecl.s_vinit in
@@ -113,16 +113,16 @@ let rec gen_stmt = function
 | S_EmptyStmt -> ";"
 
 let string_of_func_decl funcdecl = 
-  string_of_vtype funcdecl.return_type ^ " "
-  ^ funcdecl.fname ^ "("
-  ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
+  string_of_vtype funcdecl.s_return_type ^ " "
+  ^ funcdecl.s_fname ^ "("
+  ^ (String.concat ", " (List.map string_of_decl funcdecl.s_formals))
   ^ ") {\n"
-  ^ gen_stmt funcdecl.body ^ "\n}"
+  ^ gen_stmt funcdecl.s_body ^ "\n}"
 
 let string_of_program prg =
   "#include \"dave.h\"\nusing namespace std;\n"
-  ^ (String.concat "\n" (List.map string_of_decl prg.gdecls)) ^ "\n" 
-  ^ (String.concat "\n" (List.map string_of_func_decl prg.fdecls)) ^ "\n"
+  ^ (String.concat "\n" (List.map string_of_decl prg.s_gdecls)) ^ "\n" 
+  ^ (String.concat "\n" (List.map string_of_func_decl prg.s_fdecls)) ^ "\n"
 
 let compile oc prg = 
   let out_file = open_out oc in

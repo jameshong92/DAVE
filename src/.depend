@@ -4,8 +4,10 @@ parser.cmo : ast.cmo parser.cmi
 parser.cmx : ast.cmx parser.cmi
 sast.cmo : ast.cmo
 sast.cmx : ast.cmx
-astcompile.cmo : sast.cmo ast.cmo
-astcompile.cmx : sast.cmx ast.cmx
-dave.cmo : parser.cmi astcompile.cmo ast.cmo
-dave.cmx : parser.cmx astcompile.cmx ast.cmx
+semanticAnalysis.cmo : sast.cmo ast.cmo
+semanticAnalysis.cmx : sast.cmx ast.cmx
+compile.cmo : sast.cmo ast.cmo
+compile.cmx : sast.cmx ast.cmx
+dave.cmo : scanner.cmo parser.cmi astcompile.cmo ast.cmo
+dave.cmx : scanner.cmx parser.cmx astcompile.cmx ast.cmx
 parser.cmi : ast.cmo

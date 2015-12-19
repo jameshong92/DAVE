@@ -18,5 +18,10 @@ int main() {
 	}
 	print("printing sum of 1 to 10:");
 	print(e);
+
+	str[4] f;
+
+	f[0] = "hello!";
+	print(f[0]);
 	return 0;
 }

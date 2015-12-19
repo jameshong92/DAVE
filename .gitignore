@@ -6,3 +6,5 @@ scanner.ml
 dave
 src/a.out
 src/dave.cc
+*.depend
+*.depend.input

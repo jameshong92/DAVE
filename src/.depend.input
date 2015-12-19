@@ -1,8 +1,9 @@
 ast.ml
-astcompile.ml
+compile.ml
 dave.ml
 parser.ml
 parser.mli
 sast.ml
 scanner.mll
 scanner.mll
+semanticAnalysis.ml
