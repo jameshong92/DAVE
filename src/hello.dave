@@ -22,8 +22,11 @@ int main() {
 	f[1] = 2;
 	f[2] = 3;
 	f[3] = 4;
-	int[] g = f[:3];
+	int[] g = f[3:];
 	print(g[0]);
+
+	float x = float(g[0]);
+	print(x);
 
 	return 0;
 }

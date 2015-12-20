@@ -111,7 +111,7 @@ let string_of_decl vdecl =
     Noexpr -> ((string_of_var vdecl.s_vtype vdecl.s_vname) ^ ";")
     | Lval(exp) -> (match exp with
         Array(id, exp1) -> (match exp1 with
-            Range(id1, id2) -> string_of_datatype vdecl.s_vtype.s_ptype ^ " *" ^ vdecl.s_vname ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
+            Range(id1, id2) -> string_of_datatype vdecl.s_vtype.s_ptype ^ " " ^ vdecl.s_vname ^ "[" ^ string_of_expr id2 ^ "-" ^ string_of_expr id1 ^ "]; slice_array(" ^ id ^ ", " ^ vdecl.s_vname ^ ", sizeof(" ^ id ^ "), " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")" ^ ";"
             | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
           )
         | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
