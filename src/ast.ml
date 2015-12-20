@@ -61,7 +61,7 @@ and expr =
 	| Rec of expr list
 	| RecRef of string * expr
 	(*Fld = Values of the List * Name of the Field*)
-	| Fld of expr list * string
+	| Fld of expr * string
 	| Noexpr
 	| None
 
@@ -172,7 +172,7 @@ let rec string_of_expr = function
 | Tbl(exps) -> "Tbl( " ^ String.concat "; " (List.map string_of_expr exps) ^ " )"
 | Rec(exps) -> "Rec{ " ^ String.concat ", " (List.map string_of_expr exps) ^ " }"
 | RecRef(id, exp) -> "RecRef( " ^ id ^ ":" ^ string_of_expr exp ^ " )"
-| Fld(exps, lit) -> "Fld([" ^ String.concat "; " (List.map string_of_expr exps) ^ "], '" ^ lit ^ "' )"
+| Fld(exp, lit) -> "Fld(" ^ string_of_expr exp ^ ", '" ^ lit ^ "' )"
 | Noexpr -> "Noexpr"
 | None -> "NULL"
 | Var(lit) -> "Var( " ^ lit ^ " )"

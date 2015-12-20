@@ -1,5 +1,4 @@
 int main() {
-	/*str a = "hello world!";
 	int c;
 	// this is a single line comment
 	for (c = 0; c < 10; c++) {
@@ -8,30 +7,8 @@ int main() {
 	print(a);
 	bool is_continue = true;
 
-	int d = 1;
-	int e = 0;
-	print("printing sum of 1 to 10:");
-	print(e);
-
-	if (e == 0) {
-		print("e is zero");
-
-	} */
-
-	int[4] f;
-	f[0] = 1;
-	f[1] = 2;
-	f[2] = 3;
-	f[3] = 4;
-	int[] g = f[3:];
-	print(g[0]);
-
-	g[0] += 5;
-
-	float x = float(g[0]);
-	print(x);
-
-	int[] z = [1,2,3,2,5];
-
+	str z = "mama";
+	fld m = fld(z, "asdf");
+	rec y = rec{"a": 123, "b": "asdfasdf"};
 	return 0;
 }

@@ -19,3 +19,7 @@ exception Invalid_type
 exception Invalid_statement
 exception Invalid_func_err of string
 exception Array_lit_err
+exception Fld_err
+exception Rec_err
+exception Tbl_err
+exception Rec_ref_err

@@ -1,5 +1,5 @@
 %{ open Ast %}
-
+%token NEW 
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
 %token SEMICOL COMMA DOT COLON
 %token ADDEQ SUBEQ MULEQ DIVEQ MODEQ
@@ -8,16 +8,16 @@
 %token EQ NEQ LT LEQ GT GEQ
 %token CONTINUE BREAK IF ELSE FOR WHILE RETURN
 %token FLD TBL REC
+%token VOID STR BOOL INT FLOAT FLD TBL REC
 %token <int> INT_LIT
 %token <float> FLOAT_LIT
 %token <bool> BOOL_LIT
-%token <string> STR_LIT ID VAR_TYPE PRIMITIVE_TYPE
+%token <string> STR_LIT ID  /*VAR_TYPE PRIMITIVE_TYPE*/
 %token NONE
 %token EOF
 
 %nonassoc NOELSE
 %nonassoc ELSE
-%left COMMA
 %right ASN INC DEC ADDEQ SUBEQ MULEQ DIVEQ MODEQ
 %right DOT
 %left LBRACK
@@ -41,7 +41,55 @@ id:
 
 /* str int float bool rec fld tbl str[] int[] float[] bool[] */
 datatype:
-	PRIMITIVE_TYPE							{
+	INT 												{
+																{
+																	ptype = Int;
+																	dimension = []
+																}
+															}
+| STR {
+																{
+																	ptype = String;
+																	dimension = []
+																}
+															}
+| FLOAT {
+																{
+																	ptype = Float;
+																	dimension = []
+																}
+															}
+| BOOL {
+																{
+																	ptype = Bool;
+																	dimension = []
+																}
+															}
+| FLD {
+																{
+																	ptype = Fld;
+																	dimension = []
+																}
+															}
+| REC {
+																{
+																	ptype = Rec;
+																	dimension = []
+																}
+															}
+| TBL {
+																{
+																	ptype = Tbl;
+																	dimension = []
+																}
+															}
+| datatype LBRACK expr_opt RBRACK {
+																{
+																	ptype = $1.ptype;
+																	dimension = (if $3 == Noexpr then IntLit(0) else $3) :: $1.dimension
+																}
+															}
+/*	PRIMITIVE_TYPE							{
 																{
 																	ptype = type_of_string $1;
 																	dimension = []
@@ -59,7 +107,7 @@ datatype:
 																	ptype = type_of_string $1;
 																	dimension = [(if $3 == Noexpr then IntLit(0) else $3)];
 																}
-															}
+															} */
 
 /* id[index_list], expr.id */
 lvalue:
@@ -145,8 +193,8 @@ rec_lit:
 	REC LBRACE rec_init RBRACE 			{ Rec(List.rev $3) }
 
 rec_init:
-	id COLON literal 						{ [RecRef($1, $3)] }
-	| rec_init COMMA id COLON literal
+	STR_LIT COLON literal 						{ [RecRef($1, $3)] }
+	| rec_init COMMA STR_LIT COLON literal
 															{ RecRef($3, $5) :: $1 }
 
 fld_lit_list:
@@ -154,8 +202,8 @@ fld_lit_list:
 	| fld_lit 									{ [$1] }
 
 fld_lit:
-	FLD LPAREN actuals_list COMMA STR_LIT RPAREN
-															{ Fld(List.rev $3, $5) }
+	FLD LPAREN expr COMMA STR_LIT RPAREN
+															{ Fld($3, $5) }
 
 actuals_opt:
 	/* nothing */ 							{ [] }
