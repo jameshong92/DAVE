@@ -1,0 +1,38 @@
+// test comparsion
+int main() {
+    int i1 = 0;
+    int i2 = 2;
+    int i3 = 0;
+    bool c = (i1 == i2);
+    print(c);
+    c = (i1 != i2);
+    print(c);
+    c = (i2 >= i1);
+    print(c);
+    c = (i2 > i1);
+    print(c);
+    c = (i1 == i3);
+    print(c);
+    double d1 = 0.0;
+    double d2 = 2.0;
+    double d3 = 0.0;
+    c = (d1 == d2);
+    print(c);
+    c = (d1 != d2);
+    print(c);
+    c = (d2 >= d1);
+    print(c);
+    c = (d2 > d1);
+    print(c);
+    c = (d1 == d3);
+    print(c);
+    str s1 = "hello";
+    str s2 = "hihi";
+    str s3 = "hello";
+    c = (s1 == s2);
+    print(c);
+    c = (s1 != s2);
+    print(c);
+    c = (s1 == s3);
+    print(c);
+}

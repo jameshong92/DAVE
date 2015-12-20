@@ -1,0 +1,4 @@
+// test int variable
+int main() {
+	print("Hello World!");
+}

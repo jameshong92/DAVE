@@ -1,0 +1,14 @@
+// test if-elif-else
+int main() {
+	int a = 0;
+    int b = 2;
+    if (b == 0) {
+        print("b is 0");
+    } elif (a > 0) {
+        print("a is larger than 0");
+    } elif (b > 0) {
+        print("b is larger than 0");
+    } else {
+        print("just a joke!");
+    }
+}
