@@ -15,8 +15,21 @@ int main() {
 
 	if (e == 0) {
 		print("e is zero");
+	} else if (e == 1) {
+		print("e is one");
+	} else {
+		print("EEE");
 	}
 
-	
+	int i;
+	for (i = 0; i < 10; i++) {
+		print(i);
+	}
+
+
+	float fvalue = 0.2;
+	int ivalue;
+	ivalue = int(fvalue);
+
 	return 0;
 }

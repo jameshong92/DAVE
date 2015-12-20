@@ -117,8 +117,8 @@ let rec gen_stmt = function
 | S_Return(exp) -> "return " ^ string_of_expr exp.exp ^ ";"
 | S_Block(stmt_list) -> "{\n" ^ (String.concat "\n" (List.map gen_stmt stmt_list)) ^ "\n}\n"
 | S_If(exp, stmt1, stmt2) -> (if stmt2 == S_EmptyStmt then
-  "if (" ^ (string_of_expr exp.exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "\n" else
-  "if (" ^ (string_of_expr exp.exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "\nelse " ^ (gen_stmt stmt2))
+  "if (" ^ (string_of_expr exp.exp) ^ ")\n" ^ (gen_stmt stmt1) else
+  "if (" ^ (string_of_expr exp.exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "else " ^ (gen_stmt stmt2))
 | S_For(init, test, after, stmt) -> "for (" ^ string_of_expr init.exp ^ "; " ^ string_of_expr test.exp ^ "; " ^ string_of_expr after.exp ^ ") " ^ gen_stmt stmt
 | S_While(test, stmt) -> "while (" ^ (string_of_expr test.exp) ^ ") " ^ (gen_stmt stmt)
 | S_VarDeclStmt(decl) -> string_of_decl decl

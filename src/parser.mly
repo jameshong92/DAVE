@@ -54,7 +54,7 @@ datatype:
 																}
 															}
 	| PRIMITIVE_TYPE LBRACK expr_opt RBRACK
-															{ 
+															{
 																{
 																	ptype = type_of_string $1;
 																	dimension = [(if $3 == Noexpr then IntLit(0) else $3)];
@@ -198,11 +198,11 @@ formal_list:
 																	vname = $4;
 																	vtype = $3;
 																	vinit = Noexpr;
-																}) :: $1 
+																}) :: $1
 															}
 
 vdecl:
-	datatype id SEMICOL 				{ 
+	datatype id SEMICOL 				{
 																{
 																	vname = $2;
 																	vtype = $1;
@@ -210,7 +210,7 @@ vdecl:
 																}
 															}
 	| datatype id ASN expr SEMICOL
-															{ 
+															{
 																{
 																	vname = $2;
 																	vtype = $1;
