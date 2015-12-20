@@ -1,0 +1,103 @@
+tuple a = tuple(data, string name); 
+data can be int, double or string, name is a string.
+
+rec b = rec(tuple array, int length);
+tuple array or tuple vector are both ok, the length parameter is added for convinence. All the arrays mentioned could be changed to vector, but maybe we dont utilize vector in our dave, just use to help the library inner operation.
+I think that it could be written as rec b = rec(array) in dave and translate into
+rec b = rec(array, getArrayLen(array)) in c++, or I could make some change.
+
+fld c = fld(array, int length);
+array can be int array, doule array or string array. Also the same as rec class, could be modified.
+
+
+
+tbl d = tbl(fld array, int col_len, int row_len);
+col_len is the vertical length while row_len is the horizonal length.
+maybe in dave it is d = tbl(fld array), and translate to d = tbl(fld array, fld array[0].length, getArrayLen(fld array));
+
+tbl d = tbl(rec array, int col_len, int row_len);
+maybe in dave it is d = tbl(rec array), and translate to d = tbl(rec array, getArrayLen(rec array), rec array[0].length); Also, the sequence of name in each rec could be inconsistent.
+
+
+
+tbl e = tbl(tbl, fld);
+combine a fld to the right of the table.
+
+tbl e = tbl(tbl, rec);
+combine a rec to the end of the table. Here the sequence of the rec could be inconsistenet with the tbl also.
+
+tbl e = tbl(tbl, tbl, bool method);
+if method == 0, they are combined in the left, right;
+if method == 1, they are combined in the up, down.
+here also could be changed, delete the method parameter, and check the col_length and row_length, if col_length the same, then combine it horizonal, if row_length the same, combine it vertical.
+
+
+
+tbl f = tbl(tbl, row num, col num, data);
+data could be int, double or string, change the value in the (col pos, row pos) of the orginal table to a new value. The data type should be the same as the data type of the inserting fld;
+tbl(tbl, 0, 1, "Yang"), to change the 0-th row, the 1-th attribute of that row to "Yang".    
+
+tbl f = tbl(tbl, col num, type);
+type is a string, "int", "double", or "string". Change the data type of that fld.
+Like that if I wanna change the 1-th col/fld from int type to string type, then use
+tbl(tbl, 1, "string"). It is convenience because when we import data from file, they are all string, 
+we need to handle these problems, change them to somethine like int or double. 
+
+
+
+rec g = access(tbl, int num);
+to get the corresponding rec of the tbl.
+
+fld h = access(tbl, string name);
+to get the corresponding fld of the tbl.
+
+tbl i = access(tbl, int num1, int num2);
+to get the corresponding recs, begin from num1, end in num2 of the tbl to construct a new tbl, if the num2 exceeds the border of the tbl, then get the whole remaining part.
+
+tbl i = access(tbl, string array names);
+to get the corresponding flds, to construct the new tbl. If any of the names not found, just skip it.
+
+
+
+output part:
+cout << tuple;
+cout << rec;
+output like this:
+age		name
+[22,	Fan]
+cout << fld;
+output like this:
+value
+90
+99
+98
+cout << tbl;
+output like this:
+age		name	value	word
+[22,	Fan,	90,		ab]
+[20,	James,	99,		cd]
+[21,	Min,	98,		ef]
+The , and [] could be reserved or not, or the simpler one.
+age	name	value	word
+22	Fan		90		ab
+20	James	99		cd
+21	Min		98		ef
+
+
+
+file input part:
+tbl s = tbl_read(string file name);
+read the file in the corresponding path to construct a brand new table.
+each line could not exceed more than 256 bytes, but it could be changed.
+
+file output part:
+void tbl_write(tbl, string file name);
+write the tbl to the file.
+
+As for the operation part, because I dont know what we need, so just implement the plus and minus of tbl
+so far, tbl = plus(tbl1, tbl2), tbl = minus(tbl1, tbl2), could plus and minus all the elements of countable in the two tbls. I think we still need max, min, avg, and something else right?
+You could add them here, I would finish it tonight, and add the test cases also.
+
+Something else: Since in C++, we could not directly write an array like fld a = fld({1,2,3}, "name");
+we could only first array a[] = {1,2,3}; fld b = fld(a, "name");
+So in Dave, we would implement it in two steps or just in one, maybe in one step the conversion would be a littel thorny, it depends on your convenience.

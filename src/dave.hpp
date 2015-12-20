@@ -1,5 +1,5 @@
-/* #ifndef _DAVE_HPP_
-#define _DAVE_HPP_ */
+/* #ifndef _DAVE_HPP_*/
+#define _DAVE_HPP_ 
 #include <iostream>
 #include <vector>
 #include <string>
@@ -99,25 +99,37 @@ public:
         for (int i=0; i<row_len; i++) {
             string name = array[0].r[i].name;
             if (array[0].r[i].type == 0) {
-                int data[col_len];
-                for (int j=0; j<col_len; j++) {
-                    data[j] = array[j].r[i].content_int;
+                vector<int> data;
+                for(int j=0; j<col_len; j++) {
+                    for (int k=0; k<row_len; k++) {
+                        if (array[j].r[k].name.compare(name) == 0) {
+                            data.push_back(array[j].r[k].content_int);
+                        }
+                    }
                 }
-                fld temp = fld (data, name, col_len);
+                fld temp = fld (&data[0], name, col_len);
                 t.push_back(temp);
             } else if (array[0].r[i].type == 1) {
-                double data[col_len];
-                for (int j=0; j<col_len; j++) {
-                    data[j] = array[j].r[i].content_double; 
+                vector<double> data;
+                for(int j=0; j<col_len; j++) {
+                    for (int k=0; k<row_len; k++) {
+                        if (array[j].r[k].name.compare(name) == 0) {
+                            data.push_back(array[j].r[k].content_double);
+                        }
+                    }
                 }
-                fld temp = fld (data, name, col_len);
+                fld temp = fld (&data[0], name, col_len);
                 t.push_back(temp);
             } else if (array[0].r[i].type == 2) {
-                string *data = new string[col_len];
-                for (int j=0; j<col_len; j++) {
-                    data[j] = array[j].r[i].content_string;
+                vector<string> data;
+                for(int j=0; j<col_len; j++) {
+                    for (int k=0; k<row_len; k++) {
+                        if (array[j].r[k].name.compare(name) == 0) {
+                            data.push_back(array[j].r[k].content_string);
+                        }
+                    }
                 }
-                fld temp = fld (data, name, col_len);
+                fld temp = fld (&data[0], name, col_len);
                 t.push_back(temp);
             }
         }
@@ -317,6 +329,129 @@ tbl minus(tbl source1, tbl source2) {
     return source1;
 }
 
+fld access(tbl source, string fname) {
+    for (int i=0; i<source.row_length; i++) {
+        if (source.t[i].name.compare(fname) == 0) {
+            if (source.t[i].type == 0) {
+                vector<int> array;
+                for (int j=0; j<source.col_length; j++) {
+                    array.push_back(source.t[i].f_int[j]);
+                }
+                fld target = fld(&array[0], fname, source.col_length);
+                return target;
+            } else if (source.t[i].type == 1) {
+                vector<double> array;
+                for (int j=0; j<source.col_length; j++) {
+                    array.push_back(source.t[i].f_double[j]);
+                }
+                fld target = fld(&array[0], fname, source.col_length);
+                return target;
+            } else if (source.t[i].type == 2) {
+                vector<string> array;
+                for (int j=0; j<source.col_length; j++) {
+                    array.push_back(source.t[i].f_string[j]);
+                }
+                fld target = fld(&array[0], fname, source.col_length);
+                return target;
+            }
+        }
+    }
+    cout << "Not find the access."<<endl;
+    vector<int> null;
+    fld empty = fld(&null[0], fname, 0);
+    return empty;
+}
+
+rec access(tbl source, int num) {
+    vector<tuple> tuples;
+    if (num > source.col_length-1) {
+        cout << "Exceed the scope."<<endl;
+        rec target = rec(&tuples[0], 0);
+        return target;
+    } else {
+        for (int i=0; i<source.row_length; i++) {
+            if (source.t[i].type == 0) {
+                tuple temp = tuple(source.t[i].f_int[num], source.t[i].name);
+                tuples.push_back(temp);
+            } else if (source.t[i].type == 1) {
+                tuple temp = tuple(source.t[i].f_double[num], source.t[i].name);
+                tuples.push_back(temp);
+            } else if (source.t[i].type == 2) {
+                tuple temp = tuple(source.t[i].f_string[num], source.t[i].name);
+                tuples.push_back(temp);
+            }
+        }
+        rec target = rec(&tuples[0], source.row_length);
+        return target;
+    }
+}
+
+tbl access(tbl source, int start, int end) {
+    if (start > source.col_length-1) {
+        cout << "Exceed the scope."<<endl;
+        vector<rec> null;
+        tbl target = tbl(&null[0], 0, source.row_length);
+        return target;
+    }
+    vector<rec> store; 
+    for (int num = start; num < end; num++) {
+        vector<tuple> tuples;
+        for (int i=0; i<source.row_length; i++) {
+            if (source.t[i].type == 0) {
+                tuple temp = tuple(source.t[i].f_int[num], source.t[i].name);
+                tuples.push_back(temp);
+            } else if (source.t[i].type == 1) {
+                tuple temp = tuple(source.t[i].f_double[num], source.t[i].name);
+                tuples.push_back(temp);
+            } else if (source.t[i].type == 2) {
+                tuple temp = tuple(source.t[i].f_string[num], source.t[i].name);
+                tuples.push_back(temp);
+            }
+        }
+        rec temp = rec(&tuples[0], source.row_length);
+        store.push_back(temp);
+        if (end == source.col_length - 1) {
+            break;
+        }
+    }
+    tbl target = tbl(&store[0], store.size(), source.row_length);
+    return target;
+}
+
+tbl access(tbl source, string *names, int length) {
+    vector<fld> store;
+    for (int k=0; k<length; k++) {
+        string fname = names[k];
+        for (int i=0; i<source.row_length; i++) {
+            if (source.t[i].name.compare(fname) == 0) {
+                if (source.t[i].type == 0) {
+                    vector<int> array;
+                    for (int j=0; j<source.col_length; j++) {
+                        array.push_back(source.t[i].f_int[j]);
+                    }
+                    fld temp = fld(&array[0], fname, source.col_length);
+                    store.push_back(temp);
+                } else if (source.t[i].type == 1) {
+                    vector<double> array;
+                    for (int j=0; j<source.col_length; j++) {
+                        array.push_back(source.t[i].f_double[j]);
+                    }
+                    fld temp = fld(&array[0], fname, source.col_length);
+                    store.push_back(temp);
+                } else if (source.t[i].type == 2) {
+                    vector<string> array;
+                    for (int j=0; j<source.col_length; j++) {
+                        array.push_back(source.t[i].f_string[j]);
+                    }
+                    fld temp = fld(&array[0], fname, source.col_length);
+                    store.push_back(temp);
+                }
+            }
+        }
+    }
+    tbl target = tbl(&store[0], source.col_length, store.size());
+    return target;
+}
 
 ostream & operator << (ostream & sys, const tuple &in) {
     sys << in.name << endl;
@@ -403,8 +538,10 @@ ostream & operator << (ostream &sys, const tbl &in) {
     return sys;
 }
 
-/*
-int main(int argc, char const *argv[]) {
+/*int main(int argc, char const *argv[]) {
+    for (int c = 0; c < 0; c++) {
+        cout << "Hello World" << endl;
+    }
     int a[] = {90,99,98};
     string g[]  = {"ab", "cd", "ef"};
     fld b = fld (a , "value", getArrayLen(a)); 
@@ -416,7 +553,7 @@ int main(int argc, char const *argv[]) {
     rec f = rec (e, getArrayLen(e));
     // sample definition of rec
     cout << f;
-    tuple j[] = {tuple (20, "age"), tuple ("James", "name")};
+    tuple j[] = {tuple ("James", "name"), tuple (20, "age")};
     rec k = rec (j, getArrayLen(j));
     tuple u[] = {tuple (21, "age"), tuple ("Min", "name")};
     rec v = rec (u, getArrayLen(u));
@@ -426,6 +563,15 @@ int main(int argc, char const *argv[]) {
     tbl t = tbl(i, i[0].length, getArrayLen(i));
     // sample definition of tbl (kind 1)
     cout << t;
+    fld tt = access(t, "word");
+    cout << tt;
+    rec ttt = access(t, 2);
+    cout << ttt;
+    tbl sss = access(t, 1, 3);
+    cout << sss;
+    string ta[] = {"word", "age", "value"};
+    tbl stt = access(t, ta, getArrayLen(ta));
+    cout << stt;
     tbl s = tbl(l, getArrayLen(l), l[0].length);
     // sample definition of tbl (kind 2)
     cout << s;
@@ -453,7 +599,7 @@ int main(int argc, char const *argv[]) {
     cout << "result of binding4 is:" << endl;
     cout << sx;
     tbl ss = tbl(sx, 1, 2, "Cesc");
-    // sample definition of changing (kind 4)
+    // sample definition of changing
     cout << "result of changing is:" << endl;
     cout << ss;
     tbl sx1 = tbl(sx, 1, "string");
@@ -464,4 +610,4 @@ int main(int argc, char const *argv[]) {
     cout << sx2;
     // sample of data type conversion
     return 0; 
-}  */
+} */
