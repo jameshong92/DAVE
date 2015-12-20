@@ -21,5 +21,6 @@ int main() {
 
 	f[0] = "hello!";
 	print(f[0]);
+	str[] i = f[0:2];
 	return 0;
 }

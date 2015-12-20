@@ -11,7 +11,6 @@ let rec string_of_datatype = function
 | Rec -> "rec"
 | Fld -> "fld"
 | Void -> "void"
-| _ -> ""
 
 let string_of_unop = function
   Neg -> "-"
@@ -50,7 +49,11 @@ let string_of_asnop = function
 
 let rec list_of_dim v = match v with
   [] -> ""
-  | hd::tl -> "[" ^ string_of_expr hd.exp ^ "]"
+  | hd::tl -> let exp_string = string_of_expr hd.exp in
+              if exp_string = "0" then 
+                "[]" 
+              else 
+                "[" ^ exp_string ^ "]"
 
 and string_of_expr = function
   Range(exp1, exp2) -> "range(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
@@ -73,8 +76,12 @@ and string_of_expr = function
 | Noexpr -> ""
 | None -> "null"
 | Var(exp) -> exp
-| Array(exp1, exp2) -> "(" ^ exp1 ^ "[" ^ string_of_expr exp2 ^ "])"
+| Array(exp1, exp2) -> string_of_array exp1 exp2 
 | Access(exp1, exp2) -> "(" ^ string_of_expr exp1 ^ "." ^ exp2 ^ ")"
+
+and string_of_array id exp2 = match exp2 with
+  | Range(id1, id2) -> "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+  | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
 
 and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 

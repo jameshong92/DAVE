@@ -9,7 +9,7 @@ type postop = Inc | Dec
 (*Assignment Operators = += -= *= /= %=*)
 type asnop = Asn | Addeq | Subeq | Muleq | Diveq | Modeq
 (*Supported Datatypes*)
-type datatype = Int | Float | String | Bool | Fld | Tbl | Rec | Void | RangeType
+type datatype = Int | Float | String | Bool | Fld | Tbl | Rec | Void
 (*Arguments*)
 type arg = datatype * string
 (*Types of References*)
@@ -151,7 +151,6 @@ let rec string_of_datatype = function
 | Rec -> "rec"
 | Fld -> "fld"
 | Void -> "void"
-| RangeType -> "range_type"
 (* 
 let string_of_id = function
 	Id(id) -> "Id( " ^ id ^ " )"

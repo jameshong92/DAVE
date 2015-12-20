@@ -23,9 +23,9 @@ let rec type_of_expr f_context v_context exp = match exp with
 		let type1 = type_of_expr f_context v_context exp1 and
 				type2 = type_of_expr f_context v_context exp2 in
 					(match type1.s_ptype, type2.s_ptype with
-						Int, Int -> { s_ptype = RangeType; s_dimension = type1.s_dimension }
-						| Int, Void -> { s_ptype = RangeType; s_dimension = type1.s_dimension }
-						| Void, Int -> { s_ptype = RangeType; s_dimension = type2.s_dimension }
+						Int, Int -> { s_ptype = Int; s_dimension = [{ exp = exp1; typ = type1 }] }
+						| Int, Void -> { s_ptype = Int; s_dimension = [{ exp = exp1; typ = type1 }]  }
+						| Void, Int -> { s_ptype = Int; s_dimension = [{ exp = exp2; typ = type2 }] }
 						| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
 					)
 	| Binop(exp1, binop, exp2) -> (
@@ -150,11 +150,11 @@ and type_of_array id exp f_context v_context =
 			if List.length type1.s_dimension >= 1 then
 				(* check if given index is of type int or range *)
 				let type2 = type_of_expr f_context v_context exp in
-					if type2.s_ptype == Int then
-						{s_ptype = type1.s_ptype; s_dimension = []}
-					else if type2.s_ptype == RangeType then
+					if List.length type2.s_dimension >= 1 && type2.s_ptype == Int then
 						(* TODO: check if this is correct? check for dimension size *)
 						{s_ptype = type1.s_ptype; s_dimension = type1.s_dimension}
+					else if type2.s_ptype == Int then
+						{s_ptype = type1.s_ptype; s_dimension = []}
 					else
 						raise Arr_err
 			else
