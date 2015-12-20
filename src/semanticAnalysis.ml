@@ -24,7 +24,7 @@ let rec type_of_expr f_context v_context exp = match exp with
 				type2 = type_of_expr f_context v_context exp2 in
 					(match type1.s_ptype, type2.s_ptype with
 						Int, Int -> { s_ptype = Int; s_dimension = [{ exp = exp1; typ = type1 }] }
-						| Int, Void -> { s_ptype = Int; s_dimension = [{ exp = exp1; typ = type1 }]  }
+						| Int, Void -> { s_ptype = Int; s_dimension = [{ exp = exp1; typ = type1 }] }
 						| Void, Int -> { s_ptype = Int; s_dimension = [{ exp = exp2; typ = type2 }] }
 						| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
 					)
@@ -212,12 +212,34 @@ let rec s_check_expr f_context v_context in_exp = match in_exp with
 		{exp = Lval((s_check_expr f_context v_context lvalue).exp); typ = type_of_expr f_context v_context in_exp }
 	| Cast(var, exp) -> (* TODO: check cast *)
 		{exp = Cast(var, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
-	| Array(id, indices) -> {exp = Array(id, (s_check_expr f_context v_context indices).exp); typ = type_of_expr f_context v_context in_exp}
+	| Array(id, indices) -> s_check_array f_context v_context in_exp id indices
 	| Access(exp, id) -> { exp = Access((s_check_expr f_context v_context exp).exp, id); typ = type_of_expr f_context v_context in_exp }
 	(* TODO: implement missing functions for tbl rec fld *)
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
 
-let s_check_var_type f_context v_context vtype =
+and s_check_array f_context v_context in_exp id indices =
+	let index_type = type_of_expr f_context v_context indices and
+			index_expr = s_check_expr f_context v_context indices in
+		if List.length index_type.s_dimension == 0 then
+			{exp = Array(id, index_expr.exp); typ = type_of_expr f_context v_context in_exp}
+		else
+			match index_expr.exp with
+				Range(exp1, exp2) ->
+					let typ = fst (StringMap.find id v_context) and
+							type1 = type_of_expr f_context v_context exp1 and
+							type2 = type_of_expr f_context v_context exp2 in
+						if type1.s_ptype == Int && type2.s_ptype == Int then
+							{exp = Array(id, index_expr.exp); typ = type_of_expr f_context v_context in_exp}
+						else if type1.s_ptype == Void && type2.s_ptype == Int then
+							let start_range = {exp = Range(IntLit(0), (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp } in
+								{exp = Array(id, start_range.exp); typ = type_of_expr f_context v_context in_exp}
+						else if type1.s_ptype == Int && type2.s_ptype == Void then
+							let end_range = {exp = Range((s_check_expr f_context v_context exp1).exp, (List.hd (typ.s_dimension)).exp); typ = type_of_expr f_context v_context in_exp } in
+								{exp = Array(id, end_range.exp); typ = type_of_expr f_context v_context in_exp}
+						else raise Arr_err
+				| _ -> raise Arr_err
+
+let s_check_var_type f_context v_context vtype = 
     let dimention_type_list = (List.map (fun expr -> type_of_expr f_context v_context expr) vtype.dimension) in
       if List.length (List.filter (fun a -> (a.s_ptype == Int)) dimention_type_list) == List.length dimention_type_list
       then

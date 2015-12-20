@@ -8,8 +8,13 @@ sast.cmo : ast.cmo
 sast.cmx : ast.cmx
 semanticAnalysis.cmo : semanticExceptions.cmo sast.cmo ast.cmo
 semanticAnalysis.cmx : semanticExceptions.cmx sast.cmx ast.cmx
+<<<<<<< HEAD
 compile.cmo : sast.cmo ast.cmo
 compile.cmx : sast.cmx ast.cmx
+=======
+compile.cmo : semanticExceptions.cmo sast.cmo ast.cmo
+compile.cmx : semanticExceptions.cmx sast.cmx ast.cmx
+>>>>>>> 6d62cd1615dc435d6173763a1a8a8f5ca61e3107
 dave.cmo : semanticAnalysis.cmo scanner.cmo sast.cmo parser.cmi compile.cmo \
     ast.cmo
 dave.cmx : semanticAnalysis.cmx scanner.cmx sast.cmx parser.cmx compile.cmx \
