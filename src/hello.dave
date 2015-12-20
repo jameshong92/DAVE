@@ -17,10 +17,6 @@ int main() {
 		print("e is zero");
 	}
 
-	str[4] f;
-
-	f[0] = "hello!";
-	print(f[0]);
-	str[] i = f[0:2];
+	
 	return 0;
 }

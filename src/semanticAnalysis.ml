@@ -175,7 +175,7 @@ and type_of_func_ret fid param f_context v_context =
 	if StringMap.mem fid f_context then
 		let s_param = List.map (fun x -> type_of_expr f_context v_context x) param in
 			let found_map = StringMap.find fid f_context in
-				try 
+				try
 					let found = List.find (match_param s_param) found_map in
 						snd found
 				with Not_found -> raise (Invalid_func_err (fid ^ "(" ^ String.concat ", " (List.map (fun x -> string_of_datatype x.s_ptype) s_param) ^ ")"))
@@ -188,25 +188,25 @@ and match_param p1 map =
 			[], [] -> true
 			| hd::tl, [] -> false
 			| [], hd::tl -> false
-			| h1::t1, h2::t2 -> 
+			| h1::t1, h2::t2 ->
 				if h1.s_ptype == h2.s_ptype && List.length h1.s_dimension == List.length h2.s_dimension then
 					check_param t1 t2
-				else 
-					false 
+				else
+					false
 		in check_param p1 p2
 
 let rec s_check_expr f_context v_context in_exp = match in_exp with
-	ArrayLit(indices) -> 
+	ArrayLit(indices) ->
 		{exp = ArrayLit(List.map (fun a -> (s_check_expr f_context v_context a).exp) indices); typ = type_of_expr f_context v_context in_exp }
 	| Range(exp1, exp2) ->
-		{exp = Range((s_check_expr f_context v_context exp1).exp, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp } 
-	| Binop(exp1, binop, exp2) -> 
+		{exp = Range((s_check_expr f_context v_context exp1).exp, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
+	| Binop(exp1, binop, exp2) ->
 		{exp = Binop((s_check_expr f_context v_context exp1).exp, binop, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
 	| Unop(unop, exp) ->
 		{exp = Unop(unop, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
 	| Postop(lvalue, postop) ->
 		{exp = Postop((s_check_expr f_context v_context lvalue).exp, postop); typ = type_of_expr f_context v_context in_exp }
-	| AssignOp(lvalue, asnop, exp2) ->  
+	| AssignOp(lvalue, asnop, exp2) ->
 		{exp = AssignOp((s_check_expr f_context v_context lvalue).exp, asnop, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
 	| Lval(lvalue) ->
 		{exp = Lval((s_check_expr f_context v_context lvalue).exp); typ = type_of_expr f_context v_context in_exp }
@@ -217,18 +217,18 @@ let rec s_check_expr f_context v_context in_exp = match in_exp with
 	(* TODO: implement missing functions for tbl rec fld *)
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
 
-let s_check_var_type f_context v_context vtype = 
+let s_check_var_type f_context v_context vtype =
     let dimention_type_list = (List.map (fun expr -> type_of_expr f_context v_context expr) vtype.dimension) in
       if List.length (List.filter (fun a -> (a.s_ptype == Int)) dimention_type_list) == List.length dimention_type_list
       then
-          {s_ptype = vtype.ptype; 
+          {s_ptype = vtype.ptype;
           s_dimension = List.map (fun expr -> s_check_expr f_context v_context expr) vtype.dimension }
       else (* Error dimension not int *)
           raise Var_type_err
 
 let s_stmt_context_v f_context v_context level stmt = match stmt with
 	VarDeclStmt(vdecl) ->
-		let lhs = (s_check_var_type f_context v_context vdecl.vtype) and 
+		let lhs = (s_check_var_type f_context v_context vdecl.vtype) and
 				rhs = (type_of_expr f_context v_context vdecl.vinit) in
 			(* check if variable is not initialized or is initialized to same type *)
 			if vdecl.vinit == Noexpr || (List.length lhs.s_dimension == List.length rhs.s_dimension && lhs.s_ptype == rhs.s_ptype) then
@@ -238,28 +238,28 @@ let s_stmt_context_v f_context v_context level stmt = match stmt with
 					if p_level == level then
 						raise Duplicate_variable_err
 					else
-						StringMap.add vdecl.vname ((s_check_var_type f_context v_context vdecl.vtype), level) v_context 
+						StringMap.add vdecl.vname ((s_check_var_type f_context v_context vdecl.vtype), level) v_context
 				else
-					StringMap.add vdecl.vname ((s_check_var_type f_context v_context vdecl.vtype), level) v_context 
+					StringMap.add vdecl.vname ((s_check_var_type f_context v_context vdecl.vtype), level) v_context
 			else
 				raise Init_type_err
 	| _ -> v_context
 
 let s_check_var_decl f_context v_context vdecl =
-	let lhs = (s_check_var_type f_context v_context vdecl.vtype) and 
+	let lhs = (s_check_var_type f_context v_context vdecl.vtype) and
 			rhs = (type_of_expr f_context v_context vdecl.vinit) in
 		if vdecl.vinit == Noexpr || (List.length lhs.s_dimension == List.length rhs.s_dimension && lhs.s_ptype == rhs.s_ptype) then
-			{ 
-				s_vname = vdecl.vname; 
-				s_vtype = (s_check_var_type f_context v_context vdecl.vtype); 
-				s_vinit = (s_check_expr f_context v_context vdecl.vinit) 
+			{
+				s_vname = vdecl.vname;
+				s_vtype = (s_check_var_type f_context v_context vdecl.vtype);
+				s_vinit = (s_check_expr f_context v_context vdecl.vinit)
 			}
 		else
 			raise Init_type_err
 
 let rec s_check_stmt_list context_list stmt_list = match context_list, stmt_list with
      [], [] -> []
-   | context_hd::context_tl, stmt_hd::stmt_tl -> 
+   | context_hd::context_tl, stmt_hd::stmt_tl ->
            (s_check_stmt (fst context_hd) (snd context_hd) stmt_hd)
         :: (s_check_stmt_list context_tl stmt_tl)
    | _, _ -> raise Stmt_list_err
@@ -279,9 +279,9 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 				raise Current_not_found
 	| Block(stmt_list) ->
 		let first(f,_,_) = f and second(_,s,_) = s and third (_,_,t) = t in
-			S_Block(List.rev 
+			S_Block(List.rev
 				(first
-					(List.fold_left 
+					(List.fold_left
 						(fun x y -> (((s_check_stmt (second x) (third x) (level+1) y) :: (first x)),
 												 (second x),
 												 (s_stmt_context_v (second x) (third x) (level+1) y)
@@ -289,33 +289,33 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 						) ([], f_context, v_context) stmt_list
 		)
 		))
-	| If(expr, stmt1, stmt2) -> 
+	| If(expr, stmt1, stmt2) ->
 	  let exp_type = type_of_expr f_context v_context expr in
 			if (exp_type.s_ptype == Bool && exp_type.s_dimension == []) then
-				S_If(s_check_expr f_context v_context expr, 
-				s_check_stmt f_context v_context level stmt1, 
-				s_check_stmt f_context v_context level stmt2) 
+				S_If(s_check_expr f_context v_context expr,
+				s_check_stmt f_context v_context level stmt1,
+				s_check_stmt f_context v_context level stmt2)
 			else
 				raise Err_s_check_stmt_if; (* Error need boolean expression in if *)
 	| For(expr1, expr2, expr3, stmt) ->
 	       let expr2_t = type_of_expr f_context v_context expr2 in
 	    if expr2_t.s_ptype ==  Bool && List.length expr2_t.s_dimension == 0
 	    then
-	        S_For(s_check_expr f_context v_context expr1, 
-	        s_check_expr f_context v_context expr2, 
-	        s_check_expr f_context v_context expr3, 
+	        S_For(s_check_expr f_context v_context expr1,
+	        s_check_expr f_context v_context expr2,
+	        s_check_expr f_context v_context expr3,
 	        s_check_stmt f_context v_context level stmt)
 	    else
 	        raise Err_s_check_stmt_for; (* Error need boolean expression in for *)
 	| While(expr, stmt) ->
 	       let expr_t = type_of_expr f_context v_context expr in
 	    if expr_t.s_ptype == Bool && expr_t.s_dimension == []
-	    then 
-	        S_While(s_check_expr f_context v_context expr, 
+	    then
+	        S_While(s_check_expr f_context v_context expr,
 	        s_check_stmt f_context v_context level stmt)
 	    else
 	        raise Err_s_check_stmt_while; (* Error need boolean expression in while *)
-	| VarDeclStmt(vdecl) -> 
+	| VarDeclStmt(vdecl) ->
 	       S_VarDeclStmt(s_check_var_decl f_context v_context vdecl)
 	| Continue -> S_Continue
 	| Break -> S_Break
@@ -332,20 +332,20 @@ let s_check_func_decl f_context v_context fdecl =
 			s_body = s_check_stmt (StringMap.add "0current" [(List.map (fun decl -> decl.s_vtype) s_formals, s_return_type)] f_context)
 														(List.fold_left (fun map decl ->
 															(* check if variable is already defined within the function *)
-															if StringMap.mem decl.s_vname map && snd (StringMap.find decl.s_vname map) == 1 then 
+															if StringMap.mem decl.s_vname map && snd (StringMap.find decl.s_vname map) == 1 then
 																raise Duplicate_variable_err
 															else
-																StringMap.add decl.s_vname (decl.s_vtype, 1) map) v_context s_formals) 
+																StringMap.add decl.s_vname (decl.s_vtype, 1) map) v_context s_formals)
 														1 fdecl.body
 		}
 
 (* check list of function declarations *)
 let rec s_check_func_decls f_context v_context func_decl_list = match func_decl_list with
 	[] -> []
-	| hd::tl ->  
+	| hd::tl ->
 		(s_check_func_decl f_context v_context hd) :: (s_check_func_decls f_context v_context tl)
 
-let s_var_decl_to_var_map map s_vdecl = 
+let s_var_decl_to_var_map map s_vdecl =
 	if StringMap.mem s_vdecl.s_vname map then
 		(* check if variable name is already defined *)
 		raise Duplicate_variable_err
@@ -354,7 +354,7 @@ let s_var_decl_to_var_map map s_vdecl =
 		StringMap.add s_vdecl.s_vname (s_vdecl.s_vtype, 0) map
 
 (* check if vartiable type is the same for the two arguments *)
-let is_s_var_type_equal t1 t2 = 
+let is_s_var_type_equal t1 t2 =
 	if t1.s_ptype == t2.s_ptype && List.length t1.s_dimension == List.length t2.s_dimension then
 		true
 	else
@@ -365,7 +365,7 @@ let rec is_s_var_type_list_equal l1 l2 = match l1, l2 with
 	[], [] -> true
 	| [], hd::tl -> false
 	| hd::tl, [] -> false
-	| h1::t1, h2::t2 -> 
+	| h1::t1, h2::t2 ->
 		if is_s_var_type_equal h1 h2 then
 			is_s_var_type_list_equal t1 t2
 		else
@@ -380,8 +380,8 @@ let func_decl_check_func_map s_vtype_list_map s_vtype_list =
 			false
 
 let func_decl_to_func_map map fdecl v_context =
-	let func_s_vtype_list = List.map (fun decl -> decl.s_vtype) (List.map (fun arg -> s_check_var_decl StringMap.empty v_context arg) fdecl.formals) in 
-		if StringMap.mem fdecl.fname map then 
+	let func_s_vtype_list = List.map (fun decl -> decl.s_vtype) (List.map (fun arg -> s_check_var_decl StringMap.empty v_context arg) fdecl.formals) in
+		if StringMap.mem fdecl.fname map then
 			if func_decl_check_func_map (StringMap.find fdecl.fname map) func_s_vtype_list then
 				(* raise duplicate function error if function of same name and return type is already defined *)
 				raise Duplicate_function_err
@@ -398,17 +398,17 @@ let check prog =
 		(* TODO: add external functions to include *)
 		let map = StringMap.empty in
 		StringMap.add "print" [([{s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []});
-													 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []}); 
-													 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []}); 
+													 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+													 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 	                         ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map
 		in {
 			s_gdecls = s_gdecls;
 			s_fdecls =
 				let v_context = List.fold_left s_var_decl_to_var_map StringMap.empty s_gdecls in
 				let f_context = List.fold_left (fun ext_func_map func_decl -> func_decl_to_func_map ext_func_map func_decl v_context) extern_funs prog.fdecls in
-					if StringMap.mem "main" f_context then 
+					if StringMap.mem "main" f_context then
 						s_check_func_decls f_context v_context prog.fdecls
-					else 
+					else
 					(* main has to be defined in the function *)
 						raise Main_not_found_err
 		}
