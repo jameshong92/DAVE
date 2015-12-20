@@ -18,7 +18,7 @@ let rec type_of_expr f_context v_context exp = match exp with
 	| FloatLit(lit) -> { s_ptype = Float; s_dimension = [] }
 	| StringLit(lit) -> { s_ptype = String; s_dimension = [] }
 	| BoolLit(lit) -> { s_ptype = Bool; s_dimension = [] }
-	| ArrayLit(exprs) -> raise Not_implemented_err
+	| ArrayLit(exprs) -> type_of_array_lit exprs f_context v_context
 	| Range(exp1, exp2) ->
 		let type1 = type_of_expr f_context v_context exp1 and
 				type2 = type_of_expr f_context v_context exp2 in
@@ -143,6 +143,19 @@ let rec type_of_expr f_context v_context exp = match exp with
 	| Noexpr -> { s_ptype = Void; s_dimension = [] }
 	| None -> { s_ptype = Void; s_dimension = [] }
 
+and type_of_array_lit exprs f_context v_context =
+	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
+		let check_function x = 
+			let p = (type_of_expr f_context v_context x) in 
+				(p.s_ptype = first_lit.s_ptype) && (List.length p.s_dimension) = (List.length first_lit.s_dimension) in
+		let list_filter = List.filter check_function exprs in
+			if List.length list_filter == List.length exprs then
+				let exp = {exp = IntLit(List.length exprs); typ = first_lit} in
+				{ s_ptype = first_lit.s_ptype; s_dimension = [exp]}
+				(* { s_ptype = Int; s_dimension = [{ exp = exp2; typ = type2 }] } *)
+			else
+				raise Array_lit_err
+
 and type_of_array id exp f_context v_context =
 	if StringMap.mem id v_context then
 		let type1 = fst (StringMap.find id v_context) in
@@ -195,7 +208,7 @@ and match_param p1 map =
 					false
 		in check_param p1 p2
 
-let rec s_check_expr f_context v_context in_exp = match in_exp with
+and s_check_expr f_context v_context in_exp = match in_exp with
 	ArrayLit(indices) ->
 		{exp = ArrayLit(List.map (fun a -> (s_check_expr f_context v_context a).exp) indices); typ = type_of_expr f_context v_context in_exp }
 	| Range(exp1, exp2) ->
@@ -318,7 +331,7 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 				s_check_stmt f_context v_context level stmt1,
 				s_check_stmt f_context v_context level stmt2)
 			else
-				raise Err_s_check_stmt_if; (* Error need boolean expression in if *)
+				raise Err_s_check_stmt_if;
 	| For(expr1, expr2, expr3, stmt) ->
 	       let expr2_t = type_of_expr f_context v_context expr2 in
 	    if expr2_t.s_ptype ==  Bool && List.length expr2_t.s_dimension == 0
@@ -328,7 +341,7 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 	        s_check_expr f_context v_context expr3,
 	        s_check_stmt f_context v_context level stmt)
 	    else
-	        raise Err_s_check_stmt_for; (* Error need boolean expression in for *)
+	        raise Err_s_check_stmt_for;
 	| While(expr, stmt) ->
 	       let expr_t = type_of_expr f_context v_context expr in
 	    if expr_t.s_ptype == Bool && expr_t.s_dimension == []
@@ -336,7 +349,7 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 	        S_While(s_check_expr f_context v_context expr,
 	        s_check_stmt f_context v_context level stmt)
 	    else
-	        raise Err_s_check_stmt_while; (* Error need boolean expression in while *)
+	        raise Err_s_check_stmt_while;
 	| VarDeclStmt(vdecl) ->
 	       S_VarDeclStmt(s_check_var_decl f_context v_context vdecl)
 	| Continue -> S_Continue

@@ -26,9 +26,12 @@ int main() {
 	int[] g = f[3:];
 	print(g[0]);
 
+	g[0] += 5;
+
 	float x = float(g[0]);
 	print(x);
 
+	int[] z = [1,2,3,2,5];
 
 
 

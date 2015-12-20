@@ -32,6 +32,7 @@ void slice_array(int *src, int *dest, int begin, int end) {
 	}
 }
 
+
 int *slice_array(int *src, int begin, int end) {
 	int *dest;
 	int j = 0;
