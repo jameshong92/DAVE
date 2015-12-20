@@ -86,7 +86,7 @@ datatype:
 | datatype LBRACK expr_opt RBRACK {
 																{
 																	ptype = $1.ptype;
-																	dimension = (if $3 == Noexpr then IntLit(0) else $3) :: $1.dimension
+																	dimension = [(if $3 == Noexpr then IntLit(0) else $3)]
 																}
 															}
 /*	PRIMITIVE_TYPE							{
@@ -180,14 +180,14 @@ literal_list:
 	| literal_list COMMA literal { $3 :: $1 }
 
 tbl_lit:
-	TBL LPAREN rec_lit_list RPAREN
+	TBL LPAREN actuals_list RPAREN
 															{ List.rev $3 }
-	| TBL LPAREN fld_lit_list RPAREN
-															{ List.rev $3 }
+	/*| TBL LPAREN fld_lit_list RPAREN
+															{ List.rev $3 } */
 
-rec_lit_list:
+/*rec_lit_list:
 	rec_lit_list COMMA rec_lit 	{ $3 :: $1 }
-	| rec_lit 									{ [$1] }
+	| rec_lit 									{ [$1] } */
 
 rec_lit:
 	REC LBRACE rec_init RBRACE 			{ Rec(List.rev $3) }
@@ -197,9 +197,9 @@ rec_init:
 	| rec_init COMMA STR_LIT COLON literal
 															{ RecRef($3, $5) :: $1 }
 
-fld_lit_list:
+/*ffld_lit_list:
 	fld_lit_list COMMA fld_lit 	{ $3 :: $1 }
-	| fld_lit 									{ [$1] }
+	| fld_lit 									{ [$1] }*/
 
 fld_lit:
 	FLD LPAREN expr COMMA STR_LIT RPAREN

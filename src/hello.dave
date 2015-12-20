@@ -7,8 +7,11 @@ int main() {
 	print(a);
 	bool is_continue = true;
 
-	str z = "mama";
+	str[] z = ["mama", "zxcvcx"];
 	fld m = fld(z, "asdf");
+	fld n = fld(z, "qqqq");
 	rec y = rec{"a": 123, "b": "asdfasdf"};
+	tbl v = tbl(m, n);
+
 	return 0;
 }
