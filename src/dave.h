@@ -32,6 +32,16 @@ void slice_array(int *src, int *dest, int begin, int end) {
 	}
 }
 
+int * slice_array(int *src, int begin, int end) {
+	int dest[end - begin];
+	int a = 0;
+	for (int i = begin; i < end; i++) {
+		dest[a] = src[i];
+		a += 1;
+	}
+	return dest;
+}
+
 void slice_array(float *src, float *dest, int begin, int end) {
 	for (int i = begin; i < end; i++) {
 		*dest++ = src[i];

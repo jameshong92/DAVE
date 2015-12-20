@@ -81,7 +81,7 @@ and string_of_expr = function
 | Access(exp1, exp2) -> "(" ^ string_of_expr exp1 ^ "." ^ exp2 ^ ")"
 
 and string_of_array id exp2 = match exp2 with
-  | Range(id1, id2) -> "slice_array(" ^ id ^ ", sizeof(" ^ id ^ "), " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+  | Range(id1, id2) -> "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
   | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
 
 and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
@@ -108,15 +108,15 @@ let dimension = v.s_dimension in
 let string_of_decl vdecl =
   let init = vdecl.s_vinit.exp in
   match init with
-    Noexpr -> ((string_of_var vdecl.s_vtype vdecl.s_vname) ^ ";")
+    Noexpr -> ((string_of_var vdecl.s_vtype vdecl.s_vname))
     | Lval(exp) -> (match exp with
         Array(id, exp1) -> (match exp1 with
-            Range(id1, id2) -> string_of_datatype vdecl.s_vtype.s_ptype ^ " " ^ vdecl.s_vname ^ "[" ^ string_of_expr id2 ^ "-" ^ string_of_expr id1 ^ "]; slice_array(" ^ id ^ ", " ^ vdecl.s_vname ^ ", sizeof(" ^ id ^ "), " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")" ^ ";"
-            | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
+            Range(id1, id2) -> string_of_datatype vdecl.s_vtype.s_ptype ^ " " ^ vdecl.s_vname ^ "[" ^ string_of_expr id2 ^ "-" ^ string_of_expr id1 ^ "];\nslice_array(" ^ id ^ ", " ^ vdecl.s_vname ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+            | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
           )
-        | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
+        | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
       )
-    | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp ^ ";"
+    | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
 
 let rec gen_stmt = function
   S_Expr(exp) -> "(" ^ (string_of_expr exp.exp) ^ ");"
@@ -127,7 +127,7 @@ let rec gen_stmt = function
   "if (" ^ (string_of_expr exp.exp) ^ ")\n" ^ (gen_stmt stmt1) ^ "else " ^ (gen_stmt stmt2))
 | S_For(init, test, after, stmt) -> "for (" ^ string_of_expr init.exp ^ "; " ^ string_of_expr test.exp ^ "; " ^ string_of_expr after.exp ^ ") " ^ gen_stmt stmt
 | S_While(test, stmt) -> "while (" ^ (string_of_expr test.exp) ^ ") " ^ (gen_stmt stmt)
-| S_VarDeclStmt(decl) -> string_of_decl decl
+| S_VarDeclStmt(decl) -> string_of_decl decl ^ ";"
 | S_Continue -> "continue;"
 | S_Break -> "break;"
 | S_EmptyStmt -> ";"
