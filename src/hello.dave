@@ -18,25 +18,20 @@ int main() {
 
 	} */
 
-	int[4] f;
-	f[0] = 1;
-	f[1] = 2;
-	f[2] = 3;
-	f[3] = 4;
-	int[] g = f[3:];
-	print(g[0]);
+	int[5] f = [1, 2, 3, 4, 5];
+	int[] g = f[2:];
+	int v = g[1];
+	print(v);
 
-	g[0] += 5;
+	int a = none;
 
-	float x = float(g[0]);
-	print(x);
 
-	int[] z = [1,2,3,2,5];
 
 
 
 	return 0;
 }
-int print_int(int a) {
+
+void print_int(int a) {
 	print(a);
 }

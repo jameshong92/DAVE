@@ -92,6 +92,7 @@ expr:
 
 	| NOT expr 									{ Unop(Not, $2) }
 	| MINUS expr %prec UNMINUS	{ Unop(Neg, $2) }
+	| NONE											{ None }
 
 	| lvalue INC 								{ Postop($1, Inc) }
 	| lvalue DEC 								{ Postop($1, Dec) }

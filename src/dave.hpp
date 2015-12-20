@@ -16,12 +16,12 @@ int getArrayLen(T& array)
 
 class tuple {
 public:
-    string name; 
+    string name;
     int type;
     int content_int;
     double content_double;
     string content_string;
-	tuple(int initial,string str) {
+	  tuple(int initial,string str) {
         type = 0;
         content_int = initial;
         name = str;
@@ -47,16 +47,16 @@ public:
         for (int i=0; i<length; i++)
             r.push_back(array[i]);
     }
-}; 
+};
 
 class fld {
-public: 
+public:
     int length;
     string name;
     int type;
     vector<int> f_int;;
     vector<double> f_double;
-    vector<string> f_string;  
+    vector<string> f_string;
     fld(int *array, string str, int len) {
         type = 0;
         length = len;
@@ -108,7 +108,7 @@ public:
             } else if (array[0].r[i].type == 1) {
                 double data[col_len];
                 for (int j=0; j<col_len; j++) {
-                    data[j] = array[j].r[i].content_double; 
+                    data[j] = array[j].r[i].content_double;
                 }
                 fld temp = fld (data, name, col_len);
                 t.push_back(temp);
@@ -141,7 +141,7 @@ public:
                         t[j].f_double.push_back(newrec.r[i].content_double);
                     } else if (newrec.r[i].type == 2) {
                         t[j].f_string.push_back(newrec.r[i].content_string);
-                    } 
+                    }
                     break;
                 }
             }
@@ -176,7 +176,7 @@ public:
                             } else if (source2.t[i].type == 1) {
                                 t[j].f_double.push_back(source2.t[i].f_double[k]);
                             } else if (source2.t[i].type == 2) {
-                                t[j].f_string.push_back(source2.t[i].f_string[k]); 
+                                t[j].f_string.push_back(source2.t[i].f_string[k]);
                             }
                         }
                         break;
@@ -265,7 +265,7 @@ public:
                         strcpy(temp, t[row-1].f_string[i].c_str());
                         t[row-1].f_int[i] = atof(temp);
                     }
-                }     
+                }
             } else if (newtype == 1) {
                 t[row-1].type = 1;
                 for (int i=0; i<row_length; i++) {
@@ -279,7 +279,7 @@ public:
             }
         }
     }
-}; 
+};
 
 tbl plus(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
@@ -337,7 +337,7 @@ ostream & operator << (ostream &sys, const rec &in) {
 		if (i<in.length-1) {
 		    sys << "\t";
 		}
-	} 
+	}
 	sys << endl << "[";
 	for (int i=0; i<in.length; i++) {
         if (in.r[i].type == 0) {
@@ -365,7 +365,7 @@ ostream & operator << (ostream &sys, const fld &in) {
             sys << in.f_double[i] << endl;
     } else if ( in.type == 2 ) {
         for (int i=0; i<in.length; i++)
-            sys << in.f_string[i] << endl; 
+            sys << in.f_string[i] << endl;
     }
 	return sys;
 }
@@ -407,7 +407,7 @@ ostream & operator << (ostream &sys, const tbl &in) {
 int main(int argc, char const *argv[]) {
     int a[] = {90,99,98};
     string g[]  = {"ab", "cd", "ef"};
-    fld b = fld (a , "value", getArrayLen(a)); 
+    fld b = fld (a , "value", getArrayLen(a));
     // sample definition of fld
     fld h = fld (g, "word", getArrayLen(g));
     cout << b;
@@ -463,5 +463,5 @@ int main(int argc, char const *argv[]) {
     cout << "result of conversion is:" << endl;
     cout << sx2;
     // sample of data type conversion
-    return 0; 
+    return 0;
 }  */

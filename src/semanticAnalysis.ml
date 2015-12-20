@@ -145,8 +145,8 @@ let rec type_of_expr f_context v_context exp = match exp with
 
 and type_of_array_lit exprs f_context v_context =
 	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
-		let check_function x = 
-			let p = (type_of_expr f_context v_context x) in 
+		let check_function x =
+			let p = (type_of_expr f_context v_context x) in
 				(p.s_ptype = first_lit.s_ptype) && (List.length p.s_dimension) = (List.length first_lit.s_dimension) in
 		let list_filter = List.filter check_function exprs in
 			if List.length list_filter == List.length exprs then
@@ -252,7 +252,7 @@ and s_check_array f_context v_context in_exp id indices =
 						else raise Arr_err
 				| _ -> raise Arr_err
 
-let s_check_var_type f_context v_context vtype = 
+let s_check_var_type f_context v_context vtype =
     let dimention_type_list = (List.map (fun expr -> type_of_expr f_context v_context expr) vtype.dimension) in
       if List.length (List.filter (fun a -> (a.s_ptype == Int)) dimention_type_list) == List.length dimention_type_list
       then
@@ -266,7 +266,7 @@ let s_stmt_context_v f_context v_context level stmt = match stmt with
 		let lhs = (s_check_var_type f_context v_context vdecl.vtype) and
 				rhs = (type_of_expr f_context v_context vdecl.vinit) in
 			(* check if variable is not initialized or is initialized to same type *)
-			if vdecl.vinit == Noexpr || (List.length lhs.s_dimension == List.length rhs.s_dimension && lhs.s_ptype == rhs.s_ptype) then
+			if vdecl.vinit == Noexpr || vdecl.vinit == None || (List.length lhs.s_dimension == List.length rhs.s_dimension && lhs.s_ptype == rhs.s_ptype) then
 				if StringMap.mem vdecl.vname v_context then
 					let p_level = snd (StringMap.find vdecl.vname v_context) in
 					(* check if variable has been defined in the same level *)
@@ -283,7 +283,7 @@ let s_stmt_context_v f_context v_context level stmt = match stmt with
 let s_check_var_decl f_context v_context vdecl =
 	let lhs = (s_check_var_type f_context v_context vdecl.vtype) and
 			rhs = (type_of_expr f_context v_context vdecl.vinit) in
-		if vdecl.vinit == Noexpr || (List.length lhs.s_dimension == List.length rhs.s_dimension && lhs.s_ptype == rhs.s_ptype) then
+		if vdecl.vinit == Noexpr || vdecl.vinit == None || (List.length lhs.s_dimension == List.length rhs.s_dimension && lhs.s_ptype == rhs.s_ptype) then
 			{
 				s_vname = vdecl.vname;
 				s_vtype = (s_check_var_type f_context v_context vdecl.vtype);
