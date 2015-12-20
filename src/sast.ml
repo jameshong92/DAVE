@@ -1,7 +1,5 @@
 open Ast
 
-exception Invalid_use of string
-
 type t_expr = {
   exp: expr;
   typ: s_var
@@ -177,7 +175,7 @@ let rec gen_stmt = function
 | S_Break -> "break;"
 | S_EmptyStmt -> ";"
 
-let string_of_func_decl funcdecl = 
+let string_of_func_decl funcdecl =
   string_of_datatype funcdecl.return_type ^ " "
   ^ string_of_id funcdecl.fname ^ "("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
@@ -186,10 +184,10 @@ let string_of_func_decl funcdecl =
 
 let string_of_program prg =
   "#include \"dave.h\"\nusing namespace std;\n"
-  ^ (String.concat "\n" (List.map string_of_decl prg.gdecls)) ^ "\n" 
+  ^ (String.concat "\n" (List.map string_of_decl prg.gdecls)) ^ "\n"
   ^ (String.concat "\n" (List.map string_of_func_decl prg.fdecls)) ^ "\n"
 
-let print_program oc prg = 
+let print_program oc prg =
   let out_file = open_out oc in
   fprintf out_file "%s" (string_of_program prg);
   close_out out_file *)
