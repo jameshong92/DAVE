@@ -30,5 +30,10 @@ int main() {
 	print(x);
 
 
+
+
 	return 0;
+}
+int print_int(int a) {
+	print(a);
 }
