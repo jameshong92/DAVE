@@ -1,5 +1,5 @@
 int main() {
-	str a = "hello world!";
+	/*str a = "hello world!";
 	int c;
 	// this is a single line comment
 	for (c = 0; c < 10; c++) {
@@ -15,12 +15,15 @@ int main() {
 
 	if (e == 0) {
 		print("e is zero");
-	}
+	} */
 
-	str[4] f;
-	str[] g = f[:3];
-	f[0] = "hello!";
-	print(f[0]);
-	str[] i = f[0:2];
+	int[4] f;
+	f[0] = 1;
+	f[1] = 2;
+	f[2] = 3;
+	f[3] = 4;
+	int[] g = f[:3];
+	print(g[0]);
+
 	return 0;
 }
