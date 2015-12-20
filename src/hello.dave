@@ -18,7 +18,7 @@ int main() {
 	}
 
 	str[4] f;
-
+	str[] g = f[:3];
 	f[0] = "hello!";
 	print(f[0]);
 	str[] i = f[0:2];
