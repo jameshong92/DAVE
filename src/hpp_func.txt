@@ -101,3 +101,9 @@ You could add them here, I would finish it tonight, and add the test cases also.
 Something else: Since in C++, we could not directly write an array like fld a = fld({1,2,3}, "name");
 we could only first array a[] = {1,2,3}; fld b = fld(a, "name");
 So in Dave, we would implement it in two steps or just in one, maybe in one step the conversion would be a littel thorny, it depends on your convenience.
+
+Things we may need:
+int d = access(a, "age") // getting a tuple value from rec, may need to handle error, need for string double int and bool
+tuple data should be able to handle boolean value as well
+append(tbl, fld); // add a fld to a table, may need to check if fld name is already defined (append to row) or not there (new column)
+append(tbl, rec); // add a rec to a table, may need to check if tuple name is there or not
