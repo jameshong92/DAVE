@@ -1,5 +1,5 @@
 %{ open Ast %}
-%token NEW 
+%token NEW
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
 %token SEMICOL COMMA DOT COLON
 %token ADDEQ SUBEQ MULEQ DIVEQ MODEQ
@@ -13,7 +13,7 @@
 %token <float> FLOAT_LIT
 %token <bool> BOOL_LIT
 %token <string> STR_LIT ID  /*VAR_TYPE PRIMITIVE_TYPE*/
-%token NONE NEW
+%token NONE
 %token EOF
 
 %nonassoc NOELSE
