@@ -20,24 +20,24 @@ maybe in dave it is d = tbl(rec array), and translate to d = tbl(rec array, getA
 
 
 
-tbl e = tbl(tbl, fld);
-combine a fld to the right of the table.
+tbl e = append(tbl, fld);
+combine a fld to the right of the table. If the name has been used, it would not be permitted.
 
-tbl e = tbl(tbl, rec);
+tbl e = append(tbl, rec);
 combine a rec to the end of the table. Here the sequence of the rec could be inconsistenet with the tbl also.
 
-tbl e = tbl(tbl, tbl, bool method);
+tbl e = append(tbl, tbl, bool method);
 if method == 0, they are combined in the left, right;
 if method == 1, they are combined in the up, down.
 here also could be changed, delete the method parameter, and check the col_length and row_length, if col_length the same, then combine it horizonal, if row_length the same, combine it vertical.
 
 
 
-tbl f = tbl(tbl, row num, col num, data);
+tbl f = modify(tbl, row num, col num, data);
 data could be int, double or string, change the value in the (col pos, row pos) of the orginal table to a new value. The data type should be the same as the data type of the inserting fld;
 tbl(tbl, 0, 1, "Yang"), to change the 0-th row, the 1-th attribute of that row to "Yang".    
 
-tbl f = tbl(tbl, col num, type);
+tbl f = converse(tbl, col num, type);
 type is a string, "int", "double", or "string". Change the data type of that fld.
 Like that if I wanna change the 1-th col/fld from int type to string type, then use
 tbl(tbl, 1, "string"). It is convenience because when we import data from file, they are all string, 
