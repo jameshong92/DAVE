@@ -25,7 +25,7 @@ int main() {
 
 	int a = none;
 
-
+	fld fldvar = fld([1,2,3],"age");
 
 
 

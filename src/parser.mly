@@ -155,7 +155,7 @@ fld_lit_list:
 	| fld_lit 									{ [$1] }
 
 fld_lit:
-	FLD LPAREN actuals_list COMMA STR_LIT RPAREN
+	FLD LPAREN actuals_list COMMA StringLit RPAREN
 															{ Fld(List.rev $3, $5) }
 
 actuals_opt:
