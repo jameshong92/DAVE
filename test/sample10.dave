@@ -1,0 +1,12 @@
+// test continue statement
+int main() {
+	int c = 0;
+	int a = 1;
+	for (c = 0; c < 10; c++) {
+	    print(a);
+	    if (a == 5) {
+	        continue;
+	    }
+	    a++;
+	}
+}

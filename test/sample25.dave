@@ -1,0 +1,21 @@
+// test table binding4
+int main() {
+    tuple t1[] = {tuple(22, "age"), tuple("Yang", "name"), tuple(3.50, "GPA")};
+    rec r1 = rec(t1); 
+    tuple t2[] = {tuple("James", "name"), tuple(23, "age"), tuple(3.88, "GPA")}
+    rec r2 = rec(t2);
+    tuple t3[] = {tuple(24, "age"), tuple(3.80, "GPA"), tuple("Min Woo", "name")}
+    rec r3 = rec(t3);
+    rec c1[] = {r1, r2, r3};
+    tbl test1 = tbl(c1);
+    print(test1);
+    tuple t4[] = {tuple(22, "age"), tuple(3.66, "GPA"), tuple("Micheal", "name")}
+    rec r4 = rec(t4);
+    tuple t5[] = {tuple("Jotaku", "name"), tuple(21, "age"), tuple(3.60, "GPA")}
+    rec r5 = rec(t5);
+    rec c2[] = {r4, r5};
+    tbl test2 = tbl(c2);
+    print(test2);
+    test = tbl(test1, test2, false);
+    print(test);
+}

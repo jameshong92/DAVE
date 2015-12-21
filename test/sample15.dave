@@ -1,0 +1,8 @@
+// test record defintion
+#include <dave.hpp>
+int main() {
+	tuple[] array = {tuple(22, "age"), tuple(3.88, "score"), tuple("unknown", "name")};
+    rec test = rec(array);
+    print(test);
+    print(test.length);
+}

@@ -1,0 +1,19 @@
+// test operations
+int main() {
+    int a = 83;
+    int b = 69;
+    int c = a + b;
+    print(c);
+    a ++;
+    b --;
+    print(a);
+    print(b);
+    bool x = 0;
+    print(x);
+    bool y = true;
+    print(y);
+    y = (1!=2);
+    print(y);
+    x = (1==2) and true;
+    print(x);
+}

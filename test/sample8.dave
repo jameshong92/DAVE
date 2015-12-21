@@ -1,0 +1,10 @@
+// test for loop
+int main() {
+	int c = 0;
+	for (c = 0; c < 5; c++) {
+	    print("Hello World!");
+	}
+	for (int d = 0; d < 0; d++) {
+	    print("Hello Edwards!");
+	}
+}

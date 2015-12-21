@@ -1,5 +1,4 @@
 int main() {
-	/*str a = "hello world!";
 	int c;
 	// this is a single line comment
 	for (c = 0; c < 10; c++) {
@@ -8,7 +7,6 @@ int main() {
 	print(a);
 	bool is_continue = true;
 
-	int d = 1;
 	int e = 0;
 	print("printing sum of 1 to 10:");
 	print(e);
@@ -25,10 +23,13 @@ int main() {
 
 	int a = none;
 
+<<<<<<< HEAD
 	fld fldvar = fld([1,2,3],"age");
 
 
 
+=======
+>>>>>>> 2d1edc14453cecaeaf16f43799c674da20733f1d
 	return 0;
 }
 

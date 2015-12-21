@@ -1,0 +1,17 @@
+// test if-else
+int main() {
+	int a = 0;
+    int b = 2;
+    if (a >= 0) {
+	    print(a);
+    } else {
+	    print(b);
+    }
+
+    if (b > 0) {
+	    print(b);
+    }
+    if (a <= 0) {
+        print(a+b);
+    }
+}

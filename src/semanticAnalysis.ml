@@ -136,12 +136,51 @@ let rec type_of_expr f_context v_context exp = match exp with
 	| Lval(exp) -> type_of_expr f_context v_context exp (* TODO: CHECK LVAL *)
 	| Cast(var, exp) -> { s_ptype = var.ptype; s_dimension = [] } (* TODO: check if it works *)
 	| FuncCall(fid, actuals_opt) -> type_of_func_ret fid actuals_opt f_context v_context
-	| Tbl(exprs) -> { s_ptype = Tbl; s_dimension = [] }
-	| Rec(exprs) -> { s_ptype = Rec; s_dimension = [] }
-	| RecRef(id, exp) -> type_of_expr f_context v_context exp
-	| Fld(exprs, id) -> { s_ptype = Fld; s_dimension = [] }
+	| Tbl(exprs) -> type_of_table exprs f_context v_context
+	| Rec(exprs) -> type_of_rec exprs f_context v_context
+	| RecRef(id, exp) -> type_of_rec_ref id exp f_context v_context
+	| Fld(expr, id) -> type_of_fld expr id f_context v_context
 	| Noexpr -> { s_ptype = Void; s_dimension = [] }
 	| None -> { s_ptype = Void; s_dimension = [] }
+
+and type_of_table exprs f_context v_context =
+	raise Not_implemented_err
+(* 	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
+		let check_function x = 
+			let p = (type_of_expr f_context v_context x) in 
+				(p.s_ptype = first_lit.s_ptype) && (List.length p.s_dimension) = (List.length first_lit.s_dimension) in
+		let list_filter = List.filter check_function exprs in
+			if List.length list_filter == List.length exprs then *)
+
+and type_of_fld expr id f_context v_context =
+	let first_lit = type_of_expr f_context v_context expr in
+		match first_lit.s_ptype with
+			Int | String | Bool | Float -> 
+				if (List.length first_lit.s_dimension) > 0 then
+					{ s_ptype = Fld; s_dimension = first_lit.s_dimension }
+				else raise Fld_err
+			| _ -> raise Fld_err
+
+and type_of_rec exprs f_context v_context =
+	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
+		let check_function x = 
+			let p = (type_of_expr f_context v_context x) in 
+				(List.length p.s_dimension) = (List.length first_lit.s_dimension) in
+		let list_filter = List.filter check_function exprs in
+			if List.length list_filter == List.length exprs then
+				let exp = {exp = IntLit(List.length exprs); typ = {s_ptype = Int; s_dimension = []}} in
+					{ s_ptype = Rec; s_dimension = [exp]}
+			else
+				raise Rec_err
+
+and type_of_rec_ref id expr f_context v_context =
+	let first_lit = type_of_expr f_context v_context expr in
+		match first_lit.s_ptype with
+			Int | String | Bool | Float -> 
+				if (List.length first_lit.s_dimension) == 0 then
+					{ s_ptype = Fld; s_dimension = first_lit.s_dimension }
+				else raise Rec_ref_err
+			| _ -> raise Rec_ref_err
 
 and type_of_array_lit exprs f_context v_context =
 	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
@@ -150,9 +189,8 @@ and type_of_array_lit exprs f_context v_context =
 				(p.s_ptype = first_lit.s_ptype) && (List.length p.s_dimension) = (List.length first_lit.s_dimension) in
 		let list_filter = List.filter check_function exprs in
 			if List.length list_filter == List.length exprs then
-				let exp = {exp = IntLit(List.length exprs); typ = first_lit} in
-				{ s_ptype = first_lit.s_ptype; s_dimension = [exp]}
-				(* { s_ptype = Int; s_dimension = [{ exp = exp2; typ = type2 }] } *)
+				let exp = {exp = IntLit(List.length exprs); typ = {s_ptype = first_lit.s_ptype; s_dimension = []}} in
+					{ s_ptype = first_lit.s_ptype; s_dimension = [exp]}
 			else
 				raise Array_lit_err
 
@@ -228,7 +266,22 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 	| Array(id, indices) -> s_check_array f_context v_context in_exp id indices
 	| Access(exp, id) -> { exp = Access((s_check_expr f_context v_context exp).exp, id); typ = type_of_expr f_context v_context in_exp }
 	(* TODO: implement missing functions for tbl rec fld *)
+	| FuncCall(id, exprs) -> {exp = FuncCall(id, List.map (fun a -> (s_check_expr f_context v_context a).exp) exprs); typ = (type_of_expr f_context v_context in_exp)}
+	| Tbl(exprs) -> s_check_tbl f_context v_context in_exp exprs
+	| Rec(exprs) -> s_check_rec f_context v_context in_exp exprs
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
+
+and s_check_tbl f_context v_context in_exp exprs =
+	raise Not_implemented_err
+
+and s_check_rec f_context v_context in_exp exprs =
+	raise Not_implemented_err
+
+and s_check_rec_ref f_context v_context in_exp id expr =
+	raise Not_implemented_err
+
+and s_check_fld f_context v_context in_exp expr id =
+	raise Not_implemented_err
 
 and s_check_array f_context v_context in_exp id indices =
 	let index_type = type_of_expr f_context v_context indices and

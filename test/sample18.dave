@@ -1,0 +1,13 @@
+// test table definition1
+#include <dave.hpp>
+int main() {
+	string s[] = {"a", "b", "c", "d", "e"};
+	fld t1 = fld(s, "eng");
+    int i[] = {1, 2, 3, 4, 5};
+    fld t2 = fld(i, "num");
+    fld[] t = {t1, t2};
+    tbl test = tbl(t);
+	print(test);
+	print(test.row_length);
+	print(test.col_length);
+}

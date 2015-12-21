@@ -1,0 +1,12 @@
+// test break statement
+int main() {
+	int c = 0;
+	int a = 1;
+	for (c = 0; c < 100; c++) {
+	    print(a);
+	    a++;
+	    if (a == 10) {
+	        break;
+	    }
+	}
+}

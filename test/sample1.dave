@@ -1,0 +1,13 @@
+// test string variable
+int main() {
+    str s = "dave";
+    print(s);
+    str s = "dave\n";
+    print(s);
+    str s = "dave\t";
+    print(s);
+    str s = "dave\\";
+    print(s);
+    str s = "dave\"";
+    print(s);
+}
