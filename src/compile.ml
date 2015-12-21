@@ -71,8 +71,8 @@ and string_of_expr = function
 | FuncCall(id, exps) -> string_of_func_call id exps
 | Tbl(exps) -> "tbl(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 | Rec(exps) -> "rec(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
-| RecRef(id, exp) -> "tuple(" ^ string_of_expr exp ^ ", " ^ id ^ ")"
-| Fld(exps, lit) -> "fld([" ^ String.concat ", " (List.map string_of_expr exps) ^ "], \"" ^ lit ^ "\")"
+| RecRef(id, exp) -> "tuple(" ^ string_of_expr exp ^ ", \"" ^ id ^ "\")"
+| Fld(exp, lit) -> "fld(" ^ string_of_expr exp ^ ", \"" ^ lit ^ "\")"
 | Lval(lvalue) -> string_of_expr lvalue
 | Noexpr -> ""
 | None -> "NULL"
@@ -116,6 +116,7 @@ let string_of_decl vdecl =
           )
         | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
       )
+    | Rec(exprs) -> "tuple _" ^ vdecl.s_vname ^ "[] = {" ^ (String.concat ", " (List.map string_of_expr exprs)) ^ "};\n" ^ (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = rec(_" ^ vdecl.s_vname ^ ", getArrayLen(_" ^ vdecl.s_vname ^ "))"
     | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
 
 let rec gen_stmt = function
@@ -140,7 +141,7 @@ let string_of_func_decl funcdecl =
   ^ gen_stmt funcdecl.s_body ^ "\n}"
 
 let string_of_program prg =
-  "#include \"dave.h\"\nusing namespace std;\n"
+  "#include \"dave.h\"\n#include \"dave.hpp\"\nusing namespace std;\n"
   ^ (String.concat "\n" (List.map string_of_decl prg.s_gdecls)) ^ "\n"
   ^ (String.concat "\n" (List.map string_of_func_decl prg.s_fdecls)) ^ "\n"
 

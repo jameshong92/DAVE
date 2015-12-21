@@ -7,9 +7,9 @@ exception Type_err of string
 exception Arr_err
 exception Access_err
 exception Var_type_err
-exception Init_type_err
+exception Init_type_err of string
 exception No_func_err of string
-exception No_variable_err
+exception No_variable_err of string
 exception Return_type_err
 exception Current_not_found
 exception Err_s_check_stmt_if

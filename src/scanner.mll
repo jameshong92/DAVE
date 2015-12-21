@@ -58,6 +58,7 @@ rule token = parse
 | "rec" 									{REC}
 | "fld" 								{FLD}
 | "none"							 { NONE }
+| "new"								 { NEW }
 | "true" 							 { BOOL_LIT(true) }
 | "false"              { BOOL_LIT(false) }
 | (digit)+ as lit 		 { INT_LIT(int_of_string lit) }

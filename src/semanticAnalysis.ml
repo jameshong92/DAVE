@@ -8,7 +8,7 @@ let rec type_of_var id v_context =
 	if StringMap.mem id v_context then
 		fst (StringMap.find id v_context)
 	else
-		raise No_variable_err
+		raise (No_variable_err id)
 
 let rec type_of_expr f_context v_context exp = match exp with
 	Var(id) -> type_of_var id v_context
@@ -102,15 +102,18 @@ let rec type_of_expr f_context v_context exp = match exp with
 			Asn ->
 				let type1 = type_of_expr f_context v_context exp1 and
 						type2 = type_of_expr f_context v_context exp2 in
-							(match type1.s_ptype, type2.s_ptype with
-								Int, Int -> type1
-								| Int, Float -> type2
-								| Float, Int -> type1
-								| Float, Float -> type1
-								| String, String -> type1
-								| Bool, Bool -> type1
-								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ "type: " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2))
-							)
+							if List.length type1.s_dimension != List.length type2.s_dimension then
+								raise (Type_err ("type error for " ^ string_of_expr exp1 ^ "type: " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2))
+							else if List.length type2.s_dimension != 0 && type1.s_ptype == type2.s_ptype then
+								type2
+							else
+								(match type1.s_ptype, type2.s_ptype with
+									Int, Int -> type2
+									| Float, Float -> type2
+									| String, String -> type2
+									| Bool, Bool -> type2
+									| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ "type: " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2))
+								)
 			| Addeq ->
 				let type1 = type_of_expr f_context v_context exp1 and
 						type2 = type_of_expr f_context v_context exp2 in
@@ -162,14 +165,9 @@ and type_of_fld expr id f_context v_context =
 			| _ -> raise Fld_err
 
 and type_of_rec exprs f_context v_context =
-	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
-		let check_function x = 
-			let p = (type_of_expr f_context v_context x) in 
-				(List.length p.s_dimension) = (List.length first_lit.s_dimension) in
-		let list_filter = List.filter check_function exprs in
-			if List.length list_filter == List.length exprs then
-				let exp = {exp = IntLit(List.length exprs); typ = {s_ptype = Int; s_dimension = []}} in
-					{ s_ptype = Rec; s_dimension = [exp]}
+  let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
+    if List.length (List.filter (fun a -> (match a.exp with RecRef(_,_) -> true | _ -> false)) rec_ref_list) == (List.length exprs) then
+					{ s_ptype = Rec; s_dimension = []}
 			else
 				raise Rec_err
 
@@ -178,7 +176,7 @@ and type_of_rec_ref id expr f_context v_context =
 		match first_lit.s_ptype with
 			Int | String | Bool | Float -> 
 				if (List.length first_lit.s_dimension) == 0 then
-					{ s_ptype = Fld; s_dimension = first_lit.s_dimension }
+					{ s_ptype = first_lit.s_ptype; s_dimension = first_lit.s_dimension }
 				else raise Rec_ref_err
 			| _ -> raise Rec_ref_err
 
@@ -275,10 +273,14 @@ and s_check_tbl f_context v_context in_exp exprs =
 	raise Not_implemented_err
 
 and s_check_rec f_context v_context in_exp exprs =
-	raise Not_implemented_err
+  let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
+    if List.length (List.filter (fun a -> (match a.exp with RecRef(_,_) -> true | _ -> false)) rec_ref_list) == (List.length exprs) then
+    	{ exp = Rec(List.map (fun a -> (s_check_expr f_context v_context a).exp) exprs); typ = (type_of_expr f_context v_context in_exp)}
+    else
+    	raise Rec_err
 
 and s_check_rec_ref f_context v_context in_exp id expr =
-	raise Not_implemented_err
+	{ exp = RecRef(id, (s_check_expr f_context v_context expr).exp); typ = type_of_expr f_context v_context in_exp }
 
 and s_check_fld f_context v_context in_exp expr id =
 	raise Not_implemented_err
@@ -330,7 +332,7 @@ let s_stmt_context_v f_context v_context level stmt = match stmt with
 				else
 					StringMap.add vdecl.vname ((s_check_var_type f_context v_context vdecl.vtype), level) v_context
 			else
-				raise Init_type_err
+				raise (Init_type_err ("lhs type: " ^ string_of_datatype lhs.s_ptype ^ ", dimension: " ^ string_of_int (List.length lhs.s_dimension) ^ ", rhs type: " ^ string_of_datatype rhs.s_ptype ^ ", dimension: " ^ string_of_int (List.length rhs.s_dimension)))
 	| _ -> v_context
 
 let s_check_var_decl f_context v_context vdecl =
@@ -343,7 +345,7 @@ let s_check_var_decl f_context v_context vdecl =
 				s_vinit = (s_check_expr f_context v_context vdecl.vinit)
 			}
 		else
-			raise Init_type_err
+			raise (Init_type_err "hi")
 
 let rec s_check_stmt_list context_list stmt_list = match context_list, stmt_list with
      [], [] -> []
@@ -482,13 +484,16 @@ let func_decl_to_func_map map fdecl v_context =
 
 let check prog =
 	let s_gdecls = List.map (fun var_decl -> s_check_var_decl StringMap.empty StringMap.empty var_decl) prog.gdecls
-	and extern_funs =
-		(* TODO: add external functions to include *)
-		let map = StringMap.empty in
-		StringMap.add "print" [([{s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []});
-													 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []});
-													 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []});
-	                         ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map
+	and extern_funs = (
+			(* TODO: add external functions to include *)
+			let map = StringMap.empty in
+			let map = StringMap.add "print" [([{s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+														 					 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+														 					 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map
+		)
 		in {
 			s_gdecls = s_gdecls;
 			s_fdecls =

@@ -13,7 +13,7 @@
 %token <float> FLOAT_LIT
 %token <bool> BOOL_LIT
 %token <string> STR_LIT ID  /*VAR_TYPE PRIMITIVE_TYPE*/
-%token NONE
+%token NONE NEW
 %token EOF
 
 %nonassoc NOELSE
@@ -35,9 +35,6 @@
 %%
 
 /* Expressions */
-/* id */
-id:
-	ID 													{ $1 }
 
 /* str int float bool rec fld tbl str[] int[] float[] bool[] */
 datatype:
@@ -83,6 +80,12 @@ datatype:
 																	dimension = []
 																}
 															}
+| VOID {
+																{
+																	ptype = Void;
+																	dimension = []
+																}
+															}
 | datatype LBRACK expr_opt RBRACK {
 																{
 																	ptype = $1.ptype;
@@ -111,10 +114,10 @@ datatype:
 
 /* id[index_list], expr.id */
 lvalue:
-	id 													{ Var($1) }
-	| id LBRACK index_list RBRACK
+	ID 													{ Var($1) }
+	| ID LBRACK index_list RBRACK
 															{ Array($1, $3) }
-	| expr DOT id 							{ Access($1, $3) }
+	| expr DOT ID 							{ Access($1, $3) }
 
 index_list:
 	expr 									 			{ $1 }
@@ -163,10 +166,8 @@ expr:
 															{ CastTbl(type_of_string $3, type_of_string $5) } */
 	| literal 									{ $1 }
 	| tbl_lit 									{ Tbl($1) }
-	| fld_lit 									{ $1 }
-	| rec_lit 									{ $1 }
 
-	| id LPAREN actuals_opt RPAREN
+	| ID LPAREN actuals_opt RPAREN
 															{ FuncCall($1, $3) }
 
 literal:
@@ -174,15 +175,17 @@ literal:
 	| FLOAT_LIT 								{ FloatLit($1) }
 	| STR_LIT 									{ StringLit($1) }
 	| BOOL_LIT 									{ BoolLit($1) }
-	| LBRACK literal_list RBRACK { ArrayLit(List.rev $2) }
+	| fld_lit 									{ $1 }
+	| rec_lit 									{ $1 }
+	| LBRACK actuals_list RBRACK { ArrayLit(List.rev $2) }
 
-literal_list:
+/*literal_list:
 	literal 										{ [$1] }
-	| literal_list COMMA literal { $3 :: $1 }
+	| literal_list COMMA literal { $3 :: $1 }*/
 
 tbl_lit:
-	TBL LPAREN actuals_list RPAREN
-															{ List.rev $3 }
+	NEW TBL LPAREN actuals_list RPAREN
+															{ List.rev $4 }
 	/*| TBL LPAREN fld_lit_list RPAREN
 															{ List.rev $3 } */
 
@@ -191,7 +194,7 @@ tbl_lit:
 	| rec_lit 									{ [$1] } */
 
 rec_lit:
-	REC LBRACE rec_init RBRACE 			{ Rec(List.rev $3) }
+	NEW REC LPAREN rec_init RPAREN 			{ Rec(List.rev $4) }
 
 rec_init:
 	STR_LIT COLON literal 						{ [RecRef($1, $3)] }
@@ -203,8 +206,8 @@ rec_init:
 	| fld_lit 									{ [$1] }*/
 
 fld_lit:
-	FLD LPAREN expr COMMA STR_LIT RPAREN
-															{ Fld($3, $5) }
+	NEW FLD LPAREN expr COMMA STR_LIT RPAREN
+															{ Fld($4, $6) }
 
 actuals_opt:
 	/* nothing */ 							{ [] }
@@ -235,14 +238,14 @@ formals_opt:
 
 /* TODO: modify formal_list if doing in c++ */
 formal_list:
-	datatype id 								{[
+	datatype ID 								{[
 																{
 																	vname = $2;
 																	vtype = $1;
 																	vinit = Noexpr;
 																}]
 															}
-	| formal_list COMMA datatype id
+	| formal_list COMMA datatype ID
 															{ ({
 																	vname = $4;
 																	vtype = $3;
@@ -251,14 +254,14 @@ formal_list:
 															}
 
 vdecl:
-	datatype id SEMICOL 				{
+	datatype ID SEMICOL 				{
 																{
 																	vname = $2;
 																	vtype = $1;
 																	vinit = Noexpr;
 																}
 															}
-	| datatype id ASN expr SEMICOL
+	| datatype ID ASN expr SEMICOL
 															{
 																{
 																	vname = $2;
