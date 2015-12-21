@@ -37,7 +37,7 @@ type var = {
 and expr =
 	Var of string
 	| Array of string * expr
-	| Access of expr * string 
+	| Access of expr * string
 	| IntLit of int
 	| FloatLit of float
 	| StringLit of string
@@ -151,7 +151,7 @@ let rec string_of_datatype = function
 | Rec -> "rec"
 | Fld -> "fld"
 | Void -> "void"
-(* 
+(*
 let string_of_id = function
 	Id(id) -> "Id( " ^ id ^ " )"
  *)
@@ -174,18 +174,18 @@ let rec string_of_expr = function
 | RecRef(id, exp) -> "RecRef( " ^ id ^ ":" ^ string_of_expr exp ^ " )"
 | Fld(exp, lit) -> "Fld(" ^ string_of_expr exp ^ ", '" ^ lit ^ "' )"
 | Noexpr -> "Noexpr"
-| None -> "NULL"
+| None -> "None"
 | Var(lit) -> "Var( " ^ lit ^ " )"
 | Array(id, index) -> "Array( " ^ id ^ "[" ^ string_of_expr index ^ "] ) "
 | Access(exp, id) -> "Access( " ^ string_of_expr exp ^ " " ^ id ^ " )"
 
-and string_of_vtype v = 
+and string_of_vtype v =
 let dimension = v.dimension in
 	match dimension with
 	[] -> string_of_datatype v.ptype
 	| _ -> string_of_datatype v.ptype ^ "[" ^ string_of_int (List.length v.dimension) ^ "]"
 
-let string_of_decl vdecl = 
+let string_of_decl vdecl =
 	let init = vdecl.vinit in
 	match init with
 	Noexpr ->

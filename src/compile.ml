@@ -69,13 +69,13 @@ and string_of_expr = function
 | AssignOp(lvalue, asnop, exp) -> "(" ^ string_of_expr lvalue ^ " " ^ string_of_asnop asnop ^ " " ^ string_of_expr exp ^ ")"
 | Cast(datatype, exp) -> "((" ^ string_of_datatype datatype.ptype ^ ")" ^ string_of_expr exp ^ ")"
 | FuncCall(id, exps) -> string_of_func_call id exps
-| Tbl(exps) -> "Tbl(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
-| Rec(exps) -> "Rec(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
-| RecRef(id, exp) -> "RecRef(" ^ id ^ ", " ^ string_of_expr exp ^ ")"
-| Fld(exp, lit) -> "Fld(" ^ string_of_expr exp ^ ", \"" ^ lit ^ "\")"
+| Tbl(exps) -> "tbl(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
+| Rec(exps) -> "rec(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
+| RecRef(id, exp) -> "tuple(" ^ string_of_expr exp ^ ", " ^ id ^ ")"
+| Fld(exps, lit) -> "fld([" ^ String.concat ", " (List.map string_of_expr exps) ^ "], \"" ^ lit ^ "\")"
 | Lval(lvalue) -> string_of_expr lvalue
 | Noexpr -> ""
-| None -> "null"
+| None -> "NULL"
 | Var(exp) -> exp
 | Array(exp1, exp2) -> string_of_array exp1 exp2
 | Access(exp1, exp2) -> "(" ^ string_of_expr exp1 ^ "." ^ exp2 ^ ")"

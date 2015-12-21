@@ -21,7 +21,7 @@ public:
     int content_int;
     double content_double;
     string content_string;
-	tuple(int initial,string str) {
+    tuple(int initial,string str) {
         type = 0;
         content_int = initial;
         name = str;
@@ -40,8 +40,8 @@ public:
 
 class rec {
 public:
-	int length;
-	vector< tuple > r;
+    int length;
+    vector< tuple > r;
     rec(tuple *array, int len) {
         length = len;
         for (int i=0; i<length; i++)
@@ -83,7 +83,7 @@ public:
 
 class tbl {
 public:
-	int row_length;
+    int row_length;
     int col_length;
     vector<fld> t;
     tbl(fld *array, int col_len, int row_len) {
@@ -467,14 +467,14 @@ ostream & operator << (ostream & sys, const tuple &in) {
 }
 
 ostream & operator << (ostream &sys, const rec &in) {
-	for (int i=0; i<in.length; i++) {
-		sys << in.r[i].name;
-		if (i<in.length-1) {
-		    sys << "\t";
-		}
-	} 
-	sys << endl << "[";
-	for (int i=0; i<in.length; i++) {
+    for (int i=0; i<in.length; i++) {
+        sys << in.r[i].name;
+        if (i<in.length-1) {
+            sys << "\t";
+        }
+    } 
+    sys << endl << "[";
+    for (int i=0; i<in.length; i++) {
         if (in.r[i].type == 0) {
             sys << in.r[i].content_int;
         } else if (in.r[i].type == 1) {
@@ -482,19 +482,19 @@ ostream & operator << (ostream &sys, const rec &in) {
         } else if (in.r[i].type == 2) {
             sys << in.r[i].content_string;
         }
-		if (i<in.length-1) {
-			sys << ",\t";
-		}
-	}
-	sys << "]" << endl;
-	return sys;
+        if (i<in.length-1) {
+            sys << ",\t";
+        }
+    }
+    sys << "]" << endl;
+    return sys;
 }
 
 ostream & operator << (ostream &sys, const fld &in) {
-	sys << in.name << endl;
+    sys << in.name << endl;
     if ( in.type == 0 ) {
-	    for (int i=0; i<in.length; i++)
-		    sys << in.f_int[i] << endl;
+        for (int i=0; i<in.length; i++)
+            sys << in.f_int[i] << endl;
     } else if ( in.type == 1 ) {
         for (int i=0; i<in.length; i++)
             sys << in.f_double[i] << endl;
@@ -502,19 +502,19 @@ ostream & operator << (ostream &sys, const fld &in) {
         for (int i=0; i<in.length; i++)
             sys << in.f_string[i] << endl; 
     }
-	return sys;
+    return sys;
 }
 
 ostream & operator << (ostream &sys, const tbl &in) {
     for (int i=0; i<in.row_length; i++) {
         if (i<in.row_length-1) {
-		    sys << in.t[i].name << "\t";
-		} else {
+            sys << in.t[i].name << "\t";
+        } else {
             sys << in.t[i].name << endl;
         }
     }
     for (int i=0; i<in.col_length; i++) {
-    	sys << "[";
+        sys << "[";
         for (int j=0; j<in.row_length; j++) {
             if ( in.t[j].type == 0 ) {
                 sys << in.t[j].f_int[i];
@@ -533,7 +533,7 @@ ostream & operator << (ostream &sys, const tbl &in) {
                 }
             }
         }
-    	sys << "]" << endl;
+        sys << "]" << endl;
     }
     return sys;
 }
