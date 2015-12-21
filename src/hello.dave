@@ -23,13 +23,10 @@ int main() {
 
 	int a = none;
 
-<<<<<<< HEAD
-	fld fldvar = fld([1,2,3],"age");
 
 
 
-=======
->>>>>>> 2d1edc14453cecaeaf16f43799c674da20733f1d
+
 	return 0;
 }
 
