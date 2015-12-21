@@ -69,33 +69,27 @@ void tbl_write(tbl &in, string filename) {
     ofstream out;
     out.open(filename);
     for (int i=0; i<in.row_length; i++) {
-        if (i<in.row_length-1) {
-            out << in.t[i].name << "\t";
-        } else {
-            out << in.t[i].name << endl;
-        }
+        out << in.t[i].name << "\t";
     }
+    out << ";" << endl;
     for (int i=0; i<in.col_length; i++) {
-        out << "[";
         for (int j=0; j<in.row_length; j++) {
             if ( in.t[j].type == 0 ) {
                 out << in.t[j].f_int[i];
-                if (j < in.row_length-1) {
-                    out << ",\t";
-                }
             } else if ( in.t[j].type == 1 ) {
                 out << in.t[j].f_double[i];
-                if (j < in.row_length-1) {
-                    out << ",\t";
-                }
             } else if ( in.t[j].type == 2 ) {
                 out << in.t[j].f_string[i];
-                if (j < in.row_length-1) {
-                    out << ",\t";
+            } else if ( in.t[j].type == 3 ) {
+                if (in.t[j].f_bool[i] == 0) {
+                    out << "false";
+                } else {
+                    out << "true";
                 }
             }
+            out << "\t";
         }
-        out << "]" << endl;
+        out << ";" << endl;
     }
     out.close();
 }
