@@ -1,0 +1,11 @@
+int min(fld a) {
+	bool first = true;
+	int min;
+	/*for (int i = 0; i < a.length; i++) {
+		int current = a.get(i);
+		if (first == true || min > current) {
+			min = current;
+		}
+	} */
+	return min;
+}

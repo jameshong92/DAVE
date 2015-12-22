@@ -78,12 +78,12 @@ and string_of_expr = function
 and string_of_array id exp2 = match exp2 with
   | Range(id1, id2) -> 
     if string_of_expr id2 = "0" then
-      "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ id ^ ".size())"
+      "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", getArrayLen(" ^ id ^ "))"
     else
       "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
   | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
 
-and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
+and string_of_func_call id exps = "_" ^ id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 
 and string_of_vtype v =
   let dimension = v.s_dimension in
@@ -108,20 +108,31 @@ let string_of_decl vdecl =
           )
         | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
       )
-    | Rec(exprs) -> "tuple _" ^ vdecl.s_vname ^ "[] = {" ^ (String.concat ", " (List.map string_of_expr exprs)) ^ "};\n" ^ (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = rec(_" ^ vdecl.s_vname ^ ", getArrayLen(_" ^ vdecl.s_vname ^ "))"
+    | Rec(exprs) -> "tuple _" ^ vdecl.s_vname ^ "[] = {" ^ (String.concat ", " (List.map string_of_expr exprs)) ^ "};\n" ^ 
+                    (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = rec(_" ^ vdecl.s_vname ^ ", getArrayLen(_" ^ vdecl.s_vname ^ "))"
     | Fld(expr, id) -> 
       (match expr with
         ArrayLit(array_expr) -> (match array_expr with
-          _ -> "vector<" ^ (match (List.hd array_expr) with StringLit(_) -> "string" | BoolLit(_) -> "bool" | FloatLit(_) -> "double" | _ -> "int") ^ "> _" ^ vdecl.s_vname ^ " = " ^ string_of_expr expr ^ ";\n" ^ "fld " ^ vdecl.s_vname ^ " = fld(_" ^ vdecl.s_vname ^ ",\"" ^ id ^ "\", getArrayLen(_" ^ vdecl.s_vname ^"))"
+          _ ->  let array_type = (match (List.hd array_expr) with StringLit(_) -> "string" | BoolLit(_) -> "bool" | FloatLit(_) -> "double" | _ -> "int") in
+                array_type ^ " __" ^ vdecl.s_vname ^ "[] = " ^ string_of_expr expr ^ ";\n" ^
+                "vector<" ^ array_type ^ "> _" ^ vdecl.s_vname ^ " = to_vector(__" ^ vdecl.s_vname ^ ", getArrayLen(__" ^ vdecl.s_vname ^ "));\n" ^ 
+                "fld " ^ vdecl.s_vname ^ " = fld(&_" ^ vdecl.s_vname ^ "[0],\"" ^ id ^ "\", _" ^ vdecl.s_vname ^".size())"
         )
-        | _ -> "fld " ^ vdecl.s_vname ^ " = fld(" ^ string_of_expr expr ^ ", \"" ^ id ^ "\", getArrayLen(" ^ string_of_expr expr ^"))"
+        | _ -> "fld " ^ vdecl.s_vname ^ " = fld(&" ^ string_of_expr expr ^ "[0], \"" ^ id ^ "\", " ^ string_of_expr expr ^".size())"
       )
     | Tbl(exprs) ->
       if List.length exprs > 1 then
-        "vector<" ^ (match (List.hd exprs) with Fld(_,_) -> "fld" | _ -> "rec") ^ "> _" ^ vdecl.s_vname ^ "(" ^ string_of_int (List.length exprs) ^ ") = {" ^ String.concat ", " (List.map (fun x -> string_of_expr x) exprs) ^ "};\n" ^ "tbl " ^ vdecl.s_vname ^ " = tbl(_" ^ vdecl.s_vname ^ ", _" ^ vdecl.s_vname ^ "[0].length, getArrayLen(_" ^ vdecl.s_vname ^"))"
+        let tbl_elem_type = (match (List.hd exprs) with Fld(_,_) -> "fld" | _ -> "rec") in
+          tbl_elem_type ^ " __" ^ vdecl.s_vname ^ "[] = {" ^ String.concat ", " (List.map (fun x -> string_of_expr x) exprs) ^ "};\n" ^
+          "vector<" ^ tbl_elem_type ^ "> _" ^ vdecl.s_vname ^ " = to_vector(__" ^ vdecl.s_vname ^ ", getArrayLen(__" ^ vdecl.s_vname ^ "));\n" ^ 
+          "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ "[0].length, " ^ vdecl.s_vname ^".size())"
       else
         let tbl_element = string_of_expr (List.hd exprs) in
-          "tbl " ^ vdecl.s_vname ^ " = tbl(" ^ tbl_element ^ ", " ^ tbl_element ^ "[0].length, getArrayLen(" ^ tbl_element ^ ")"
+          "tbl " ^ vdecl.s_vname ^ " = tbl(&" ^ tbl_element ^ "[0], " ^ tbl_element ^ "[0].length, " ^ tbl_element ^ ".size())"
+    | ArrayLit(exprs) ->
+      let array_type = (match vdecl.s_vinit.typ.s_ptype with Rec -> "rec" | Fld -> "fld" | String -> "string" | Bool -> "bool" | Float -> "double" | _ -> "int") in
+        array_type ^ " _" ^ vdecl.s_vname ^ "[] = {" ^ (String.concat ", " (List.map string_of_expr exprs)) ^ "};\n" ^
+        "vector<" ^ array_type ^ "> " ^ vdecl.s_vname ^ " = to_vector(_" ^ vdecl.s_vname ^ ", getArrayLen(_" ^ vdecl.s_vname ^ "))"
     | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
 
 let rec gen_stmt = function
@@ -139,18 +150,20 @@ let rec gen_stmt = function
 | S_EmptyStmt -> ";"
 
 let string_of_func_decl funcdecl =
-  string_of_vtype funcdecl.s_return_type ^ " "
+  string_of_vtype funcdecl.s_return_type ^ " _"
   ^ funcdecl.s_fname ^ "("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.s_formals))
   ^ ") {\n"
   ^ gen_stmt funcdecl.s_body ^ "\n}"
 
 let string_of_program prg =
-  "#include \"dave.h\"\n#include \"dave.hpp\"\nusing namespace std;\n"
-  ^ (String.concat "\n" (List.map string_of_decl prg.s_gdecls)) ^ "\n"
+  (String.concat "\n" (List.map string_of_decl prg.s_gdecls)) ^ "\n"
   ^ (String.concat "\n" (List.map string_of_func_decl prg.s_fdecls)) ^ "\n"
 
 let compile oc prg =
   let out_file = open_out oc in
-  fprintf out_file "%s" (string_of_program prg);
+  fprintf out_file "#include \"dave.h\"\n";
+  fprintf out_file "%s" (string_of_program (List.hd prg));
+  fprintf out_file "%s" (string_of_program (List.nth prg 1));
+  fprintf out_file "int main() {\n  return _main();\n}";
   close_out out_file

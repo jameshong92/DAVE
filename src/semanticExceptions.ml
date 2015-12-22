@@ -23,3 +23,4 @@ exception Fld_err
 exception Rec_err
 exception Tbl_err of string
 exception Rec_ref_err
+exception Compile_err of string

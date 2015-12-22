@@ -488,7 +488,7 @@ let func_decl_to_func_map map fdecl v_context =
 			(* if function name is not in the map, add new map with list of functions for that fname *)
 			StringMap.add fdecl.fname [(func_s_vtype_list, s_check_var_type StringMap.empty v_context fdecl.return_type)] map
 
-let check prog =
+let check prog check_option =
 	let s_gdecls = List.map (fun var_decl -> s_check_var_decl StringMap.empty StringMap.empty var_decl) prog.gdecls
 	and extern_funs = (
 			(* TODO: add external functions to include *)
@@ -498,14 +498,24 @@ let check prog =
 														 					 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 		                         					 ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
-		  StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map
+		  let map = StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+		  (* add dave library functions *)
+		  if check_option = "import" then 
+		  	map 
+		  else
+		  	let map = StringMap.add "min" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+				let map = StringMap.add "max" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			  StringMap.add "mean" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																	([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map
 		)
 		in {
 			s_gdecls = s_gdecls;
 			s_fdecls =
 				let v_context = List.fold_left s_var_decl_to_var_map StringMap.empty s_gdecls in
 				let f_context = List.fold_left (fun ext_func_map func_decl -> func_decl_to_func_map ext_func_map func_decl v_context) extern_funs prog.fdecls in
-					if StringMap.mem "main" f_context then
+					if (StringMap.mem "main" f_context) || check_option = "import" then
 						s_check_func_decls f_context v_context prog.fdecls
 					else
 					(* main has to be defined in the function *)

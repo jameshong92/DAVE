@@ -2,35 +2,35 @@
 
 #include "dave.hpp"
 
-void print(int n) {
+void _print(int n) {
 	cout << n << endl;
 }
 
-void print(double d) {
+void _print(double d) {
 	cout << d << endl;
 }
 
-void print(string str) {
+void _print(string str) {
 	cout << str << endl;
 }
 
-void print(const char *str) {
+void _print(const char *str) {
 	cout << str << endl;
 }
 
-void print(bool b) {
+void _print(bool b) {
 	cout << (b ? "true" : "false") << endl;
 }
 
-void print(rec r) {
+void _print(rec r) {
 	cout << r << endl;
 }
 
-void print(fld f) {
+void _print(fld f) {
 	cout << f << endl;
 }
 
-void print(tbl t) {
+void _print(tbl t) {
 	cout << t << endl;
 }
 

@@ -12,7 +12,7 @@
 %token <int> INT_LIT
 %token <float> FLOAT_LIT
 %token <bool> BOOL_LIT
-%token <string> STR_LIT ID  /*VAR_TYPE PRIMITIVE_TYPE*/
+%token <string> STR_LIT ID
 %token NONE
 %token EOF
 
@@ -80,37 +80,19 @@ datatype:
 																	dimension = []
 																}
 															}
-| VOID {
+| VOID 												{
 																{
 																	ptype = Void;
 																	dimension = []
 																}
 															}
-| datatype LBRACK expr_opt RBRACK {
+| datatype LBRACK expr_opt RBRACK 
+															{
 																{
 																	ptype = $1.ptype;
 																	dimension = [(if $3 == Noexpr then IntLit(0) else $3)]
 																}
 															}
-/*	PRIMITIVE_TYPE							{
-																{
-																	ptype = type_of_string $1;
-																	dimension = []
-																}
-															}
-	| VAR_TYPE									{
-																{
-																	ptype = type_of_string $1;
-																	dimension = []
-																}
-															}
-	| PRIMITIVE_TYPE LBRACK expr_opt RBRACK
-															{
-																{
-																	ptype = type_of_string $1;
-																	dimension = [(if $3 == Noexpr then IntLit(0) else $3)];
-																}
-															} */
 
 /* id[index_list], expr.id */
 lvalue:
@@ -179,31 +161,18 @@ literal:
 	| rec_lit 									{ $1 }
 	| LBRACK actuals_list RBRACK { ArrayLit(List.rev $2) }
 
-/*literal_list:
-	literal 										{ [$1] }
-	| literal_list COMMA literal { $3 :: $1 }*/
-
 tbl_lit:
 	NEW TBL LPAREN actuals_list RPAREN
 															{ List.rev $4 }
-	/*| TBL LPAREN fld_lit_list RPAREN
-															{ List.rev $3 } */
-
-/*rec_lit_list:
-	rec_lit_list COMMA rec_lit 	{ $3 :: $1 }
-	| rec_lit 									{ [$1] } */
 
 rec_lit:
-	NEW REC LPAREN rec_init RPAREN 			{ Rec(List.rev $4) }
+	NEW REC LPAREN rec_init RPAREN 
+															{ Rec(List.rev $4) }
 
 rec_init:
 	ID COLON literal 						{ [RecRef($1, $3)] }
 	| rec_init COMMA ID COLON literal
 															{ RecRef($3, $5) :: $1 }
-
-/*ffld_lit_list:
-	fld_lit_list COMMA fld_lit 	{ $3 :: $1 }
-	| fld_lit 									{ [$1] }*/
 
 fld_lit:
 	NEW FLD LPAREN expr COMMA STR_LIT RPAREN
@@ -225,18 +194,19 @@ program:
 
 fdecl:
 	datatype ID LPAREN formals_opt RPAREN LBRACE stmt_list RBRACE
-															{ {
+															{ 
+																{
 																	fname = $2;
 																	formals = $4;
 																	body = Block(List.rev $7);
 																	return_type = $1
-															} }
+																} 
+															}
 
 formals_opt:
 	/* nothing */ 							{ [] }
 	| formal_list 							{ List.rev $1 }
 
-/* TODO: modify formal_list if doing in c++ */
 formal_list:
 	datatype ID 								{[
 																{
@@ -269,11 +239,6 @@ vdecl:
 																	vinit = $4;
 																}
 															}
-/*	datatype id SEMICOL 				{ VarDecl({vtype=$1; vname=$2}) }
-	| datatype id ASN expr SEMICOL
-															{ AssignDecl({vtype=$1; vname=$2}, $4) }
-	| PRIMITIVE_TYPE LBRACK expr RBRACK id SEMICOL
-															{ ArrayDecl(type_of_string $1, $3, $5) } */
 
 expr_opt:
 	/* nothing */ 							{ Noexpr }
