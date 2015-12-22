@@ -12,6 +12,6 @@ int main() {
     rec[] r7 = [r4,r5,r6];
     tbl test2 = new tbl(r7);
     print(test2);
-    test = plus(test, test2);
+    test = tbl_plus(test, test2);
     print(test);
 }

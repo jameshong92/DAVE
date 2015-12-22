@@ -5,5 +5,5 @@ int main() {
     path = "new.txt";
     save(test, path);
     tbl test2 = load(path);
-    pritn(test2);
+    println(test2);
 }

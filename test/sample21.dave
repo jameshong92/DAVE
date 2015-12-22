@@ -6,8 +6,8 @@ int main() {
     rec[] r = [r1, r2, r3];
     tbl test = new tbl(r);
     print(test);
-    tbl mod1 = modify(test, 1, 2, "Cesc");
+    tbl mod1 = modify(test, 0, 1, "Cesc");
     print(mod1);
-    tbl mod2 = modify(mod1, 2, 3, 3.91);
+    tbl mod2 = modify(mod1, 1, 2, 3.91);
     print(mod2);
 }

@@ -110,7 +110,7 @@ public:
 	int row_length;
     int col_length;
     vector<fld> t;
-    tbl(fld *array, int col_len, int row_len) {
+    tbl(fld *array, int row_len, int col_len) {
         col_length = col_len;
         row_length = row_len;
         for (int i=0; i<row_len; i++) {
@@ -681,7 +681,7 @@ ostream & operator << (ostream &sys, const rec &in) {
 	for (int i=0; i<in.length; i++) {
 		sys << in.r[i].name << "\t";
 	} 
-    sys << ";" << endl;
+    sys << endl;
 	for (int i=0; i<in.length; i++) {
         if (in.r[i].type == 0) {
             sys << in.r[i].content_int;

@@ -1,6 +1,6 @@
 // test table definition2
 int main() {
-  rec r1 = new rec(age: 22, name:"Yang", GPA:3.50); 
+  rec r1 = new rec(age:22, name:"Yang", GPA:3.50); 
   rec r2 = new rec(age:23, name:"James", GPA:3.88);
   rec r3 = new rec(age:24, name:"Min Woo", GPA:3.80);
   rec[] r4 = [r1, r2, r3];
