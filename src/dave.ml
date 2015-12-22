@@ -29,5 +29,6 @@ let _ =
 	| Compile ->
 			let import = (SemanticAnalysis.check (List.hd programs) "import") in
 			let checked_program = import :: [SemanticAnalysis.check (List.nth programs 1) ""] in
-			Compile.compile "dave.cc" checked_program
+			Compile.compile "dave.cc" checked_program;
+			ignore (Sys.command "g++ -w dave.cc -Isrc")
 	| _ -> print_string "Usage: dave <compile_option> < <input_file>\n"

@@ -2,12 +2,12 @@
 int main() {
     str s = "dave";
     print(s);
-    str s = "dave\n";
+    s = "dave\n";
     print(s);
-    str s = "dave\t";
+    s = "dave\t";
     print(s);
-    str s = "dave\\";
+    s = "dave\\";
     print(s);
-    str s = "dave\"";
+    s = "dave\"";
     print(s);
 }

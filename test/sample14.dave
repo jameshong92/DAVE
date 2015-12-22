@@ -1,14 +1,13 @@
 // test function defintion
-
-int sum(int a, int b) {
-	int c = a + b;
-	double d = int(a - b);
-	return c;
-}
-
 int main() {
 	int a = 5;
 	int b = 10;
-    int c = sum(a+b);
-    print(c);
+  int c = sum(a, b);
+  print(c);
+}
+
+int sum(int a, int b) {
+	int c = a + b;
+	float d = int(a - b);
+	return c;
 }

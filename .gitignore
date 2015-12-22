@@ -8,3 +8,4 @@ src/a.out
 src/dave.cc
 *.depend
 *.depend.input
+*.out

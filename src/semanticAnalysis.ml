@@ -166,7 +166,7 @@ and type_of_fld expr id f_context v_context =
 and type_of_rec exprs f_context v_context =
   let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
     if List.length (List.filter (fun a -> (match a.exp with RecRef(_,_) -> true | _ -> false)) rec_ref_list) == (List.length exprs) then
-					{ s_ptype = Rec; s_dimension = (List.map (fun x -> s_check_expr f_context v_context x) exprs)}
+					{ s_ptype = Rec; s_dimension = []}
 			else
 				raise Rec_err
 
@@ -224,6 +224,7 @@ and type_of_access exp id f_context v_context = (
 				raise Access_err
 		| Tbl -> if id = "row_length" || id = "col_length" then {s_ptype = Int; s_dimension = []} else raise Access_err
 		| Rec -> if id = "length" then {s_ptype = Int; s_dimension = []} else raise Access_err
+		| Int | Bool | Float | String -> if (List.length exp_type.s_dimension) == 1 then {s_ptype = Int; s_dimension = []} else raise Access_err
 		| _ -> raise Access_err
 )
 
