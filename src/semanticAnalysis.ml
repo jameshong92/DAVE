@@ -271,13 +271,19 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 	| Cast(var, exp) -> (* TODO: check cast *)
 		{exp = Cast(var, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
 	| Array(id, indices) -> s_check_array f_context v_context in_exp id indices
-	| Access(exp, id) -> { exp = Access((s_check_expr f_context v_context exp).exp, id); typ = type_of_expr f_context v_context in_exp }
+	| Access(exp, id) -> s_check_access f_context v_context in_exp exp id
 	| FuncCall(id, exprs) -> {exp = FuncCall(id, List.map (fun a -> (s_check_expr f_context v_context a).exp) exprs); typ = (type_of_expr f_context v_context in_exp)}
 	| Tbl(exprs) -> s_check_tbl f_context v_context in_exp exprs
 	| Rec(exprs) -> s_check_rec f_context v_context in_exp exprs
 	| Fld(expr, id) -> s_check_fld f_context v_context in_exp expr id
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
 
+and s_check_access f_context v_context in_exp expr id =
+	let exp_type = type_of_expr f_context v_context expr in (
+		match exp_type.s_ptype with
+			Int | String | Bool | Float -> { exp = Access((s_check_expr f_context v_context expr).exp, "size()"); typ = type_of_expr f_context v_context in_exp }
+			| _ -> { exp = Access((s_check_expr f_context v_context expr).exp, id); typ = type_of_expr f_context v_context in_exp }
+		)
 and s_check_tbl f_context v_context in_exp exprs =
   let tbl_exprs = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
 	  if List.length (List.filter (fun a -> (match a.exp with Lval(_) -> true | _ -> raise (Tbl_err (string_of_expr a.exp)))) tbl_exprs) == (List.length exprs) then
@@ -510,10 +516,10 @@ let check prog check_option =
 		                         					 ([{s_ptype = Rec; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 		                         					 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 		                         					 ([{s_ptype = Tbl; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
-			let map = StringMap.add "get" 	[([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []});
-														 					 ([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []});
-														 					 ([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []});
-		                         					 ([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
+			let map = StringMap.add "getInt" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []})] map in
+			let map = StringMap.add "getString" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []})] map in
+			let map = StringMap.add "getFloat" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			let map = StringMap.add "getBool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
 		  (* add dave library functions *)

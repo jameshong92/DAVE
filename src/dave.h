@@ -34,19 +34,20 @@ void _print(tbl t) {
 	cout << t << endl;
 }
 
-int _get(fld a, int index) {
+int _getInt(fld a, int index) {
+	_print(a.f_int[index]);
 	return a.f_int[index];
 }
 
-double _get(fld a, int index) {
+double _getFloat(fld a, int index) {
 	return a.f_double[index];
 }
 
-string _get(fld a, int index) {
+string _getString(fld a, int index) {
 	return a.f_string[index];
 }
 
-bool _get(fld a, int index) {
+bool _getBool(fld a, int index) {
 	return a.f_bool[index];
 }
 
