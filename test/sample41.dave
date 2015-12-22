@@ -1,0 +1,5 @@
+# test syntactic analysis
+int main() {
+    int _asd = "string";
+    print(_asd);
+}

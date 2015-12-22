@@ -1,5 +1,7 @@
-# test syntactic analysis
+// test fld type conversion
 int main() {
-    double _asd = "string";
-    print(_asd);
+	str path = "test.txt";
+    tbl test = load(path);
+    test = converse(test, 0, "double");
+    print(test);
 }

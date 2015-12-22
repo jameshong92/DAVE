@@ -1,9 +1,14 @@
-// test tuple defintion
-#include <dave.hpp>
+// test function defintion
+
+int sum(int a, int b) {
+	int c = a + b;
+	double d = int(a - b);
+	return c;
+}
+
 int main() {
-	tuple a = tuple(22, "age");
-	tuple b = tuple(3.8, "score");
-	tuple c = tuple("unknown", "name");	print(a);
-	print(b);
-	print(c);
+	int a = 5;
+	int b = 10;
+    int c = sum(a+b);
+    print(c);
 }

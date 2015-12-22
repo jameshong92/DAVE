@@ -1,14 +1,14 @@
-eng	num
-a	1
-b	2
-c	3
-d	4
-e	5
+eng	num	
+a	1	
+b	2	
+c	3	
+d	4	
+e	5	
 
-eng	num	rev
-a	1	z
-b	2	y
-c	3	x
-d	4	w
-e	5	v
+eng	num	rev	
+a	1	z	
+b	2	y	
+c	3	x	
+d	4	w	
+e	5	v	
 

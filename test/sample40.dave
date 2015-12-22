@@ -1,0 +1,5 @@
+＃ test lexical analysis
+int main() {
+	int #abc = 78;
+	print(#abc);
+}

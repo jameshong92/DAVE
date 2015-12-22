@@ -1,1 +1,13 @@
 // test data conversion
+int main() {
+    int a = 83;
+    double b = int(a);
+    print(b);
+    b = 63.23;
+    a = int(b+1.5);
+    print (a);
+    string c = "new";
+    bool e = bool(c);
+    print(c);
+    print(bool(""));
+}

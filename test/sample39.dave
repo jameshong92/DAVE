@@ -1,0 +1,16 @@
+// test tbl converse and plus
+int main() {
+    rec r1 = new rec(name:"Yang", score:"94"); 
+    rec r2 = new rec(name:"James", score:"95");
+    rec r3 = new rec(name:"Micheal", score:"98");
+    tbl test = tbl([r1, r2, r3]);
+    print(test);
+    test = converse(test, 1, "int");
+    rec r4 = new rec(name:"Yang", score:72); 
+    rec r5 = new rec(name:"James", score:90);
+    rec r6 = new rec(name:"Micheal", score:88);
+    tbl test2 = tbl([r4, r5, r6]);
+    print(test2);
+    test = plus(test, test2);
+    print(test);
+}
