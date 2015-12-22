@@ -35,7 +35,7 @@ void print(tbl t) {
 }
 
 int get_int(fld a, int index) {
-	_print(a.f_int[index]);
+	print(a.f_int[index]);
 	return a.f_int[index];
 }
 

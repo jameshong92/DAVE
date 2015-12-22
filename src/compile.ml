@@ -82,12 +82,12 @@ and string_of_expr = function
 and string_of_array id exp2 = match exp2 with
   | Range(id1, id2) -> 
     if string_of_expr id2 = "0" then
-      "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", getArrayLen(" ^ id ^ "))"
+      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", getArrayLen(" ^ id ^ "))"
     else
-      "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
   | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
 
-and string_of_func_call id exps = "_" ^ id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
+and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 
 and string_of_vtype v =
   let dimension = v.s_dimension in

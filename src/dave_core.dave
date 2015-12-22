@@ -1,26 +1,30 @@
 int min(fld a) {
 	int min;
 	int i;
-	int current = getInt(a, 0);
-	for (i = 1; i < (a.length); i++) {
-		if (getInt(a, min) > current) {
+	int length = a.length;
+	int current = get_int(a, 0);
+	for (i = 1; i < length; i++) {
+		if (get_int(a, i) > current) {
 			min = current;
 		}
 	}
 	return min;
 }
 
-/*int min(fld a) {
-	bool first = true;
-	int min;
+int max(fld a) {
+	int max;
+	int current = get_int(a, 0);
+	int length = a.length;
 	int i;
-	for (i = 0; i < 5; i++) {
-		if (first == true || min > current) {
-			min = current;
+	for (i = 1; i < length; i++) {
+		if (get_int(a, i) < current) {
+			max = current;
 		}
 	}
-	return min;
+	return max;
 }
+
+/*
 
 int max(fld a) {
 	bool first = true;
