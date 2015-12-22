@@ -160,7 +160,7 @@ and type_of_fld expr id f_context v_context =
 		match first_lit.s_ptype with
 			Int | String | Bool | Float -> 
 				if (List.length first_lit.s_dimension) > 0 then
-					{ s_ptype = Fld; s_dimension = first_lit.s_dimension }
+					{ s_ptype = Fld; s_dimension = [] }
 				else raise Fld_err
 			| _ -> raise Fld_err
 
@@ -263,10 +263,10 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 		{exp = Cast(var, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
 	| Array(id, indices) -> s_check_array f_context v_context in_exp id indices
 	| Access(exp, id) -> { exp = Access((s_check_expr f_context v_context exp).exp, id); typ = type_of_expr f_context v_context in_exp }
-	(* TODO: implement missing functions for tbl rec fld *)
 	| FuncCall(id, exprs) -> {exp = FuncCall(id, List.map (fun a -> (s_check_expr f_context v_context a).exp) exprs); typ = (type_of_expr f_context v_context in_exp)}
 	| Tbl(exprs) -> s_check_tbl f_context v_context in_exp exprs
 	| Rec(exprs) -> s_check_rec f_context v_context in_exp exprs
+	| Fld(expr, id) -> s_check_fld f_context v_context in_exp expr id
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
 
 and s_check_tbl f_context v_context in_exp exprs =
@@ -283,7 +283,12 @@ and s_check_rec_ref f_context v_context in_exp id expr =
 	{ exp = RecRef(id, (s_check_expr f_context v_context expr).exp); typ = type_of_expr f_context v_context in_exp }
 
 and s_check_fld f_context v_context in_exp expr id =
-	raise Not_implemented_err
+	let exp_type = type_of_expr f_context v_context expr in
+		if List.length exp_type.s_dimension > 0 then
+			{ exp = Fld((s_check_expr f_context v_context expr).exp, id); typ = type_of_expr f_context v_context in_exp }
+
+		else
+			raise Fld_err
 
 and s_check_array f_context v_context in_exp id indices =
 	let index_type = type_of_expr f_context v_context indices and
@@ -293,8 +298,7 @@ and s_check_array f_context v_context in_exp id indices =
 		else
 			match index_expr.exp with
 				Range(exp1, exp2) ->
-					let typ = fst (StringMap.find id v_context) and
-							type1 = type_of_expr f_context v_context exp1 and
+					let type1 = type_of_expr f_context v_context exp1 and
 							type2 = type_of_expr f_context v_context exp2 in
 						if type1.s_ptype == Int && type2.s_ptype == Int then
 							{exp = Array(id, index_expr.exp); typ = type_of_expr f_context v_context in_exp}
@@ -302,7 +306,7 @@ and s_check_array f_context v_context in_exp id indices =
 							let start_range = {exp = Range(IntLit(0), (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp } in
 								{exp = Array(id, start_range.exp); typ = type_of_expr f_context v_context in_exp}
 						else if type1.s_ptype == Int && type2.s_ptype == Void then
-							let end_range = {exp = Range((s_check_expr f_context v_context exp1).exp, (List.hd (typ.s_dimension)).exp); typ = type_of_expr f_context v_context in_exp } in
+							let end_range = {exp = Range((s_check_expr f_context v_context exp1).exp, IntLit(0)); typ = type_of_expr f_context v_context in_exp } in
 								{exp = Array(id, end_range.exp); typ = type_of_expr f_context v_context in_exp}
 						else raise Arr_err
 				| _ -> raise Arr_err

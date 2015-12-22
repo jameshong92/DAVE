@@ -81,7 +81,11 @@ and string_of_expr = function
 | Access(exp1, exp2) -> "(" ^ string_of_expr exp1 ^ "." ^ exp2 ^ ")"
 
 and string_of_array id exp2 = match exp2 with
-  | Range(id1, id2) -> "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+  | Range(id1, id2) -> 
+    if string_of_expr id2 = "0" then
+      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ id ^ ".size())"
+    else
+      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
   | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
 
 and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
@@ -117,6 +121,13 @@ let string_of_decl vdecl =
         | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
       )
     | Rec(exprs) -> "tuple _" ^ vdecl.s_vname ^ "[] = {" ^ (String.concat ", " (List.map string_of_expr exprs)) ^ "};\n" ^ (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = rec(_" ^ vdecl.s_vname ^ ", getArrayLen(_" ^ vdecl.s_vname ^ "))"
+    | Fld(expr, id) -> 
+      (match expr with
+        ArrayLit(array_expr) -> (match array_expr with
+          _ -> "vector<" ^ (match (List.hd array_expr) with StringLit(_) -> "string" | BoolLit(_) -> "bool" | FloatLit(_) -> "double" | _ -> "int") ^ "> _" ^ vdecl.s_vname ^ " = " ^ string_of_expr expr ^ ";\n" ^ "fld " ^ vdecl.s_vname ^ " = fld(_" ^ vdecl.s_vname ^ ",\"" ^ id ^ "\", getArrayLen(_" ^ vdecl.s_vname ^"))"
+        )
+        | _ -> "fld " ^ vdecl.s_vname ^ " = fld(" ^ string_of_expr expr ^ ", \"" ^ id ^ "\", getArrayLen(" ^ string_of_expr expr ^"))"
+      )
     | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
 
 let rec gen_stmt = function
