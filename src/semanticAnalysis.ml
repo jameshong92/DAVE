@@ -50,7 +50,8 @@ let rec type_of_expr f_context v_context exp = match exp with
 								| Float, Int -> { s_ptype = Bool; s_dimension = [] }
 								| Float, Float -> { s_ptype = Bool; s_dimension = [] }
 								| String, String -> { s_ptype = Bool; s_dimension = [] }
-								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
+								| Bool, Bool -> { s_ptype = Bool; s_dimension = [] }
+								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ " " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2 ^ " " ^ string_of_datatype type2.s_ptype))
 							)
 			| Sub | Mul | Div | Exp | Mod ->
 				let type1 = type_of_expr f_context v_context exp1 and
@@ -361,7 +362,7 @@ let s_check_var_decl f_context v_context vdecl =
 				s_vinit = (s_check_expr f_context v_context vdecl.vinit)
 			}
 		else
-			raise (Init_type_err "hi")
+			raise (Init_type_err "Type does not match")
 
 let rec s_check_stmt_list context_list stmt_list = match context_list, stmt_list with
      [], [] -> []
@@ -505,7 +506,14 @@ let check prog check_option =
 			let map = StringMap.add "print" [([{s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 														 					 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 														 					 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []});
-		                         					 ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+		                         					 ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Rec; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Tbl; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+			let map = StringMap.add "get" 	[([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+														 					 ([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []});
+														 					 ([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []});
+		                         					 ([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
 		  (* add dave library functions *)

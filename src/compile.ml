@@ -58,7 +58,11 @@ and string_of_expr = function
 | StringLit(lit) -> "\"" ^ lit ^ "\""
 | BoolLit(lit) -> string_of_bool lit
 | ArrayLit(exps) -> "{" ^ String.concat ", " (List.map string_of_expr exps) ^ "}"
-| Binop(exp1, binop, exp2) -> "(" ^ string_of_expr exp1 ^ " " ^ string_of_binop binop ^ " " ^ string_of_expr exp2 ^ ")"
+| Binop(exp1, binop, exp2) -> (
+  match exp1 with
+    StringLit(_) -> string_of_expr exp1 ^ " " ^ string_of_expr exp2
+    | _ -> "(" ^ string_of_expr exp1 ^ " " ^ string_of_binop binop ^ " " ^ string_of_expr exp2 ^ ")"
+  )
 | Unop(unop, exp) -> "(" ^ string_of_unop unop ^ string_of_expr exp ^ ")"
 | Postop(lvalue, postop) -> "(" ^ string_of_expr lvalue ^ string_of_postop postop ^ ")"
 | AssignOp(lvalue, asnop, exp) -> "(" ^ string_of_expr lvalue ^ " " ^ string_of_asnop asnop ^ " " ^ string_of_expr exp ^ ")"

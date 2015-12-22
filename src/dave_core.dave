@@ -1,3 +1,15 @@
+int min(fld a) {
+	int min;
+	int i;
+	int current = get(a, 0);
+	for (i = 1; i < (a.length); i++) {
+		if (get(a, min) > current) {
+			min = current;
+		}
+	}
+	return min;
+}
+
 /*int min(fld a) {
 	bool first = true;
 	int min;

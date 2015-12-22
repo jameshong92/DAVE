@@ -34,6 +34,22 @@ void _print(tbl t) {
 	cout << t << endl;
 }
 
+int _get(fld a, int index) {
+	return a.f_int[index];
+}
+
+double _get(fld a, int index) {
+	return a.f_double[index];
+}
+
+string _get(fld a, int index) {
+	return a.f_string[index];
+}
+
+bool _get(fld a, int index) {
+	return a.f_bool[index];
+}
+
 vector<int> to_vector(int arr[], int length) {
 	vector<int> v;
 	for (int i = 0; i < length; i++) {
