@@ -6,7 +6,7 @@ void print_int(int a) {
 
 int main() {
 	int b = 10;
-    print_int(b);
-    print_int(b++);
-    print_int(b+b);
+  print(b);
+  print(b++);
+  print(b+b);
 }

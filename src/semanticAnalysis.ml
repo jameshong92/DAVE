@@ -527,10 +527,10 @@ let check prog check_option =
 		                         					 ([{s_ptype = Rec; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 		                         					 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 		                         					 ([{s_ptype = Tbl; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
-			let map = StringMap.add "getInt" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []})] map in
-			let map = StringMap.add "getString" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []})] map in
-			let map = StringMap.add "getFloat" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
-			let map = StringMap.add "getBool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
+			let map = StringMap.add "get_int" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []})] map in
+			let map = StringMap.add "get_string" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []})] map in
+			let map = StringMap.add "get_float" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			let map = StringMap.add "get_bool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  let map = StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
 		  let map = StringMap.add "access" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = [{ exp = IntLit(0); typ = {s_ptype = Int; s_dimension = []} }]}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});

@@ -8,6 +8,6 @@ int main() {
 
 int sum(int a, int b) {
 	int c = a + b;
-	float d = int(a - b);
+	float d = float(a - b);
 	return c;
 }

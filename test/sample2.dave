@@ -4,6 +4,6 @@ int main() {
 	str s2 = "world!";
 	str s3 = s1 + s2;
 	str s4 = "dave " + "is " + "completed!";
-    print(s3);
-    print(s4);
+  print(s3);
+  print(s4);
 }

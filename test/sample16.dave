@@ -1,6 +1,6 @@
 // test field defintion
 int main() {
-	string[] s = ["a", "b", "c", "d", "e"];
+	str[] s = ["a", "b", "c", "d", "e"];
 	fld test = new fld(s, "alphabet");
 	print(test);
   test = new fld(["a", "b", "c", "d", "e"], "alphabet");

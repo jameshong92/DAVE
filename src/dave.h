@@ -34,20 +34,20 @@ void print(tbl t) {
 	cout << t << endl;
 }
 
-int getInt(fld a, int index) {
+int get_int(fld a, int index) {
 	_print(a.f_int[index]);
 	return a.f_int[index];
 }
 
-double getFloat(fld a, int index) {
+double get_float(fld a, int index) {
 	return a.f_double[index];
 }
 
-string getString(fld a, int index) {
+string get_string(fld a, int index) {
 	return a.f_string[index];
 }
 
-bool getBool(fld a, int index) {
+bool get_bool(fld a, int index) {
 	return a.f_bool[index];
 }
 
