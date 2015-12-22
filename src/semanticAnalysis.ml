@@ -113,6 +113,9 @@ let rec type_of_expr f_context v_context exp = match exp with
 									| Float, Float -> type2
 									| String, String -> type2
 									| Bool, Bool -> type2
+									| Fld, Fld -> type2
+									| Rec, Rec -> type2
+									| Tbl, Tbl -> type2
 									| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ "type: " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2))
 								)
 			| Addeq ->
@@ -286,10 +289,18 @@ and s_check_access f_context v_context in_exp expr id =
 		)
 and s_check_tbl f_context v_context in_exp exprs =
   let tbl_exprs = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
-	  if List.length (List.filter (fun a -> (match a.exp with Lval(_) -> true | _ -> raise (Tbl_err (string_of_expr a.exp)))) tbl_exprs) == (List.length exprs) then
+	  if List.length (List.filter (fun a -> (
+	  		match a.exp with 
+	  		Lval(lval) -> let lval_type = type_of_expr f_context v_context lval in (
+	  			if (List.length lval_type.s_dimension) > 0 then true
+	  			else false
+	  		)
+	  		| ArrayLit(_) -> false 
+	  		| _ -> raise (Tbl_err (string_of_expr a.exp)))) tbl_exprs
+		) == (List.length exprs) then
       {exp = in_exp; typ = { s_ptype = Tbl; s_dimension = [] }}
     else
-    	raise (Tbl_err "hihi")
+    	raise (Tbl_err "Parameter in the table cannot be a type of array")
 
 and s_check_rec f_context v_context in_exp exprs =
   let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
