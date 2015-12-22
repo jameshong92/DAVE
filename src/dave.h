@@ -38,7 +38,6 @@ string append(string a, string b) {
 }
 
 int get_int(fld a, int index) {
-	print(a.f_int[0]);
 	return a.f_int[index];
 }
 

@@ -1,7 +1,7 @@
 // test table binding1
 int main() {
 	str[] s = ["a", "b", "c", "d", "e"];
-	fld t1 = new fld(s, "asdfasdf");
+	fld t1 = new fld(s, "eng");
     fld t2 = new fld([1, 2, 3, 4, 5], "num");
     fld[] t = [t1, t2];
     tbl test = new tbl(t);

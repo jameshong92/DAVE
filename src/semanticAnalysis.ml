@@ -572,9 +572,9 @@ let check prog check_option =
 		  if check_option = "import" then 
 		  	map 
 		  else
-		  	let map = StringMap.add "min" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  	let map = StringMap.add "min_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
 		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
-				let map = StringMap.add "max" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+				let map = StringMap.add "max_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
 		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
 			  StringMap.add "mean" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
 		  																	([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map

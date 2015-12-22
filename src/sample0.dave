@@ -9,9 +9,9 @@ int main() {
 	tbl sample = new tbl(f);
 	print("Original Dataset:");
 	print(sample);
-	//tbl newsample = simpleLinearRegression(sample,a,b);
-	//print("Updated Dataset");
-	//print(newsample);
+	tbl newsample = simpleLinearRegression(sample,a,b);
+	print("Updated Dataset");
+	print(newsample);
 	
 }
 tbl simpleLinearRegression(tbl sample, str ind, str dep) {
@@ -26,27 +26,27 @@ tbl simpleLinearRegression(tbl sample, str ind, str dep) {
   fld x = access(sample,ind);
   fld y = access(sample,dep);
   for (i = 0; i < sizeX; i++) {
-    sumX = sumX + x[i];
-    sumY = sumY + y[i];
+    sumX = sumX + get_float(x, i);
+    sumY = sumY + get_float(y, i);
   }
   avgX = sumX/sizeX;
-  avgY = sumY/sizeY;
+  avgY = sumY/sizeX;
   for (i = 0; i < sizeX; i++) {
-    cov = cov + ((x[i]-avgX)*(y[i]-avgY));
-    var = var + ((x[i]-avgX)*(x[i]-avgX));
+    cov = cov + ((get_float(x, i)-avgX)*(get_float(y, i)-avgY));
+    var = var + ((get_float(x, i)-avgX)*(get_float(x, i)-avgX));
   }
   float beta = cov/var;
   float alpha = avgY - beta * avgX;
   float[sizeX] f;
   for (i = 0; i < sizeX; i++) {
-    f[i] = alpha + beta * x[i];
+    f[i] = alpha + beta * get_float(x, i);
   }
   fld f3 = new fld(f,"est");
   float ssres = 0.0;
   float sstot = 0.0;
   for (i = 0; i < sizeX; i++) {
-    ssres = ssres + ((y[i]-f[i])*(y[i]-f[i]));
-    sstot = sstot + ((y[i]-avgY)*(y[i]-avgY));
+    ssres = ssres + ((get_float(y, i)-f[i])*(get_float(y, i)-f[i]));
+    sstot = sstot + ((get_float(y, i)-avgY)*(get_float(y, i)-avgY));
   }
   float rsquare = 1 - ssres/sstot;
   print("The beta value is");
