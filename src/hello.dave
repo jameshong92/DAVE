@@ -10,6 +10,10 @@ int main() {
 	fld[] z = [q, r];
 	tbl s = new tbl(z);
 
+	r.length;
+	q.length;
+	s.row_length;
+
 	int i;
 	for (i=0; i<3; i++) {
 		print("hi");

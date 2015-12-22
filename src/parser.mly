@@ -142,10 +142,6 @@ expr:
 
 	| datatype LPAREN expr RPAREN
 															{ Cast($1, $3) }
-/*	| FLD LPAREN expr COMMA STR_LIT RPAREN
-															{ CastFld($3, $5) }
-	| TBL LPAREN VAR_TYPE COMMA VAR_TYPE RPAREN
-															{ CastTbl(type_of_string $3, type_of_string $5) } */
 	| literal 									{ $1 }
 	| tbl_lit 									{ Tbl($1) }
 

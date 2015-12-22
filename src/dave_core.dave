@@ -1,11 +1,72 @@
-int min(fld a) {
+/*int min(fld a) {
 	bool first = true;
 	int min;
-	/*for (int i = 0; i < a.length; i++) {
-		int current = a.get(i);
+	int i;
+	for (i = 0; i < 5; i++) {
 		if (first == true || min > current) {
 			min = current;
 		}
-	} */
+	}
 	return min;
 }
+
+int max(fld a) {
+	bool first = true;
+	int max;
+	for (int i = 0; i < a.length; i++) {
+		int current = a.get(i);
+		if (first == true || max < current) {
+			max = current;
+		}
+	}
+	return max;
+}
+
+int mean(fld a) {
+	int mean = 0;
+	for (int i = 0; i < a.length; i++) {
+		mean += a.get(i);
+	}
+	return int(mean/a.length);
+}
+
+float median(fld a) {
+	int[] sorted = sort(a);
+	int length = a.length;
+	int mid_index = int(length/2);
+	if ((mid_index % 2) == 1) {
+		return (sorted[mid_index]-sorted[mid_index-1]) / 2;
+	}
+}
+
+float min(fld a) {
+	bool first = true;
+	float min;
+	for (int i = 0; i < a.length; i++) {
+		float current = a.get(i);
+		if (first == true || min > current) {
+			min = current;
+		}
+	}
+	return min;
+}
+
+float max(fld a) {
+	bool first = true;
+	float max;
+	for (int i = 0; i < a.length; i++) {
+		float current = a.get(i);
+		if (first == true || max < current) {
+			max = current;
+		}
+	}
+	return max;
+}
+
+float mean(fld a) {
+	float mean = 0.0;
+	for (int i = 0; i < a.length; i++) {
+		mean += a.get(i);
+	}
+	return (mean/a.length);
+}*/

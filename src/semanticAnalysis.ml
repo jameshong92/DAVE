@@ -13,7 +13,7 @@ let rec type_of_var id v_context =
 let rec type_of_expr f_context v_context exp = match exp with
 	Var(id) -> type_of_var id v_context
 	| Array(id, exp) -> type_of_array id exp f_context v_context
-	| Access(exp, id) -> type_of_access id exp f_context v_context
+	| Access(exp, id) -> type_of_access exp id f_context v_context
 	| IntLit(lit) -> { s_ptype = Int; s_dimension = [] }
 	| FloatLit(lit) -> { s_ptype = Float; s_dimension = [] }
 	| StringLit(lit) -> { s_ptype = String; s_dimension = [] }
@@ -152,7 +152,7 @@ and type_of_tbl exprs f_context v_context =
     	 List.length (List.filter (fun a -> (match a.s_ptype with Rec -> true | _ -> false)) expr_list) == (List.length exprs) then
     		{ s_ptype = Tbl; s_dimension = []}
 			else
-				raise (Tbl_err "qwer")
+				raise (Tbl_err "Table error")
 
 and type_of_fld expr id f_context v_context =
 	let first_lit = type_of_expr f_context v_context expr in
@@ -166,7 +166,7 @@ and type_of_fld expr id f_context v_context =
 and type_of_rec exprs f_context v_context =
   let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
     if List.length (List.filter (fun a -> (match a.exp with RecRef(_,_) -> true | _ -> false)) rec_ref_list) == (List.length exprs) then
-					{ s_ptype = Rec; s_dimension = []}
+					{ s_ptype = Rec; s_dimension = (List.map (fun x -> s_check_expr f_context v_context x) exprs)}
 			else
 				raise Rec_err
 
@@ -210,16 +210,24 @@ and type_of_array id exp f_context v_context =
 	else
 		raise Arr_err
 
-and type_of_access id exp f_context v_context = (
-	if StringMap.mem id v_context then
-		fst (StringMap.find id v_context)
-	else
-		raise Access_err
+and type_of_access exp id f_context v_context = (
+	let exp_type = type_of_expr f_context v_context exp in
+	match exp_type.s_ptype with
+		Fld -> 
+			if id = "length" then 
+				{s_ptype = Int; s_dimension = []} 
+			else if id = "name" then
+				{s_ptype = String; s_dimension = []} 
+			else if id = "type" then 
+				{s_ptype = Int; s_dimension = []} 
+			else
+				raise Access_err
+		| Tbl -> if id = "row_length" || id = "col_length" then {s_ptype = Int; s_dimension = []} else raise Access_err
+		| Rec -> if id = "length" then {s_ptype = Int; s_dimension = []} else raise Access_err
+		| _ -> raise Access_err
 )
 
-
 and type_of_func_ret fid param f_context v_context =
-(* TODO add custom functions that would return other types *)
 	if StringMap.mem fid f_context then
 		let s_param = List.map (fun x -> type_of_expr f_context v_context x) param in
 			let found_map = StringMap.find fid f_context in
