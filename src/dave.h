@@ -2,39 +2,39 @@
 
 #include "dave.hpp"
 
-void print(int n) {
+void _print(int n) {
 	cout << n << endl;
 }
 
-void print(double d) {
+void _print(double d) {
 	cout << d << endl;
 }
 
-void print(string str) {
+void _print(string str) {
 	cout << str << endl;
 }
 
-void print(const char *str) {
+void _print(const char *str) {
 	cout << str << endl;
 }
 
-void print(bool b) {
+void _print(bool b) {
 	cout << (b ? "true" : "false") << endl;
 }
 
-void print(rec r) {
+void _print(rec r) {
 	cout << r << endl;
 }
 
-void print(fld f) {
+void _print(fld f) {
 	cout << f << endl;
 }
 
-void print(tbl t) {
+void _print(tbl t) {
 	cout << t << endl;
 }
 
-vector<int> to_vector(int arr[], int length) {
+vector<int> _to_vector(int arr[], int length) {
 	vector<int> v;
 	for (int i = 0; i < length; i++) {
 		v.push_back(arr[i]);
@@ -42,7 +42,7 @@ vector<int> to_vector(int arr[], int length) {
 	return v;
 }
 
-vector<double> to_vector(double arr[], int length) {
+vector<double> _to_vector(double arr[], int length) {
 	vector<double> v;
 	for (int i = 0; i < length; i++) {
 		v.push_back(arr[i]);
@@ -50,7 +50,7 @@ vector<double> to_vector(double arr[], int length) {
 	return v;
 }
 
-vector<bool> to_vector(bool arr[], int length) {
+vector<bool> _to_vector(bool arr[], int length) {
 	vector<bool> v;
 	for (int i = 0; i < length; i++) {
 		v.push_back(arr[i]);
@@ -58,7 +58,7 @@ vector<bool> to_vector(bool arr[], int length) {
 	return v;
 }
 
-vector<string> to_vector(string arr[], int length) {
+vector<string> _to_vector(string arr[], int length) {
 	vector<string> v;
 	for (int i = 0; i < length; i++) {
 		v.push_back(arr[i]);
@@ -66,7 +66,7 @@ vector<string> to_vector(string arr[], int length) {
 	return v;
 }
 
-vector<fld> to_vector(fld arr[], int length) {
+vector<fld> _to_vector(fld arr[], int length) {
 	vector<fld> v;
 	for (int i = 0; i < length; i++) {
 		v.push_back(arr[i]);
@@ -74,7 +74,7 @@ vector<fld> to_vector(fld arr[], int length) {
 	return v;
 }
 
-vector<rec> to_vector(rec arr[], int length) {
+vector<rec> _to_vector(rec arr[], int length) {
 	vector<rec> v;
 	for (int i = 0; i < length; i++) {
 		v.push_back(arr[i]);
@@ -82,7 +82,7 @@ vector<rec> to_vector(rec arr[], int length) {
 	return v;
 }
 
-vector<int> slice_array(vector<int> src, int begin, int end) {
+vector<int> _slice_array(vector<int> src, int begin, int end) {
 	int j = 0;
 	for (int i = begin; i < end; i++) {
 		src[j++] = src[i];
@@ -91,7 +91,7 @@ vector<int> slice_array(vector<int> src, int begin, int end) {
 	return src;
 }
 
-vector<double> slice_array(vector<double> src, int begin, int end) {
+vector<double> _slice_array(vector<double> src, int begin, int end) {
 	int j = 0;
 	for (int i = begin; i < end; i++) {
 		src[j++] = src[i];
@@ -100,7 +100,7 @@ vector<double> slice_array(vector<double> src, int begin, int end) {
 	return src;
 }
 
-vector<string> slice_array(vector<string> src, int begin, int end) {
+vector<string> _slice_array(vector<string> src, int begin, int end) {
 	int j = 0;
 	for (int i = begin; i < end; i++) {
 		src[j++] = src[i];
@@ -109,7 +109,7 @@ vector<string> slice_array(vector<string> src, int begin, int end) {
 	return src;
 }
 
-vector<bool> slice_array(vector<bool> src, int begin, int end) {
+vector<bool> _slice_array(vector<bool> src, int begin, int end) {
 	int j = 0;
 	for (int i = begin; i < end; i++) {
 		src[j++] = src[i];
@@ -118,7 +118,7 @@ vector<bool> slice_array(vector<bool> src, int begin, int end) {
 	return src;
 }
 
-vector<fld> slice_array(vector<fld> src, int begin, int end) {
+vector<fld> _slice_array(vector<fld> src, int begin, int end) {
 	vector<fld> dest;
 	int j = 0;
 	for (int i = begin; i < end; i++) {
@@ -127,7 +127,7 @@ vector<fld> slice_array(vector<fld> src, int begin, int end) {
 	return dest;
 }
 
-vector<rec> slice_array(vector<rec> src, int begin, int end) {
+vector<rec> _slice_array(vector<rec> src, int begin, int end) {
 	vector<rec> dest;
 	int j = 0;
 	for (int i = begin; i < end; i++) {
