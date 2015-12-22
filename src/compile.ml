@@ -1,6 +1,5 @@
 open Ast
 open Sast
-open SemanticAnalysis
 open SemanticExceptions
 open Printf
 
@@ -134,7 +133,7 @@ let string_of_decl vdecl =
         | _ -> "fld " ^ vdecl.s_vname ^ " = fld(&" ^ string_of_expr expr ^ "[0], \"" ^ id ^ "\", " ^ string_of_expr expr ^".size())"
       )
     | Tbl(exprs) ->
-      let tbl_elem_type = (match type_of_expr (List.hd exprs).exp with Fld -> "fld" | _ -> "rec") in
+(*       let tbl_elem_type = (match type_of_expr (List.hd exprs).exp with Fld -> "fld" | _ -> "rec") in
       if List.length exprs > 1 then
         let base_string =
           tbl_elem_type ^ " __" ^ vdecl.s_vname ^ "[] = {" ^ String.concat ", " (List.map (fun x -> string_of_expr x) exprs) ^ "};\n" ^
@@ -144,11 +143,8 @@ let string_of_decl vdecl =
         else if tbl_elem_type == "rec" then 
           base_string ^ "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ ".size(), _" ^ vdecl.s_vname ^ "[0].length)"
         else raise Not_implemented_err)
-      else
+      else *)
         let tbl_element = string_of_expr (List.hd exprs) in
-          if tbl_elem_type = "fld" then
-            "tbl " ^ vdecl.s_vname ^ " = tbl(&" ^ tbl_element ^ "[0], " ^ tbl_element ^ "[0].length, " ^ tbl_element ^ ".size())"
-          else
             "tbl " ^ vdecl.s_vname ^ " = tbl(&" ^ tbl_element ^ "[0], " ^ tbl_element ^ ".size(), " ^ tbl_element ^ "[0].length)"
     | ArrayLit(exprs) ->
       let array_type = (match vdecl.s_vinit.typ.s_ptype with Rec -> "rec" | Fld -> "fld" | String -> "string" | Bool -> "bool" | Float -> "double" | _ -> "int") in
