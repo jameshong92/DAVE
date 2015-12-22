@@ -329,7 +329,7 @@ tbl modify(tbl original, int col, int row, string newele) {
     return original;
 }
 
-tbl converse(tbl original, int row, string type) {
+tbl convert(tbl original, int row, string type) {
     int newtype;
     if (type.compare("int") == 0) {
         newtype = 0;
@@ -392,7 +392,7 @@ tbl converse(tbl original, int row, string type) {
 }
 
 
-tbl plus(tbl source1, tbl source2) {
+tbl tbl_plus(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -410,7 +410,7 @@ tbl plus(tbl source1, tbl source2) {
     return source1;
 }
 
-tbl minus(tbl source1, tbl source2) {
+tbl tbl_minus(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -428,7 +428,7 @@ tbl minus(tbl source1, tbl source2) {
     return source1;
 }
 
-tbl mult(tbl source1, tbl source2) {
+tbl tbl_mult(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -446,7 +446,7 @@ tbl mult(tbl source1, tbl source2) {
     return source1;
 }
 
-tbl div(tbl source1, tbl source2) {
+tbl tbl_div(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;

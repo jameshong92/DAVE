@@ -275,7 +275,12 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 	| Range(exp1, exp2) ->
 		{exp = Range((s_check_expr f_context v_context exp1).exp, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
 	| Binop(exp1, binop, exp2) ->
-		{exp = Binop((s_check_expr f_context v_context exp1).exp, binop, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
+		let exp1_type = type_of_expr f_context v_context exp1 in
+			if exp1_type.s_ptype == Tbl then
+				let binop_string = match binop with Add -> "tbl_plus" | Sub -> "tbl_minus" | Mul -> "tbl_mult" | Div -> "tbl_div" | _ -> raise (Type_err "Table arithmetic only supported for +, -, *, /") in
+				{exp = FuncCall(binop_string, List.map (fun a -> (s_check_expr f_context v_context a).exp) [exp1; exp2]); typ = type_of_expr f_context v_context in_exp }
+			else
+				{exp = Binop((s_check_expr f_context v_context exp1).exp, binop, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
 	| Unop(unop, exp) ->
 		{exp = Unop(unop, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
 	| Postop(lvalue, postop) ->
@@ -557,6 +562,7 @@ let check prog check_option =
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  let map = StringMap.add "convert" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  (* add dave library functions *)
 		  if check_option = "import" then 
 		  	map 

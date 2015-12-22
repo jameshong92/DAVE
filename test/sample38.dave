@@ -1,4 +1,4 @@
-// test tbl converse and plus
+// test tbl convert and plus
 int main() {
     rec r1 = new rec(name:"Yang", score:94); 
     rec r2 = new rec(name:"James", score:95);
@@ -12,7 +12,7 @@ int main() {
     rec[] r7 = [r4, r5, r6];
     tbl test2 = new tbl(r7);
     print(test2);
-    test = converse(test, 1, "int");
-    test = add(test, test2);
+    test = convert(test, 1, "int");
+    test = test + test2;
     print(test);
 }

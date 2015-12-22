@@ -5,7 +5,7 @@ open Printf
 
 let rec string_of_datatype = function
   Int -> "int"
-| Float -> "float"
+| Float -> "double"
 | Bool -> "bool"
 | String -> "string"
 | Tbl -> "tbl"
@@ -61,14 +61,14 @@ and string_of_expr = function
 | Binop(exp1, binop, exp2) -> (
   match exp1, exp2 with
     StringLit(lit1), StringLit(lit2) -> "append(\"" ^ lit1 ^ "\",\"" ^ lit2 ^ "\")"
-    | Tbl(_), Tbl(_) -> (
+(*     | Tbl(_), Tbl(_) -> (
       match binop with
         Add -> "plus(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
         | Sub -> "minus(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
         | Mul -> "mul(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
         | Div -> "div(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
         | _ -> "(" ^ string_of_expr exp1 ^ " " ^ string_of_binop binop ^ " " ^ string_of_expr exp2 ^ ")"
-    )
+    ) *)
     | _,_ -> "(" ^ string_of_expr exp1 ^ " " ^ string_of_binop binop ^ " " ^ string_of_expr exp2 ^ ")"
   )
 | Unop(unop, exp) -> "(" ^ string_of_unop unop ^ string_of_expr exp ^ ")"
