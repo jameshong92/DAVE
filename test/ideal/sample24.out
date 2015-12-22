@@ -6,16 +6,16 @@ d	4
 e	5	
 
 rev	acc	
-z	1.0	
-y	2.0	
-x	3.0	
-w	4.0	
-v	5.0	
+z	1.1	
+y	2.2	
+x	3.3	
+w	4.4	
+v	5.5	
 
 eng	num	rev	acc	
-a	1	z	1.0	
-b	2	y	2.0	
-c	3	x	3.0	
-d	4	w	4.0	
-e	5	v	5.0	
+a	1	z	1.1	
+b	2	y	2.2	
+c	3	x	3.3	
+d	4	w	4.4	
+e	5	v	5.5	
 

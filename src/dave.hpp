@@ -754,6 +754,10 @@ ostream & operator << (ostream &sys, const tbl &in) {
 
 /*int main(int argc, char const *argv[]) {
     int a[] = {90,99,98};
+    fld b = fld (a , "value", getArrayLen(a));
+    cout << b.f_int[0] << endl;
+}
+    int a[] = {90,99,98};
     string g[]  = {"ab", "cd", "ef"};
     fld b = fld (a , "value", getArrayLen(a)); 
     // sample definition of fld
