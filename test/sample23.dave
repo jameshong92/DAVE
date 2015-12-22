@@ -1,16 +1,12 @@
 // test table binding2
 int main() {
-    tuple t1[] = {tuple(22, "age"), tuple("Yang", "name"), tuple(3.50, "GPA")};
-    rec r1 = rec(t1); 
-    tuple t2[] = {tuple("James", "name"), tuple(23, "age"), tuple(3.88, "GPA")}
-    rec r2 = rec(t2);
-    tuple t3[] = {tuple(24, "age"), tuple(3.80, "GPA"), tuple("Min Woo", "name")}
-    rec r3 = rec(t3);
-    rec r[] = {r1, r2, r3};
-    tbl test = tbl(r);
+    rec r1 = new rec(age: 22, name:"Yang", GPA:3.50); 
+    rec r2 = new rec(name:"James", age:23, GPA:3.88);
+    rec r3 = new rec(age:24, GPA:3.80, name:"Min Woo");
+    rec[] r = [r1, r2, r3];
+    tbl test = new tbl(r);
     print(test);
-    tuple t4[] = {tuple(22, "age"), tuple(3.66, "GPA"), tuple("Micheal", "name")}
-    rec r4 = rec(t4);
-    test = tbl(test, r4);
+    rec r4 = new rec(age:22, GPA:3.66, name:"Micheal");
+    test = append(test, r4);
     print(test);
 }

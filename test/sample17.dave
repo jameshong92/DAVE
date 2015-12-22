@@ -1,1 +1,12 @@
 // test function defintion
+
+void print_int(int a) {
+	print(a);
+}
+
+int main() {
+	int b = 10;
+  print(b);
+  print(b++);
+  print(b+b);
+}

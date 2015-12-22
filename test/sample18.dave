@@ -1,12 +1,11 @@
 // test table definition1
-#include <dave.hpp>
+
 int main() {
-	string s[] = {"a", "b", "c", "d", "e"};
-	fld t1 = fld(s, "eng");
-    int i[] = {1, 2, 3, 4, 5};
-    fld t2 = fld(i, "num");
-    fld[] t = {t1, t2};
-    tbl test = tbl(t);
+	str[] s = ["a", "b", "c", "d", "e"];
+	fld t1 = new fld(s, "eng");
+  fld t2 = new fld([1, 2, 3, 4, 5], "num");
+  fld[] t = [t1, t2];
+  tbl test = new tbl(t);
 	print(test);
 	print(test.row_length);
 	print(test.col_length);

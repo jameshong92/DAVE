@@ -1,8 +1,6 @@
 // test record defintion
-#include <dave.hpp>
 int main() {
-	tuple[] array = {tuple(22, "age"), tuple(3.88, "score"), tuple("unknown", "name")};
-    rec test = rec(array);
+    rec test = new rec(age: 22, score: 3.88, name: "unknown");
     print(test);
     print(test.length);
 }

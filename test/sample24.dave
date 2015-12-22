@@ -1,19 +1,17 @@
 // test table binding3
 int main() {
-	string s[] = {"a", "b", "c", "d", "e"};
-	fld t1 = fld(s, "eng");
-    int i[] = {1, 2, 3, 4, 5};
-    fld t2 = fld(i, "num");
-    fld[] b1 = {t1, t2};
-    tbl test1 = tbl(b1);
+	str[] s = ["a", "b", "c", "d", "e"];
+	fld t1 = new fld(s, "eng");
+    fld t2 = new fld([1, 2, 3, 4, 5], "num");
+    fld[] t = [t1, t2];
+    tbl test1 = new tbl(t);
     print(test1);
-    string n[] = {"z", "y", "x", "w", "v"};
-    fld t3 = fld(n, "rev");
-    double n[] = {1.0, 2.0, 3.0, 4.0, 5.0};
-    fld t4 = fld(n, "acc");
-    fld[] b2 = {t3, t4};
-    tbl test2 = tbl(b2);
+    str[] n = ["z", "y", "x", "w", "v"];
+    fld t3 = new fld(n, "rev");
+    fld t4 = new fld([1.0, 2.0, 3.0, 4.0, 5.0], "acc");
+    fld[] t5 = [t3, t4];
+    tbl test2 = new tbl(t5);
     print(test2);
-    tbl test = tbl(test1, test2, true);
+    tbl test = append(test1, test2, true);
     print(test);
 }

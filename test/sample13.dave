@@ -1,9 +1,10 @@
 // test for general array
 int main() {
-    int[] num = {7, 8, 9};
+    int[] num = [7, 8, 9];
     int sum = 0;
-    size = sizeof(num)/sizeof(int);
-    for (int i=0; i<size; i++) {
+    int size = num.length;
+    int i;
+    for (i=0; i<size; i++) {
         print(num[i]);
         sum += num[i];
     }

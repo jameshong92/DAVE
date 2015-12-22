@@ -1,15 +1,13 @@
-# test table binding1
+// test table binding1
 int main() {
-	string s[] = {"a", "b", "c", "d", "e"};
+	str[] s = ["a", "b", "c", "d", "e"];
 	fld t1 = fld(s, "eng");
-	print(t1);
-    int i[] = {1, 2, 3, 4, 5};
-    fld t2 = fld(i, "num");
-    print(t2);
-    fld[] t = {t1, t2};
-    tbl test = tbl(t);
-    string n[] = {"z", "y", "x", "w", "v"};
+    fld t2 = fld([1, 2, 3, 4, 5], "num");
+    fld[] t = [t1, t2];
+    tbl test = new tbl(t);
+    print(test);
+    str[] n = ["z", "y", "x", "w", "v"];
     fld t3 = fld(n, "rev");
-    test = tbl(test, t3);
+    test = append(test, t3);
     print(test);
 }

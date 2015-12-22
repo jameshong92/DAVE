@@ -3,10 +3,11 @@ int main() {
 	int c = 0;
 	for (c = 0; c < 4; c++) {
 	    print("Hello World!");
-	    for (int d = 0; d < 2; d++) {
+	    int d;
+	    for (d = 0; d < 2; d++) {
 	        print("Hello Edwards!");
 	        int e = 3;
-	        for (; e > 0; e--) {
+	        for (e=3; e > 0; e--) {
                 print("Hello Stephen!");
 	        }
 	    }

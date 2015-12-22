@@ -188,8 +188,8 @@ clean::
 	rm -f *.cm[iox] *~ .*~ #*#
 	rm -f $(EXEC)
 	rm -f $(EXEC).opt
-	rm parser.ml parser.mli scanner.ml 
-	rm a.out dave.cc
+	rm -f ./parser.ml ./parser.mli ./scanner.ml 
+	rm -f ./a.out ./dave.cc
 
 .depend.input: Makefile
 	@echo -n '--Checking Ocaml input files: '

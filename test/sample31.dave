@@ -1,5 +1,9 @@
-# test syntactic analysis
+// test file output
 int main() {
-    int _asd = "string";
-    print(_asd);
+    str path = "test.txt";
+    tbl test = load(path);
+    path = "new.txt";
+    save(test, path);
+    tbl test2 = load(path);
+    pritn(test2);
 }

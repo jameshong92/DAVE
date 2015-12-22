@@ -1,5 +1,7 @@
 (*ast.ml*)
 exception Invalid_type of string
+exception Syntax_error of string
+
 (*Binary Operators (In Order): +, -, *, /, %, ^, ==, !=, <, >, >=, <=, &&, ||*)
 type binop = Add | Sub | Mul | Div | Mod | Exp | Eq | Neq | Lt | Gt | Leq | Geq | And | Or
 (*Unary Operators (Before Operand) (In Order): !, -*)
@@ -105,7 +107,6 @@ type func_decl = {
 type program = {
 	gdecls : decl list;
 	fdecls : func_decl list;
-	(* sdecls : stmt list; *)
 }
 
 

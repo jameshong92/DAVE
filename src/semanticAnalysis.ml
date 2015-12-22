@@ -13,7 +13,7 @@ let rec type_of_var id v_context =
 let rec type_of_expr f_context v_context exp = match exp with
 	Var(id) -> type_of_var id v_context
 	| Array(id, exp) -> type_of_array id exp f_context v_context
-	| Access(exp, id) -> type_of_access id exp f_context v_context
+	| Access(exp, id) -> type_of_access exp id f_context v_context
 	| IntLit(lit) -> { s_ptype = Int; s_dimension = [] }
 	| FloatLit(lit) -> { s_ptype = Float; s_dimension = [] }
 	| StringLit(lit) -> { s_ptype = String; s_dimension = [] }
@@ -39,6 +39,7 @@ let rec type_of_expr f_context v_context exp = match exp with
 								| Float, Int -> type1
 								| Float, Float -> type1
 								| String, String -> type1
+								| Tbl, Tbl -> type1
 								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
 							)
 			| Eq | Neq | Lt | Gt | Leq | Geq ->
@@ -50,9 +51,22 @@ let rec type_of_expr f_context v_context exp = match exp with
 								| Float, Int -> { s_ptype = Bool; s_dimension = [] }
 								| Float, Float -> { s_ptype = Bool; s_dimension = [] }
 								| String, String -> { s_ptype = Bool; s_dimension = [] }
-								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
+								| Bool, Bool -> { s_ptype = Bool; s_dimension = [] }
+								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ " " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2 ^ " " ^ string_of_datatype type2.s_ptype))
 							)
-			| Sub | Mul | Div | Exp | Mod ->
+			| Sub | Mul | Div ->
+				let type1 = type_of_expr f_context v_context exp1 and
+					type2 = type_of_expr f_context v_context exp2 in
+						(match type1.s_ptype, type2.s_ptype with
+							Int, Int -> type1
+							| Int, Float -> type2
+							| Float, Int -> type1
+							| Float, Float -> type1
+							| Tbl, Tbl -> type1
+							| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
+						)
+
+			| Exp | Mod ->
 				let type1 = type_of_expr f_context v_context exp1 and
 						type2 = type_of_expr f_context v_context exp2 in
 							(match type1.s_ptype, type2.s_ptype with
@@ -112,6 +126,9 @@ let rec type_of_expr f_context v_context exp = match exp with
 									| Float, Float -> type2
 									| String, String -> type2
 									| Bool, Bool -> type2
+									| Fld, Fld -> type2
+									| Rec, Rec -> type2
+									| Tbl, Tbl -> type2
 									| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ "type: " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2))
 								)
 			| Addeq ->
@@ -139,21 +156,20 @@ let rec type_of_expr f_context v_context exp = match exp with
 	| Lval(exp) -> type_of_expr f_context v_context exp (* TODO: CHECK LVAL *)
 	| Cast(var, exp) -> { s_ptype = var.ptype; s_dimension = [] } (* TODO: check if it works *)
 	| FuncCall(fid, actuals_opt) -> type_of_func_ret fid actuals_opt f_context v_context
-	| Tbl(exprs) -> type_of_table exprs f_context v_context
+	| Tbl(exprs) -> type_of_tbl exprs f_context v_context
 	| Rec(exprs) -> type_of_rec exprs f_context v_context
 	| RecRef(id, exp) -> type_of_rec_ref id exp f_context v_context
 	| Fld(expr, id) -> type_of_fld expr id f_context v_context
 	| Noexpr -> { s_ptype = Void; s_dimension = [] }
-	| None -> { s_ptype = Void; s_dimension = [] }
+	| None -> { s_ptype = Void; s_dimension = [] } 
 
-and type_of_table exprs f_context v_context =
-	raise Not_implemented_err
-(* 	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
-		let check_function x = 
-			let p = (type_of_expr f_context v_context x) in 
-				(p.s_ptype = first_lit.s_ptype) && (List.length p.s_dimension) = (List.length first_lit.s_dimension) in
-		let list_filter = List.filter check_function exprs in
-			if List.length list_filter == List.length exprs then *)
+and type_of_tbl exprs f_context v_context =
+  let expr_list = (List.map (fun expr -> type_of_expr f_context v_context expr) exprs) in
+    if List.length (List.filter (fun a -> (match a.s_ptype with Fld -> true | _ -> false)) expr_list) == (List.length exprs) ||
+    	 List.length (List.filter (fun a -> (match a.s_ptype with Rec -> true | _ -> false)) expr_list) == (List.length exprs) then
+    		{ s_ptype = Tbl; s_dimension = []}
+			else
+				raise (Tbl_err "Table error")
 
 and type_of_fld expr id f_context v_context =
 	let first_lit = type_of_expr f_context v_context expr in
@@ -211,16 +227,25 @@ and type_of_array id exp f_context v_context =
 	else
 		raise Arr_err
 
-and type_of_access id exp f_context v_context = (
-	if StringMap.mem id v_context then
-		fst (StringMap.find id v_context)
-	else
-		raise Access_err
+and type_of_access exp id f_context v_context = (
+	let exp_type = type_of_expr f_context v_context exp in
+	match exp_type.s_ptype with
+		Fld -> 
+			if id = "length" then 
+				{s_ptype = Int; s_dimension = []} 
+			else if id = "name" then
+				{s_ptype = String; s_dimension = []} 
+			else if id = "type" then 
+				{s_ptype = Int; s_dimension = []} 
+			else
+				raise Access_err
+		| Tbl -> if id = "row_length" || id = "col_length" then {s_ptype = Int; s_dimension = []} else raise Access_err
+		| Rec -> if id = "length" then {s_ptype = Int; s_dimension = []} else raise Access_err
+		| Int | Bool | Float | String -> if (List.length exp_type.s_dimension) == 1 then {s_ptype = Int; s_dimension = []} else raise Access_err
+		| _ -> raise Access_err
 )
 
-
 and type_of_func_ret fid param f_context v_context =
-(* TODO add custom functions that would return other types *)
 	if StringMap.mem fid f_context then
 		let s_param = List.map (fun x -> type_of_expr f_context v_context x) param in
 			let found_map = StringMap.find fid f_context in
@@ -262,15 +287,33 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 	| Cast(var, exp) -> (* TODO: check cast *)
 		{exp = Cast(var, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
 	| Array(id, indices) -> s_check_array f_context v_context in_exp id indices
-	| Access(exp, id) -> { exp = Access((s_check_expr f_context v_context exp).exp, id); typ = type_of_expr f_context v_context in_exp }
+	| Access(exp, id) -> s_check_access f_context v_context in_exp exp id
 	| FuncCall(id, exprs) -> {exp = FuncCall(id, List.map (fun a -> (s_check_expr f_context v_context a).exp) exprs); typ = (type_of_expr f_context v_context in_exp)}
 	| Tbl(exprs) -> s_check_tbl f_context v_context in_exp exprs
 	| Rec(exprs) -> s_check_rec f_context v_context in_exp exprs
 	| Fld(expr, id) -> s_check_fld f_context v_context in_exp expr id
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
 
+and s_check_access f_context v_context in_exp expr id =
+	let exp_type = type_of_expr f_context v_context expr in (
+		match exp_type.s_ptype with
+			Int | String | Bool | Float -> { exp = Access((s_check_expr f_context v_context expr).exp, "size()"); typ = type_of_expr f_context v_context in_exp }
+			| _ -> { exp = Access((s_check_expr f_context v_context expr).exp, id); typ = type_of_expr f_context v_context in_exp }
+		)
 and s_check_tbl f_context v_context in_exp exprs =
-	raise Not_implemented_err
+  let tbl_exprs = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
+	  if List.length (List.filter (fun a -> (
+	  		match a.exp with 
+	  		Lval(lval) -> let lval_type = type_of_expr f_context v_context lval in (
+	  			if (List.length lval_type.s_dimension) > 0 then true
+	  			else false
+	  		)
+	  		| ArrayLit(_) -> false 
+	  		| _ -> raise (Tbl_err (string_of_expr a.exp)))) tbl_exprs
+		) == (List.length exprs) then
+      {exp = in_exp; typ = { s_ptype = Tbl; s_dimension = [] }}
+    else
+    	raise (Tbl_err "Parameter in the table cannot be a type of array")
 
 and s_check_rec f_context v_context in_exp exprs =
   let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
@@ -349,7 +392,7 @@ let s_check_var_decl f_context v_context vdecl =
 				s_vinit = (s_check_expr f_context v_context vdecl.vinit)
 			}
 		else
-			raise (Init_type_err "hi")
+			raise (Init_type_err "Type does not match")
 
 let rec s_check_stmt_list context_list stmt_list = match context_list, stmt_list with
      [], [] -> []
@@ -414,7 +457,6 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 	| Continue -> S_Continue
 	| Break -> S_Break
 	| EmptyStmt -> S_EmptyStmt
-
 
 let s_check_func_decl f_context v_context fdecl =
 	let s_formals = List.map (fun var_decl -> s_check_var_decl f_context v_context var_decl) fdecl.formals in
@@ -486,7 +528,7 @@ let func_decl_to_func_map map fdecl v_context =
 			(* if function name is not in the map, add new map with list of functions for that fname *)
 			StringMap.add fdecl.fname [(func_s_vtype_list, s_check_var_type StringMap.empty v_context fdecl.return_type)] map
 
-let check prog =
+let check prog check_option =
 	let s_gdecls = List.map (fun var_decl -> s_check_var_decl StringMap.empty StringMap.empty var_decl) prog.gdecls
 	and extern_funs = (
 			(* TODO: add external functions to include *)
@@ -494,16 +536,44 @@ let check prog =
 			let map = StringMap.add "print" [([{s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 														 					 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 														 					 ([{s_ptype = Float; s_dimension = []}], {s_ptype = Void; s_dimension = []});
-		                         					 ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
-		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
-		  StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map
+		                         					 ([{s_ptype = Bool; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Rec; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Void; s_dimension = []});
+		                         					 ([{s_ptype = Tbl; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+			let map = StringMap.add "get_int" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []})] map in
+			let map = StringMap.add "get_string" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []})] map in
+			let map = StringMap.add "get_float" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			let map = StringMap.add "get_bool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
+		  let map = StringMap.add "load" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  let map = StringMap.add "save" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+		  let map = StringMap.add "access" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = [{ exp = IntLit(0); typ = {s_ptype = Int; s_dimension = []} }]}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Fld; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Rec; s_dimension = []})] map in
+			let map = StringMap.add "append" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Rec; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Fld; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Tbl; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  let map = StringMap.add "modify" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Float; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  (* add dave library functions *)
+		  if check_option = "import" then 
+		  	map 
+		  else
+		  	let map = StringMap.add "min" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+				let map = StringMap.add "max" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			  StringMap.add "mean" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																	([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map
 		)
 		in {
 			s_gdecls = s_gdecls;
 			s_fdecls =
 				let v_context = List.fold_left s_var_decl_to_var_map StringMap.empty s_gdecls in
 				let f_context = List.fold_left (fun ext_func_map func_decl -> func_decl_to_func_map ext_func_map func_decl v_context) extern_funs prog.fdecls in
-					if StringMap.mem "main" f_context then
+					if (StringMap.mem "main" f_context) || check_option = "import" then
 						s_check_func_decls f_context v_context prog.fdecls
 					else
 					(* main has to be defined in the function *)

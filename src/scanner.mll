@@ -51,12 +51,12 @@ rule token = parse
 | "return"             { RETURN }
 | "void" 							 { VOID }
 | "int" 							 { INT }
-| "float" 						 {FLOAT}
-| "bool" 								{BOOL}
-| "str" 								{ STR }
-| "tbl" 								{ TBL }
-| "rec" 									{REC}
-| "fld" 								{FLD}
+| "float" 						 { FLOAT }
+| "bool" 							 { BOOL }
+| "str" 							 { STR }
+| "tbl" 							 { TBL }
+| "rec" 							 { REC }
+| "fld" 							 { FLD }
 | "none"							 { NONE }
 | "new"								 { NEW }
 | "true" 							 { BOOL_LIT(true) }

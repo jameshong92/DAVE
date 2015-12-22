@@ -1,8 +1,9 @@
 // test field defintion
-#include <dave.hpp>
 int main() {
-	string s[] = {"a", "b", "c", "d", "e"};
-	fld test = fld(s, "alphabet");
+	str[] s = ["a", "b", "c", "d", "e"];
+	fld test = new fld(s, "alphabet");
 	print(test);
-	print(test.length);
+  fld test2 = new fld(["a", "b", "c", "d", "e"], "alphabet");
+  print(test2);
+  print(test2.length);
 }

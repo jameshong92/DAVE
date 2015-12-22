@@ -34,6 +34,27 @@ void print(tbl t) {
 	cout << t << endl;
 }
 
+string append(string a, string b) {
+	return a + b;
+}
+
+int get_int(fld a, int index) {
+	print(a.f_int[0]);
+	return a.f_int[index];
+}
+
+double get_float(fld a, int index) {
+	return a.f_double[index];
+}
+
+string get_string(fld a, int index) {
+	return a.f_string[index];
+}
+
+bool get_bool(fld a, int index) {
+	return a.f_bool[index];
+}
+
 vector<int> to_vector(int arr[], int length) {
 	vector<int> v;
 	for (int i = 0; i < length; i++) {

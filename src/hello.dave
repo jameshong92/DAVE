@@ -5,8 +5,38 @@ int main() {
 	rec[] c = [a, b];
 
 	fld q = new fld(["hell", "lo"], "name");
+	fld r = new fld([1, 2, 3], "age");
+
+	fld[] z = [q, r];
+	tbl s = new tbl(z);
+
+	r.length;
+	q.length;
+	s.row_length;
+
+	int i;
+	for (i=0; i<3; i++) {
+		print("hi");
+	}
+
+	int asdf = 4;
+	int min = min(q);
+	print(min);
 	return 0;
 
+}
+
+// test table definition2
+int test() {
+  rec r1 = new rec(age: 22, name:"Yang", GPA:3.50); 
+  rec r2 = new rec(age:23, name:"James", GPA:3.88);
+  rec r3 = new rec(age:24, name:"Min Woo", GPA:3.80);
+  fld b = new fld([1,2,3], "age");
+  rec[] r4 = [r1, r2, r3];
+  tbl test = new tbl(r4);
+	print(test);
+	print(test.row_length);
+	print(test.col_length);
 }
 
 void print_int(int a) {
