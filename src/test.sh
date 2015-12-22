@@ -16,10 +16,11 @@ Compare() { #compare the two files
 	}
 }
 
+echo "Testing good cases:"
 for f in $TESTFILES
 do
 	(( run++ ))
-	echo "file: $f"
+	echo "###################"
 	name=${f#$prefix}
 	name=${name%$suffix}
 	ideal="../test/ideal/$name.out" #set the expect output path 

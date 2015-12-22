@@ -12,6 +12,6 @@ int main() {
     rec[] r7 = [r4, r5, r6];
     tbl test2 = new tbl(r7);
     print(test2);
-    test = div(test, test2);
+    test = test / test2;
     print(test);
 }
