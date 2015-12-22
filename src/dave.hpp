@@ -359,7 +359,7 @@ tbl convert(tbl original, int row, string type) {
                     stringstream strStream;
                     strStream << original.t[row].f_double[i];
                     string s = strStream.str();
-                    original.t[row-1].f_string.push_back(s);
+                    original.t[row].f_string.push_back(s);
                 }
             }
         }
@@ -383,12 +383,12 @@ tbl convert(tbl original, int row, string type) {
         } else if (newtype == 1) {
             original.t[row].type = 1;
             for (int i=0; i<original.row_length; i++) {
-                original.t[row].f_double[i] = (double) original.t[row].f_int[i];
+                original.t[row].f_double[i] = double(original.t[row].f_int[i]);
             }
         } else if (newtype == 0) {
             original.t[row].type = 0;
             for (int i=0; i<original.row_length; i++) {
-                original.t[row].f_int[i] = (int) original.t[row].f_double[i];
+                original.t[row].f_int[i] = int(original.t[row].f_double[i]);
             }
         }
     }

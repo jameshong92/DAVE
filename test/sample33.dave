@@ -1,7 +1,0 @@
-// test fld type conversion
-int main() {
-	str path = "test.txt";
-    tbl test = load(path);
-    test = convert(test, 0, "double");
-    print(test);
-}
