@@ -1,75 +1,137 @@
-#ifndef __DAVE_H_
 #define __DAVE_H_
 
-#include <iostream>
-#include <string>
-
-using namespace std;
+#include "dave.hpp"
 
 void print(int n) {
 	cout << n << endl;
 }
 
-void print(float n) {
-	cout << n << endl;
+void print(double d) {
+	cout << d << endl;
 }
 
-void print(string n) {
-	cout << n << endl;
+void print(string str) {
+	cout << str << endl;
 }
 
-void print(const char *n) {
-	cout << string(n) << endl;
+void print(const char *str) {
+	cout << str << endl;
 }
 
-void print(bool v) {
-	cout << (v ? "true" : "false") << endl;
+void print(bool b) {
+	cout << (b ? "true" : "false") << endl;
 }
 
-void slice_array(int *src, int *dest, int begin, int end) {
-	for (int i = begin; i < end; i++) {
-		*dest++ = src[i];
+void print(rec r) {
+	cout << r << endl;
+}
+
+void print(fld f) {
+	cout << f << endl;
+}
+
+void print(tbl t) {
+	cout << t << endl;
+}
+
+vector<int> to_vector(int arr[], int length) {
+	vector<int> v;
+	for (int i = 0; i < length; i++) {
+		v.push_back(arr[i]);
 	}
+	return v;
 }
 
+vector<double> to_vector(double arr[], int length) {
+	vector<double> v;
+	for (int i = 0; i < length; i++) {
+		v.push_back(arr[i]);
+	}
+	return v;
+}
 
-int *slice_array(int *src, int begin, int end) {
-	int *dest;
+vector<bool> to_vector(bool arr[], int length) {
+	vector<bool> v;
+	for (int i = 0; i < length; i++) {
+		v.push_back(arr[i]);
+	}
+	return v;
+}
+
+vector<string> to_vector(string arr[], int length) {
+	vector<string> v;
+	for (int i = 0; i < length; i++) {
+		v.push_back(arr[i]);
+	}
+	return v;
+}
+
+vector<fld> to_vector(fld arr[], int length) {
+	vector<fld> v;
+	for (int i = 0; i < length; i++) {
+		v.push_back(arr[i]);
+	}
+	return v;
+}
+
+vector<rec> to_vector(rec arr[], int length) {
+	vector<rec> v;
+	for (int i = 0; i < length; i++) {
+		v.push_back(arr[i]);
+	}
+	return v;
+}
+
+vector<int> slice_array(vector<int> src, int begin, int end) {
 	int j = 0;
 	for (int i = begin; i < end; i++) {
-		dest[j++] = src[i];
+		src[j++] = src[i];
+	}
+	src.resize(end-begin);
+	return src;
+}
+
+vector<double> slice_array(vector<double> src, int begin, int end) {
+	int j = 0;
+	for (int i = begin; i < end; i++) {
+		src[j++] = src[i];
+	}
+	src.resize(end-begin);
+	return src;
+}
+
+vector<string> slice_array(vector<string> src, int begin, int end) {
+	int j = 0;
+	for (int i = begin; i < end; i++) {
+		src[j++] = src[i];
+	}
+	src.resize(end-begin);
+	return src;
+}
+
+vector<bool> slice_array(vector<bool> src, int begin, int end) {
+	int j = 0;
+	for (int i = begin; i < end; i++) {
+		src[j++] = src[i];
+	}
+	src.resize(end-begin);
+	return src;
+}
+
+vector<fld> slice_array(vector<fld> src, int begin, int end) {
+	vector<fld> dest;
+	int j = 0;
+	for (int i = begin; i < end; i++) {
+		dest.push_back(src[i]);
 	}
 	return dest;
 }
 
-void slice_array(float *src, float *dest, int begin, int end) {
-	for (int i = begin; i < end; i++) {
-		*dest++ = src[i];
-	}
-}
-
-float *slice_array(float *src, int begin, int end) {
-	float *dest;
+vector<rec> slice_array(vector<rec> src, int begin, int end) {
+	vector<rec> dest;
 	int j = 0;
 	for (int i = begin; i < end; i++) {
-		dest[j++] = src[i];
+		dest.push_back(src[i]);
 	}
 	return dest;
 }
-
-void slice_array(bool *src, bool *dest, int begin, int end) {
-	for (int i = begin; i < end; i++) {
-		*dest++ = src[i];
-	}
-}
-
-bool *slice_array(bool *src, int begin, int end) {
-	bool *dest;
-	int j = 0;
-	for (int i = begin; i < end; i++) {
-		dest[j++] = src[i];
-	}
-	return dest;
-}
-
-#endif
