@@ -2,52 +2,52 @@
 
 #include "dave.hpp"
 
-void _print(int n) {
+void print(int n) {
 	cout << n << endl;
 }
 
-void _print(double d) {
+void print(double d) {
 	cout << d << endl;
 }
 
-void _print(string str) {
+void print(string str) {
 	cout << str << endl;
 }
 
-void _print(const char *str) {
+void print(const char *str) {
 	cout << str << endl;
 }
 
-void _print(bool b) {
+void print(bool b) {
 	cout << (b ? "true" : "false") << endl;
 }
 
-void _print(rec r) {
+void print(rec r) {
 	cout << r << endl;
 }
 
-void _print(fld f) {
+void print(fld f) {
 	cout << f << endl;
 }
 
-void _print(tbl t) {
+void print(tbl t) {
 	cout << t << endl;
 }
 
-int _getInt(fld a, int index) {
+int getInt(fld a, int index) {
 	_print(a.f_int[index]);
 	return a.f_int[index];
 }
 
-double _getFloat(fld a, int index) {
+double getFloat(fld a, int index) {
 	return a.f_double[index];
 }
 
-string _getString(fld a, int index) {
+string getString(fld a, int index) {
 	return a.f_string[index];
 }
 
-bool _getBool(fld a, int index) {
+bool getBool(fld a, int index) {
 	return a.f_bool[index];
 }
 

@@ -154,7 +154,7 @@ let rec gen_stmt = function
 | S_EmptyStmt -> ";"
 
 let string_of_func_decl funcdecl =
-  string_of_vtype funcdecl.s_return_type ^ " _"
+  string_of_vtype funcdecl.s_return_type ^ " "
   ^ funcdecl.s_fname ^ "("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.s_formals))
   ^ ") {\n"
@@ -169,5 +169,4 @@ let compile oc prg =
   fprintf out_file "#include \"dave.h\"\n";
   fprintf out_file "%s" (string_of_program (List.hd prg));
   fprintf out_file "%s" (string_of_program (List.nth prg 1));
-  fprintf out_file "int main() {\n  return _main();\n}";
   close_out out_file
