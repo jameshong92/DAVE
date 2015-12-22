@@ -154,7 +154,12 @@ let rec type_of_expr f_context v_context exp = match exp with
 							)
 	)
 	| Lval(exp) -> type_of_expr f_context v_context exp (* TODO: CHECK LVAL *)
-	| Cast(var, exp) -> { s_ptype = var.ptype; s_dimension = [] } (* TODO: check if it works *)
+	| Cast(var, exp) -> 
+		if var.ptype == Rec || var.ptype == Fld || var.ptype == Tbl then
+			raise (Cast_err ((string_of_datatype var.ptype) ^ " needs to be initialized with 'new'"))
+		else if var.ptype == Int || var.ptype == Float then
+			{ s_ptype = var.ptype; s_dimension = [] }
+		else raise (Cast_err "Invalid cast")
 	| FuncCall(fid, actuals_opt) -> type_of_func_ret fid actuals_opt f_context v_context
 	| Tbl(exprs) -> type_of_tbl exprs f_context v_context
 	| Rec(exprs) -> type_of_rec exprs f_context v_context

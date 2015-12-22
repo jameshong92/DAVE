@@ -1,5 +1,6 @@
 open Ast
 open Sast
+open SemanticAnalysis
 open SemanticExceptions
 open Printf
 
@@ -133,15 +134,16 @@ let string_of_decl vdecl =
         | _ -> "fld " ^ vdecl.s_vname ^ " = fld(&" ^ string_of_expr expr ^ "[0], \"" ^ id ^ "\", " ^ string_of_expr expr ^".size())"
       )
     | Tbl(exprs) ->
-      let tbl_elem_type = (match (List.hd exprs) with Fld(_,_) -> "fld" | _ -> "rec") in
+      let tbl_elem_type = (match type_of_expr (List.hd exprs).exp with Fld -> "fld" | _ -> "rec") in
       if List.length exprs > 1 then
         let base_string =
           tbl_elem_type ^ " __" ^ vdecl.s_vname ^ "[] = {" ^ String.concat ", " (List.map (fun x -> string_of_expr x) exprs) ^ "};\n" ^
           "vector<" ^ tbl_elem_type ^ "> _" ^ vdecl.s_vname ^ " = to_vector(__" ^ vdecl.s_vname ^ ", getArrayLen(__" ^ vdecl.s_vname ^ "));\n" in (
-        if tbl_elem_type = "fld" then 
+        if tbl_elem_type == "fld" then 
           base_string ^ "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ "[0].length, _" ^ vdecl.s_vname ^".size())"
-        else
-          base_string ^ "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ ".size(), _" ^ vdecl.s_vname ^ "[0].length)")
+        else if tbl_elem_type == "rec" then 
+          base_string ^ "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ ".size(), _" ^ vdecl.s_vname ^ "[0].length)"
+        else raise Not_implemented_err)
       else
         let tbl_element = string_of_expr (List.hd exprs) in
           if tbl_elem_type = "fld" then
