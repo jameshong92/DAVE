@@ -20,7 +20,7 @@ int main() {
 	}
 
 	int asdf = 4;
-	int min = min(q);
+	int min = min_value(r);
 	print(min);
 	return 0;
 

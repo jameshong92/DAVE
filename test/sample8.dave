@@ -4,7 +4,8 @@ int main() {
 	for (c = 0; c < 5; c++) {
 	    print("Hello World!");
 	}
-	for (int d = 0; d < 0; d++) {
+	int d;
+	for (d = 0; d < 0; d++) {
 	    print("Hello Edwards!");
 	}
 }

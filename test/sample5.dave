@@ -13,9 +13,9 @@ int main() {
     print(c);
     c = (i1 == i3);
     print(c);
-    double d1 = 0.0;
-    double d2 = 2.0;
-    double d3 = 0.0;
+    float d1 = 0.0;
+    float d2 = 2.0;
+    float d3 = 0.0;
     c = (d1 == d2);
     print(c);
     c = (d1 != d2);

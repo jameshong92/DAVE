@@ -1,17 +1,18 @@
-// test tbl converse and plus
+// test tbl convert and plus
 int main() {
-    rec r1 = new rec(name:"Yang", score:94.37); 
-    rec r2 = new rec(name:"James", score:95.66);
-    rec r3 = new rec(name:"Micheal", score:98.89);
-    tbl test = new tbl([r1, r2, r3]);
-    test = converse(test, 1, "int");
+    rec r1 = new rec(name:"Yang", score:94); 
+    rec r2 = new rec(name:"James", score:95);
+    rec r3 = new rec(name:"Micheal", score:98);
+    rec[] r = [r1, r2, r3];
+    tbl test = new tbl(r);
     print(test);
-    rec r4 = new rec(name:"Yang", score:72.12); 
-    rec r5 = new rec(name:"James", score:90.34);
-    rec r6 = new rec(name:"Micheal", score:88.22);
-    tbl test2 = new tbl([r4, r5, r6]);
+    rec r4 = new rec(name:"Yang", score:72); 
+    rec r5 = new rec(name:"James", score:90);
+    rec r6 = new rec(name:"Micheal", score:88);
+    rec[] r7 = [r4, r5, r6];
+    tbl test2 = new tbl(r7);
     print(test2);
-    test = converse(test, 1, "int");
-    test = add(test, test2);
+    test = convert(test, 1, "int");
+    test = test + test2;
     print(test);
 }

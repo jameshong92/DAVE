@@ -1,6 +1,5 @@
 #define __DAVE_H_
-
-#include "dave.hpp"
+#include "dave_io.hpp"
 
 void print(int n) {
 	cout << n << endl;
@@ -34,8 +33,11 @@ void print(tbl t) {
 	cout << t << endl;
 }
 
+string append(string a, string b) {
+	return a + b;
+}
+
 int get_int(fld a, int index) {
-	print(a.f_int[index]);
 	return a.f_int[index];
 }
 

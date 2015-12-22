@@ -16,19 +16,24 @@ Compare() { #compare the two files
 	}
 }
 
+echo "Testing good cases:"
 for f in $TESTFILES
 do
 	(( run++ ))
-	echo "file: $f"
+	echo "###################"
 	name=${f#$prefix}
 	name=${name%$suffix}
 	ideal="../test/ideal/$name.out" #set the expect output path 
 	rm -f "../test/$name.out" #remove previous output
 	echo "Testing: $name"
 	./dave -c < "$f" 2>&1 && {
-		g++ -w dave.cc -Isrc
-		./a.out > "../test/$name.out"
-		Compare "../test/$name.out" "../test/ideal"
+		g++ -w dave.cc -Isrc 2>&1 && {
+			./a.out > "../test/$name.out"
+			Compare "../test/$name.out" "../test/ideal"
+		} || {
+			cat "../test/$name.out"
+			echo "FAILDED: did not compile"
+		}
 	} || {
 		cat "../test/$name.out"
 		echo "FAILDED: did not compile"

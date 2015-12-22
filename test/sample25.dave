@@ -3,13 +3,15 @@ int main() {
     rec r1 = new rec(age: 22, name:"Yang", GPA:3.50); 
     rec r2 = new rec(name:"James", age:23, GPA:3.88);
     rec r3 = new rec(age:24, GPA:3.80, name:"Min Woo");
-    tbl test1 = tbl([r1, r2, r3]);
+    rec[] r0 = [r1, r2, r3];
+    tbl test1 = new tbl(r0);
     print(test1);
 
     rec r4 = new rec(age: 22, GPA:3.66, name:"Micheal"); 
     rec r5 = new rec(name:"Jotaku", age:21, GPA:3.60);
-    tbl test2 = tbl([r4, r5]);
+    rec[] r6 = [r4, r5];
+    tbl test2 = new tbl(r6);
     print(test2);
-    test = append(test1, test2, false);
+    tbl test = append(test1, test2, false);
     print(test);
 }

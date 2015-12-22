@@ -78,8 +78,10 @@ public:
         type = 0;
         length = len;
         name = str;
-        for (int i=0; i<length; i++)
-            f_int.push_back(array[i]);
+        for (int i=0; i<length; i++) {
+            int var = array[i];
+            f_int.push_back(var);
+        }
     }
     fld(double *array, string str, int len) {
         type = 1;
@@ -92,8 +94,10 @@ public:
         type = 2;
         length = len;
         name = str;
-        for (int i=0; i<length; i++)
-            f_string.push_back(array[i]);
+        for (int i=0; i<length; i++) {
+            string var = array[i];
+            f_string.push_back(var);
+        }
     }
     fld(bool *array, string str, int len) {
         type = 3;
@@ -110,7 +114,7 @@ public:
 	int row_length;
     int col_length;
     vector<fld> t;
-    tbl(fld *array, int col_len, int row_len) {
+    tbl(fld *array, int row_len, int col_len) {
         col_length = col_len;
         row_length = row_len;
         for (int i=0; i<row_len; i++) {
@@ -329,7 +333,7 @@ tbl modify(tbl original, int col, int row, string newele) {
     return original;
 }
 
-tbl converse(tbl original, int row, string type) {
+tbl convert(tbl original, int row, string type) {
     int newtype;
     if (type.compare("int") == 0) {
         newtype = 0;
@@ -392,7 +396,7 @@ tbl converse(tbl original, int row, string type) {
 }
 
 
-tbl plus(tbl source1, tbl source2) {
+tbl tbl_plus(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -410,7 +414,7 @@ tbl plus(tbl source1, tbl source2) {
     return source1;
 }
 
-tbl minus(tbl source1, tbl source2) {
+tbl tbl_minus(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -428,7 +432,7 @@ tbl minus(tbl source1, tbl source2) {
     return source1;
 }
 
-tbl mult(tbl source1, tbl source2) {
+tbl tbl_mult(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -446,7 +450,7 @@ tbl mult(tbl source1, tbl source2) {
     return source1;
 }
 
-tbl div(tbl source1, tbl source2) {
+tbl tbl_div(tbl source1, tbl source2) {
     if (source1.col_length != source2.col_length ||
         source1.row_length != source2.row_length) {
         return source1;
@@ -681,7 +685,7 @@ ostream & operator << (ostream &sys, const rec &in) {
 	for (int i=0; i<in.length; i++) {
 		sys << in.r[i].name << "\t";
 	} 
-    sys << ";" << endl;
+    sys << endl;
 	for (int i=0; i<in.length; i++) {
         if (in.r[i].type == 0) {
             sys << in.r[i].content_int;

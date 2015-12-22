@@ -1,4 +1,4 @@
-int min(fld a) {
+int min_value(fld a) {
 	int min;
 	int i;
 	int length = a.length;
@@ -11,7 +11,7 @@ int min(fld a) {
 	return min;
 }
 
-int max(fld a) {
+int max_value(fld a) {
 	int max;
 	int current = get_int(a, 0);
 	int length = a.length;
