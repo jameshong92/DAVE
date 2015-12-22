@@ -2,7 +2,7 @@
 #include <fstream>
 using namespace std;
 
-tbl tbl_read(string filename) {
+tbl load(string filename) {
     char buffer[256];
     ifstream in(filename);
     bool flag = false;
@@ -64,7 +64,7 @@ tbl tbl_read(string filename) {
     return readtbl;
 }
 
-void tbl_write(tbl &in, string filename) {
+void save(tbl &in, string filename) {
     ofstream out;
     out.open(filename);
     for (int i=0; i<in.row_length; i++) {

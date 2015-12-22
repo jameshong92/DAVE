@@ -39,6 +39,7 @@ let rec type_of_expr f_context v_context exp = match exp with
 								| Float, Int -> type1
 								| Float, Float -> type1
 								| String, String -> type1
+								| Tbl, Tbl -> type1
 								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
 							)
 			| Eq | Neq | Lt | Gt | Leq | Geq ->
@@ -53,7 +54,19 @@ let rec type_of_expr f_context v_context exp = match exp with
 								| Bool, Bool -> { s_ptype = Bool; s_dimension = [] }
 								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ " " ^ string_of_datatype type1.s_ptype ^ ", " ^ string_of_expr exp2 ^ " " ^ string_of_datatype type2.s_ptype))
 							)
-			| Sub | Mul | Div | Exp | Mod ->
+			| Sub | Mul | Div ->
+				let type1 = type_of_expr f_context v_context exp1 and
+					type2 = type_of_expr f_context v_context exp2 in
+						(match type1.s_ptype, type2.s_ptype with
+							Int, Int -> type1
+							| Int, Float -> type2
+							| Float, Int -> type1
+							| Float, Float -> type1
+							| Tbl, Tbl -> type1
+							| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
+						)
+
+			| Exp | Mod ->
 				let type1 = type_of_expr f_context v_context exp1 and
 						type2 = type_of_expr f_context v_context exp2 in
 							(match type1.s_ptype, type2.s_ptype with
@@ -531,12 +544,15 @@ let check prog check_option =
 			let map = StringMap.add "get_string" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = String; s_dimension = []})] map in
 			let map = StringMap.add "get_float" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
 			let map = StringMap.add "get_bool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
-		  let map = StringMap.add "tbl_read" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
-		  let map = StringMap.add "tbl_write" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
+		  let map = StringMap.add "load" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  let map = StringMap.add "save" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
 		  let map = StringMap.add "access" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = [{ exp = IntLit(0); typ = {s_ptype = Int; s_dimension = []} }]}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Fld; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Rec; s_dimension = []})] map in
+			let map = StringMap.add "append" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Rec; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Fld; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Tbl; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  let map = StringMap.add "modify" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Float; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});

@@ -1,14 +1,16 @@
 // test table binding3
 int main() {
-	string s[] = ["a", "b", "c", "d", "e"];
+	str[] s = ["a", "b", "c", "d", "e"];
 	fld t1 = new fld(s, "eng");
     fld t2 = new fld([1, 2, 3, 4, 5], "num");
-    tbl test1 = new tbl([t1, t2]);
+    fld[] t = [t1, t2];
+    tbl test1 = new tbl(t);
     print(test1);
-    string n[] = ["z", "y", "x", "w", "v"];
+    str[] n = ["z", "y", "x", "w", "v"];
     fld t3 = new fld(n, "rev");
     fld t4 = new fld([1.0, 2.0, 3.0, 4.0, 5.0], "acc");
-    tbl test2 = new tbl([t3, t4]);
+    fld[] t5 = [t3, t4];
+    tbl test2 = new tbl(t5);
     print(test2);
     tbl test = append(test1, test2, true);
     print(test);

@@ -3,12 +3,14 @@ int main() {
     rec r1 = new rec(name:"Yang", score:94); 
     rec r2 = new rec(name:"James", score:95);
     rec r3 = new rec(name:"Micheal", score:98);
-    tbl test = new tbl([r1, r2, r3]);
+    rec[] r = [r1, r2, r3];
+    tbl test = new tbl(r);
     print(test);
     rec r4 = new rec(name:"Yang", score:72); 
     rec r5 = new rec(name:"James", score:90);
     rec r6 = new rec(name:"Micheal", score:88);
-    tbl test2 = new tbl([r4, r5, r6]);
+    rec[] r7 = [r4, r5, r6];
+    tbl test2 = new tbl(r7);
     print(test2);
     test = div(test, test2);
     print(test);

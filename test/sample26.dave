@@ -3,7 +3,8 @@ int main() {
     rec r1 = new rec(age: 22, name:"Yang", GPA:3.50); 
     rec r2 = new rec(name:"James", age:23, GPA:3.88);
     rec r3 = new rec(age:24, GPA:3.80, name:"Min Woo");
-    tbl test = tbl([r1, r2, r3]);
+    rec r4 = [r1,r2,r3];
+    tbl test = new tbl(r4);
     print(test);
     rec test1 = access(test, 2);
     print(test1);

@@ -1,12 +1,12 @@
 // test table binding1
 int main() {
-	string s[] = ["a", "b", "c", "d", "e"];
+	str[] s = ["a", "b", "c", "d", "e"];
 	fld t1 = fld(s, "eng");
     fld t2 = fld([1, 2, 3, 4, 5], "num");
     fld[] t = [t1, t2];
-    tbl test = tbl(t);
+    tbl test = new tbl(t);
     print(test);
-    string n[] = ["z", "y", "x", "w", "v"];
+    str[] n = ["z", "y", "x", "w", "v"];
     fld t3 = fld(n, "rev");
     test = append(test, t3);
     print(test);
