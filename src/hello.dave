@@ -1,8 +1,10 @@
 int main() {
 
-	rec a = new rec("name":"james", "age": 11);
-	rec b = new rec("name":"james", "age": 11);
+	rec a = new rec(name:"james", age: 11);
+	rec b = new rec(name:"james", age: 11);
 	rec[] c = [a, b];
+
+	fld q = new fld(["hell", "lo"], "name");
 	return 0;
 
 }

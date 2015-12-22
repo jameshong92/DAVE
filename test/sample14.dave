@@ -3,8 +3,7 @@
 int main() {
 	tuple a = tuple(22, "age");
 	tuple b = tuple(3.8, "score");
-	tuple c = tuple("unknown", "name");
-	print(a);
+	tuple c = tuple("unknown", "name");	print(a);
 	print(b);
 	print(c);
 }

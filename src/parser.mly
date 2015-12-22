@@ -197,8 +197,8 @@ rec_lit:
 	NEW REC LPAREN rec_init RPAREN 			{ Rec(List.rev $4) }
 
 rec_init:
-	STR_LIT COLON literal 						{ [RecRef($1, $3)] }
-	| rec_init COMMA STR_LIT COLON literal
+	ID COLON literal 						{ [RecRef($1, $3)] }
+	| rec_init COMMA ID COLON literal
 															{ RecRef($3, $5) :: $1 }
 
 /*ffld_lit_list:
