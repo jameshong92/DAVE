@@ -139,21 +139,20 @@ let rec type_of_expr f_context v_context exp = match exp with
 	| Lval(exp) -> type_of_expr f_context v_context exp (* TODO: CHECK LVAL *)
 	| Cast(var, exp) -> { s_ptype = var.ptype; s_dimension = [] } (* TODO: check if it works *)
 	| FuncCall(fid, actuals_opt) -> type_of_func_ret fid actuals_opt f_context v_context
-	| Tbl(exprs) -> type_of_table exprs f_context v_context
+	| Tbl(exprs) -> type_of_tbl exprs f_context v_context
 	| Rec(exprs) -> type_of_rec exprs f_context v_context
 	| RecRef(id, exp) -> type_of_rec_ref id exp f_context v_context
 	| Fld(expr, id) -> type_of_fld expr id f_context v_context
 	| Noexpr -> { s_ptype = Void; s_dimension = [] }
-	| None -> { s_ptype = Void; s_dimension = [] }
+	| None -> { s_ptype = Void; s_dimension = [] } 
 
-and type_of_table exprs f_context v_context =
-	raise Not_implemented_err
-(* 	let first_lit = type_of_expr f_context v_context (List.hd exprs) in
-		let check_function x = 
-			let p = (type_of_expr f_context v_context x) in 
-				(p.s_ptype = first_lit.s_ptype) && (List.length p.s_dimension) = (List.length first_lit.s_dimension) in
-		let list_filter = List.filter check_function exprs in
-			if List.length list_filter == List.length exprs then *)
+and type_of_tbl exprs f_context v_context =
+  let expr_list = (List.map (fun expr -> type_of_expr f_context v_context expr) exprs) in
+    if List.length (List.filter (fun a -> (match a.s_ptype with Fld -> true | _ -> false)) expr_list) == (List.length exprs) ||
+    	 List.length (List.filter (fun a -> (match a.s_ptype with Rec -> true | _ -> false)) expr_list) == (List.length exprs) then
+    		{ s_ptype = Tbl; s_dimension = []}
+			else
+				raise (Tbl_err "qwer")
 
 and type_of_fld expr id f_context v_context =
 	let first_lit = type_of_expr f_context v_context expr in
@@ -270,7 +269,11 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 	| _ -> { exp = in_exp; typ = type_of_expr f_context v_context in_exp }
 
 and s_check_tbl f_context v_context in_exp exprs =
-	raise Not_implemented_err
+  let tbl_exprs = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
+	  if List.length (List.filter (fun a -> (match a.exp with Lval(_) -> true | _ -> raise (Tbl_err (string_of_expr a.exp)))) tbl_exprs) == (List.length exprs) then
+      {exp = in_exp; typ = { s_ptype = Tbl; s_dimension = [] }}
+    else
+    	raise (Tbl_err "hihi")
 
 and s_check_rec f_context v_context in_exp exprs =
   let rec_ref_list = (List.map (fun expr -> s_check_expr f_context v_context expr) exprs) in
@@ -414,7 +417,6 @@ and s_check_stmt f_context v_context level stmt = match stmt with
 	| Continue -> S_Continue
 	| Break -> S_Break
 	| EmptyStmt -> S_EmptyStmt
-
 
 let s_check_func_decl f_context v_context fdecl =
 	let s_formals = List.map (fun var_decl -> s_check_var_decl f_context v_context var_decl) fdecl.formals in

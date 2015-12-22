@@ -5,6 +5,10 @@ int main() {
 	rec[] c = [a, b];
 
 	fld q = new fld(["hell", "lo"], "name");
+	fld r = new fld([1, 2, 3], "age");
+
+	fld[] z = [q, r];
+	tbl s = new tbl(q, a);
 	return 0;
 
 }

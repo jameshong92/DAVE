@@ -45,16 +45,11 @@ let string_of_asnop = function
 | Diveq -> "/="
 | Modeq -> "%="
 
-(* let string_of_id = function
-  Id(id) -> id *)
-
 let rec list_of_dim v = match v with
   [] -> ""
-  | hd::tl -> let exp_string = string_of_expr hd.exp in
-              if exp_string = "0" then
-                "[]"
-              else
-                "[" ^ exp_string ^ "]"
+  | hd::tl -> 
+    let exp_string = string_of_expr hd.exp in
+      if exp_string = "0" then "" else "(" ^ exp_string ^ ")"
 
 and string_of_expr = function
   Range(exp1, exp2) -> "range(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
@@ -83,31 +78,24 @@ and string_of_expr = function
 and string_of_array id exp2 = match exp2 with
   | Range(id1, id2) -> 
     if string_of_expr id2 = "0" then
-      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ id ^ ".size())"
+      "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ id ^ ".size())"
     else
-      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+      "_slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
   | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
 
 and string_of_func_call id exps = id ^ "(" ^ String.concat ", " (List.map string_of_expr exps) ^ ")"
 
 and string_of_vtype v =
-(*   if v.s_dimension == [] then
-    string_of_datatype v.s_ptype
-  else string_of_datatype v.s_ptype ^ list_of_dim (List.rev v.s_dimension) *)
-let dimension = v.s_dimension in
-  match dimension with
-  [] -> string_of_datatype v.s_ptype
-  | _ -> string_of_datatype v.s_ptype ^ list_of_dim (List.rev v.s_dimension)
+  let dimension = v.s_dimension in
+    match dimension with
+    [] -> string_of_datatype v.s_ptype
+    | _ -> "vector<" ^ string_of_datatype v.s_ptype ^ "> " ^ list_of_dim (List.rev v.s_dimension)
 
 and string_of_var v id =
-(*   if v.s_dimension == [] then
-    string_of_datatype v.s_ptype ^ " " ^ id
-  else
-    string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim (List.rev v.s_dimension) *)
-let dimension = v.s_dimension in
-  match dimension with
-  [] -> string_of_datatype v.s_ptype ^ " " ^ id
-  | _ -> string_of_datatype v.s_ptype ^ " " ^ id ^ list_of_dim (List.rev v.s_dimension)
+  let dimension = v.s_dimension in
+    match dimension with
+    [] -> string_of_datatype v.s_ptype ^ " " ^ id
+    | _ -> "vector<" ^ string_of_datatype v.s_ptype ^ "> " ^ id ^ list_of_dim (List.rev v.s_dimension)
 
 let string_of_decl vdecl =
   let init = vdecl.s_vinit.exp in
@@ -115,7 +103,7 @@ let string_of_decl vdecl =
     Noexpr -> ((string_of_var vdecl.s_vtype vdecl.s_vname))
     | Lval(exp) -> (match exp with
         Array(id, exp1) -> (match exp1 with
-            Range(id1, id2) -> string_of_datatype vdecl.s_vtype.s_ptype ^ " " ^ vdecl.s_vname ^ "[" ^ string_of_expr id2 ^ "-" ^ string_of_expr id1 ^ "];\nslice_array(" ^ id ^ ", " ^ vdecl.s_vname ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
+            Range(id1, id2) -> string_of_var vdecl.s_vtype vdecl.s_vname ^ " = _slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
             | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
           )
         | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
@@ -128,6 +116,12 @@ let string_of_decl vdecl =
         )
         | _ -> "fld " ^ vdecl.s_vname ^ " = fld(" ^ string_of_expr expr ^ ", \"" ^ id ^ "\", getArrayLen(" ^ string_of_expr expr ^"))"
       )
+    | Tbl(exprs) ->
+      if List.length exprs > 1 then
+        "vector<" ^ (match (List.hd exprs) with Fld(_,_) -> "fld" | _ -> "rec") ^ "> _" ^ vdecl.s_vname ^ "(" ^ string_of_int (List.length exprs) ^ ") = {" ^ String.concat ", " (List.map (fun x -> string_of_expr x) exprs) ^ "};\n" ^ "tbl " ^ vdecl.s_vname ^ " = tbl(_" ^ vdecl.s_vname ^ ", _" ^ vdecl.s_vname ^ "[0].length, getArrayLen(_" ^ vdecl.s_vname ^"))"
+      else
+        let tbl_element = string_of_expr (List.hd exprs) in
+          "tbl " ^ vdecl.s_vname ^ " = tbl(" ^ tbl_element ^ ", " ^ tbl_element ^ "[0].length, getArrayLen(" ^ tbl_element ^ ")"
     | _ -> (string_of_var vdecl.s_vtype vdecl.s_vname) ^ " = " ^ string_of_expr vdecl.s_vinit.exp
 
 let rec gen_stmt = function
