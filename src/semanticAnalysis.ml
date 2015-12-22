@@ -537,6 +537,10 @@ let check prog check_option =
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Fld; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Rec; s_dimension = []})] map in
+		  let map = StringMap.add "modify" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Float; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  (* add dave library functions *)
 		  if check_option = "import" then 
 		  	map 
