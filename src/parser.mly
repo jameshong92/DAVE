@@ -36,7 +36,7 @@
 
 /* Expressions */
 
-/* str int float bool rec fld tbl str[] int[] float[] bool[] */
+/* str int float bool rec fld tbl str[] int[] float[] bool[] fld[] rec[] */
 datatype:
 	INT 												{
 																{
@@ -99,7 +99,6 @@ lvalue:
 	ID 													{ Var($1) }
 	| ID LBRACK index_list RBRACK
 															{ Array($1, $3) }
-	| expr DOT ID 							{ Access($1, $3) }
 
 index_list:
 	expr 									 			{ $1 }
@@ -136,6 +135,7 @@ expr:
 	| lvalue DIVEQ expr 				{ AssignOp($1, Diveq, $3) }
 	| lvalue MODEQ expr 				{ AssignOp($1, Modeq, $3) }
 	| lvalue ASN expr 					{ AssignOp($1, Asn, $3) }
+	| expr DOT ID 							{ Access($1, $3) }
 	| lvalue 										{ Lval($1) }
 
 	| LPAREN expr RPAREN 				{ $2 }

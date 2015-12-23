@@ -1,0 +1,12 @@
+int main() {
+    fld r1 = new fld([1, 3, 2, 7, 6], "num"); 
+    print("field:");
+    print(r1);
+    print("min:");
+    print(min_value(r1));
+    print("max:");
+    print(max_value(r1));
+    print("mean:");
+    float mean = mean_value(r1);
+    print(mean);
+}

@@ -1,6 +1,6 @@
 open Printf
 
-type action = Ast | Compile | Verbose (* | Semantic *)
+type action = Ast | Compile | Verbose
 
 let loc_err lex_buf =
   let p = lex_buf.Lexing.lex_curr_p in

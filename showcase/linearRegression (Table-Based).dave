@@ -1,18 +1,18 @@
 int main() {
-	float[] x=[1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0];
-	float[] y=[7.0,2.0,9.0,0.0,5.0,4.0,10.0,900.0,1.0,23.0];
-	fld f1 = new fld(x,"ind");
-	fld f2 = new fld(y,"dep");
-	str a = "ind";
-	str b = "dep";
-	fld[] f = [f1,f2];
-	tbl sample = new tbl(f);
-	print("Original Dataset:");
-	print(sample);
-	tbl newsample = simpleLinearRegression(sample,a,b);
-	print("Updated Dataset");
-	print(newsample);
-	
+  float[] x=[1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0];
+  float[] y=[7.0,2.0,9.0,0.0,5.0,4.0,10.0,900.0,1.0,23.0];
+  fld f1 = new fld(x,"ind");
+  fld f2 = new fld(y,"dep");
+  str a = "ind";
+  str b = "dep";
+  fld[] f = [f1,f2];
+  tbl sample = new tbl(f);
+  print("Original Dataset:");
+  print(sample);
+  tbl newsample = simpleLinearRegression(sample,a,b);
+  print("Updated Dataset");
+  print(newsample);
+  
 }
 tbl simpleLinearRegression(tbl sample, str ind, str dep) {
   int sizeX = sample.col_length;

@@ -17,7 +17,7 @@ if [ "$input" == "2" ]; then
 		echo "Failed to Compile to Executable (Unable to Compile to C++ Source Code with DAVE Compiler)."
 		exit 1
 	fi
-	g++ dave.cc
+	g++ -w dave.cc
 	if [ $? != 0 ]; then
 	echo "Failed to Compile to Executable (Unable to Compile to Executable with g++ Compiler)."
 	exit 1

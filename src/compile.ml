@@ -61,14 +61,6 @@ and string_of_expr = function
 | Binop(exp1, binop, exp2) -> (
   match exp1, exp2 with
     StringLit(lit1), StringLit(lit2) -> "append(\"" ^ lit1 ^ "\",\"" ^ lit2 ^ "\")"
-(*     | Tbl(_), Tbl(_) -> (
-      match binop with
-        Add -> "plus(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
-        | Sub -> "minus(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
-        | Mul -> "mul(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
-        | Div -> "div(" ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2 ^ ")"
-        | _ -> "(" ^ string_of_expr exp1 ^ " " ^ string_of_binop binop ^ " " ^ string_of_expr exp2 ^ ")"
-    ) *)
     | _,_ -> "(" ^ string_of_expr exp1 ^ " " ^ string_of_binop binop ^ " " ^ string_of_expr exp2 ^ ")"
   )
 | Unop(unop, exp) -> "(" ^ string_of_unop unop ^ string_of_expr exp ^ ")"
@@ -89,8 +81,10 @@ and string_of_expr = function
 
 and string_of_array id exp2 = match exp2 with
   | Range(id1, id2) -> 
-    if string_of_expr id2 = "0" then
-      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", getArrayLen(" ^ id ^ "))"
+    if string_of_expr id2 = "0" || string_of_expr id2 = "" then
+      "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", (int)" ^ id ^ ".size())"
+    else if string_of_expr id1 = "" then
+      "slice_array(" ^ id ^ ", 0, " ^ string_of_expr id2 ^ ")"
     else
       "slice_array(" ^ id ^ ", " ^ string_of_expr id1 ^ ", " ^ string_of_expr id2 ^ ")"
   | _ -> "(" ^ id ^ "[" ^ string_of_expr exp2 ^ "])"
@@ -133,17 +127,6 @@ let string_of_decl vdecl =
         | _ -> "fld " ^ vdecl.s_vname ^ " = fld(&" ^ string_of_expr expr ^ "[0], \"" ^ id ^ "\", " ^ string_of_expr expr ^".size())"
       )
     | Tbl(exprs) ->
-(*       let tbl_elem_type = (match type_of_expr (List.hd exprs).exp with Fld -> "fld" | _ -> "rec") in
-      if List.length exprs > 1 then
-        let base_string =
-          tbl_elem_type ^ " __" ^ vdecl.s_vname ^ "[] = {" ^ String.concat ", " (List.map (fun x -> string_of_expr x) exprs) ^ "};\n" ^
-          "vector<" ^ tbl_elem_type ^ "> _" ^ vdecl.s_vname ^ " = to_vector(__" ^ vdecl.s_vname ^ ", getArrayLen(__" ^ vdecl.s_vname ^ "));\n" in (
-        if tbl_elem_type == "fld" then 
-          base_string ^ "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ "[0].length, _" ^ vdecl.s_vname ^".size())"
-        else if tbl_elem_type == "rec" then 
-          base_string ^ "tbl " ^ vdecl.s_vname ^ " = tbl(&_" ^ vdecl.s_vname ^ "[0], _" ^ vdecl.s_vname ^ ".size(), _" ^ vdecl.s_vname ^ "[0].length)"
-        else raise Not_implemented_err)
-      else *)
         let tbl_element = string_of_expr (List.hd exprs) in
             "tbl " ^ vdecl.s_vname ^ " = tbl(&" ^ tbl_element ^ "[0], " ^ tbl_element ^ ".size(), " ^ tbl_element ^ "[0].length)"
     | ArrayLit(exprs) ->

@@ -4,8 +4,10 @@ int main() {
     rec r2 = new rec(name:"James", age:23, GPA:3.88);
     rec r3 = new rec(age:24, GPA:3.80, name:"Min Woo");
     rec[] r4 = [r1,r2,r3];
-    tbl test = new tbl(r4);
+    tbl test = new tbl(r4[0:]);
     print(test);
     fld test1 = access(test, "age");
     print(test1);
+	str filename = "testing.txt";
+	save(test, filename);
 }

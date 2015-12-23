@@ -14,28 +14,11 @@ type asnop = Asn | Addeq | Subeq | Muleq | Diveq | Modeq
 type datatype = Int | Float | String | Bool | Fld | Tbl | Rec | Void
 (*Arguments*)
 type arg = datatype * string
-(*Types of References*)
-(* type ref = ARef | RecRef | FldRef | TblRef *)
-
-
-(*Expression*)
-(*Critical: Refer to the Issue List Before Proceed*)
-(* type id = Id of string *)
-
-(*Varaible Definition*)
-(* type var = {
-	vtype: datatype;
-	vname: id;
-} *)
 
 type var = {
 	ptype: datatype;
 	dimension: expr list;
 }
-(* and lvalue =
-	Var of string
-	| Array of string * expr
-	| Access of expr * string *)
 and expr =
 	Var of string
 	| Array of string * expr
@@ -52,10 +35,7 @@ and expr =
 	| AssignOp of expr * asnop * expr
 	| Lval of expr
 	| Cast of var * expr
-	(*| CastFld of expr * string
-	| CastTbl of datatype * datatype *)
 	| FuncCall of string * expr list
-	(* | Ref of id * ref * expr list *)
 	(*Tbl = a list of Rec | a list of Fld*)
 	| Tbl of expr list
 	(*Rec = list of id (key) * Value of Each Component*)
@@ -67,20 +47,11 @@ and expr =
 	| Noexpr
 	| None
 
-(*
-type decl =
-	VarDecl of datatype * id
-	| AssignDecl of datatype * id * expr
-	| ArrayDecl of datatype * expr * id
-*)
 type decl = {
 	vname: string;
 	vtype: var;
 	vinit: expr;
 }
-(* 	VarDecl of var
-	| AssignDecl of var * expr
-	| ArrayDecl of datatype * expr * id *)
 
 (*Statement*)
 type stmt =
@@ -152,10 +123,7 @@ let rec string_of_datatype = function
 | Rec -> "rec"
 | Fld -> "fld"
 | Void -> "void"
-(*
-let string_of_id = function
-	Id(id) -> "Id( " ^ id ^ " )"
- *)
+
 let rec string_of_expr = function
 	IntLit(lit) -> "IntLit( " ^ string_of_int lit ^ " )"
 | FloatLit(lit) -> "FloatLit( " ^ string_of_float lit ^ " )"
@@ -211,7 +179,6 @@ let string_of_func_decl funcdecl = "Function( return type: ("
 	^  funcdecl.fname ^ "\" formals: ("
   ^ (String.concat ", " (List.map string_of_decl funcdecl.formals))
   ^ ") {\n"
-	(* ^ (String.concat "stmt:\n" (List.map string_of_stmt funcdecl.body)) *)
 	^ string_of_stmt funcdecl.body ^ "\n}"
 
 let string_of_program prgm = "Program( "

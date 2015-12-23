@@ -154,7 +154,7 @@ let rec type_of_expr f_context v_context exp = match exp with
 								| _, _ -> raise (Type_err ("type error for " ^ string_of_expr exp1 ^ ", " ^ string_of_expr exp2))
 							)
 	)
-	| Lval(exp) -> type_of_expr f_context v_context exp (* TODO: CHECK LVAL *)
+	| Lval(exp) -> type_of_expr f_context v_context exp
 	| Cast(var, exp) -> 
 		if var.ptype == Rec || var.ptype == Fld || var.ptype == Tbl then
 			raise (Cast_err ((string_of_datatype var.ptype) ^ " needs to be initialized with 'new'"))
@@ -222,7 +222,6 @@ and type_of_array id exp f_context v_context =
 				(* check if given index is of type int or range *)
 				let type2 = type_of_expr f_context v_context exp in
 					if List.length type2.s_dimension >= 1 && type2.s_ptype == Int then
-						(* TODO: check if this is correct? check for dimension size *)
 						{s_ptype = type1.s_ptype; s_dimension = type1.s_dimension}
 					else if type2.s_ptype == Int then
 						{s_ptype = type1.s_ptype; s_dimension = []}
@@ -272,7 +271,6 @@ and match_param p1 map =
 				if h1.s_ptype == h2.s_ptype && List.length h1.s_dimension == List.length h2.s_dimension then
 					check_param t1 t2
 				else
-					(* raise (Invalid_func_err (string_of_int (List.length h1.s_dimension) ^ " " ^ string_of_int (List.length h2.s_dimension))); *)
 					false
 		in check_param p1 p2
 
@@ -296,7 +294,7 @@ and s_check_expr f_context v_context in_exp = match in_exp with
 		{exp = AssignOp((s_check_expr f_context v_context lvalue).exp, asnop, (s_check_expr f_context v_context exp2).exp); typ = type_of_expr f_context v_context in_exp }
 	| Lval(lvalue) ->
 		{exp = Lval((s_check_expr f_context v_context lvalue).exp); typ = type_of_expr f_context v_context in_exp }
-	| Cast(var, exp) -> (* TODO: check cast *)
+	| Cast(var, exp) ->
 		{exp = Cast(var, (s_check_expr f_context v_context exp).exp); typ = type_of_expr f_context v_context in_exp }
 	| Array(id, indices) -> s_check_array f_context v_context in_exp id indices
 	| Access(exp, id) -> s_check_access f_context v_context in_exp exp id
@@ -543,7 +541,6 @@ let func_decl_to_func_map map fdecl v_context =
 let check prog check_option =
 	let s_gdecls = List.map (fun var_decl -> s_check_var_decl StringMap.empty StringMap.empty var_decl) prog.gdecls
 	and extern_funs = (
-			(* TODO: add external functions to include *)
 			let map = StringMap.empty in
 			let map = StringMap.add "print" [([{s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []});
 														 					 ([{s_ptype = Int; s_dimension = []}], {s_ptype = Void; s_dimension = []});
@@ -571,16 +568,17 @@ let check prog check_option =
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  let map = StringMap.add "convert" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
+		  let map = StringMap.add "set_int" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Int; s_dimension = []})] map in
+			let map = StringMap.add "set_string" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = String; s_dimension = []})] map in
+			let map = StringMap.add "set_float" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Float; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			let map = StringMap.add "set_bool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Bool; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
 		  (* add dave library functions *)
 		  if check_option = "import" then 
 		  	map 
 		  else
-		  	let map = StringMap.add "min_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
-		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
-				let map = StringMap.add "max_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
-		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
-			  let map = StringMap.add "mean_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
-		  																	([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+		  	let map = StringMap.add "min_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+				let map = StringMap.add "max_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+			  let map = StringMap.add "mean_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
 				StringMap.add "median_value" 		[([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map
 		)
 		in {
