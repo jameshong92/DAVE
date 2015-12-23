@@ -37,6 +37,22 @@ string append(string a, string b) {
 	return a + b;
 }
 
+void set_int(fld a, int index, int b) {
+	a.f_int[index] = b;
+}
+
+void set_float(fld a, int index, float b) {
+	a.f_double[index] = b;
+}
+
+void set_bool(fld a, int index, bool b) {
+	a.f_bool[index] = b;
+}
+
+void set_string(fld a, int index, string b) {
+	a.f_string[index] = b;
+}
+
 int get_int(fld a, int index) {
 	return a.f_int[index];
 }

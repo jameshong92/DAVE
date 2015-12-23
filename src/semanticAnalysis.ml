@@ -1,6 +1,7 @@
 open Ast
 open Sast
 open SemanticExceptions
+open Printf
 
 module StringMap = Map.Make(String)
 
@@ -271,6 +272,7 @@ and match_param p1 map =
 				if h1.s_ptype == h2.s_ptype && List.length h1.s_dimension == List.length h2.s_dimension then
 					check_param t1 t2
 				else
+					(* raise (Invalid_func_err (string_of_int (List.length h1.s_dimension) ^ " " ^ string_of_int (List.length h2.s_dimension))); *)
 					false
 		in check_param p1 p2
 
@@ -530,7 +532,7 @@ let func_decl_to_func_map map fdecl v_context =
 		if StringMap.mem fdecl.fname map then
 			if func_decl_check_func_map (StringMap.find fdecl.fname map) func_s_vtype_list then
 				(* raise duplicate function error if function of same name and return type is already defined *)
-				raise Duplicate_function_err
+				raise (Duplicate_function_err fdecl.fname)
 			else
 				(* add function to map if function type is different *)
 				StringMap.add fdecl.fname ((func_s_vtype_list, s_check_var_type StringMap.empty v_context fdecl.return_type)::StringMap.find fdecl.fname map) map
@@ -556,8 +558,9 @@ let check prog check_option =
 			let map = StringMap.add "get_bool" [([{s_ptype = Fld; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Bool; s_dimension = []})] map in
 		  let map = StringMap.add "load" [([{s_ptype = String; s_dimension = []}], {s_ptype = Tbl; s_dimension = []})] map in
 		  let map = StringMap.add "save" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Void; s_dimension = []})] map in
-		  let map = StringMap.add "access" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = [{ exp = IntLit(0); typ = {s_ptype = Int; s_dimension = []} }]}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  let map = StringMap.add "access" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = [{ exp = StringLit(""); typ = {s_ptype = String; s_dimension = []}}]}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
+		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = [{ exp = StringLit(""); typ = {s_ptype = String; s_dimension = []}}]}], {s_ptype = Tbl; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = String; s_dimension = []}], {s_ptype = Fld; s_dimension = []});
 		  																	([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Int; s_dimension = []}], {s_ptype = Rec; s_dimension = []})] map in
 			let map = StringMap.add "append" [([{s_ptype = Tbl; s_dimension = []}; {s_ptype = Rec; s_dimension = []}], {s_ptype = Tbl; s_dimension = []});
@@ -576,8 +579,9 @@ let check prog check_option =
 		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
 				let map = StringMap.add "max_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
 		  																 ([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
-			  StringMap.add "mean" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
-		  																	([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map
+			  let map = StringMap.add "mean_value" [([{s_ptype = Fld; s_dimension = []}], {s_ptype = Int; s_dimension = []});
+		  																	([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map in
+				StringMap.add "median_value" 		[([{s_ptype = Fld; s_dimension = []}], {s_ptype = Float; s_dimension = []})] map
 		)
 		in {
 			s_gdecls = s_gdecls;

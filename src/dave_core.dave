@@ -1,88 +1,178 @@
-int min_value(fld a) {
-	int min;
-	int i;
-	int length = a.length;
-	int current = get_int(a, 0);
-	for (i = 1; i < length; i++) {
-		if (get_int(a, i) > current) {
-			min = current;
+float min_value(fld a) {
+	if (a.type == 0) {
+		int min;
+		int i;
+		int length = a.length;
+		int current = get_int(a, 0);
+		for (i = 1; i < length; i++) {
+			if (get_int(a, i) > current) {
+				min = current;
+			}
 		}
+		return float(min);
 	}
-	return min;
+	else if (a.type == 1) {
+		float min;
+		int i;
+		int length = (a.length);
+		float current = get_float(a, 0);
+		for (i = 1; i < length; i++) {
+			if (get_float(a, i) > current) {
+				min = current;
+			}
+		}
+		return min;
+	}
+	return 0.0;
 }
 
-int max_value(fld a) {
-	int max;
-	int current = get_int(a, 0);
-	int length = a.length;
-	int i;
-	for (i = 1; i < length; i++) {
-		if (get_int(a, i) < current) {
-			max = current;
+float max_value(fld a) {
+	if (a.type == 0) {
+		int max;
+		int current = get_int(a, 0);
+		int length = (a.length);
+		int i;
+		for (i = 1; i < length; i++) {
+			if (get_int(a, i) < current) {
+				max = current;
+			}
 		}
+		return float(max);
 	}
-	return max;
+	else if (a.type == 1) {
+		float max;
+		float current = get_float(a, 0);
+		int length = a.length;
+		int i;
+		for (i = 1; i < length; i++) {
+			if (get_float(a, i) < current) {
+				max = current;
+			}
+		}
+		return max;
+	}
+	return 0.0;
+}
+
+float mean_value(fld a) {
+	if (a.type == 0) {
+		int mean = 0;
+		int i;
+		for (i = 0; i < (a.length); i++) {
+			mean += get_int(a, 0);
+		}
+		return float(mean/(a.length));
+	}
+	if (a.type == 1) {
+		float mean = 0.0;
+		int i;
+		for (i = 0; i < (a.length); i++) {
+			mean += get_float(a, 0);
+		}
+		return mean/(a.length);
+	}
+	return 0.0;
 }
 
 /*
 
-int max(fld a) {
-	bool first = true;
-	int max;
-	for (int i = 0; i < a.length; i++) {
-		int current = a.get(i);
-		if (first == true || max < current) {
-			max = current;
+float median_value(fld a) {
+	if (a.type == 0) {
+		int[(a.length)] b_array;
+		fld b = new fld(b_array, "merge");
+		int[] sorted = sort_fld(a, b, a.length);
+		int length = a.length;
+		int mid_index = int(length/2);
+		if ((mid_index % 2) == 1) {
+			return (sorted[mid_index]-sorted[mid_index-1]) / 2;
 		}
-	}
-	return max;
-}
 
-int mean(fld a) {
-	int mean = 0;
-	for (int i = 0; i < a.length; i++) {
-		mean += a.get(i);
+		return float(sorted[mid_index]);
 	}
-	return int(mean/a.length);
-}
-
-float median(fld a) {
-	int[] sorted = sort(a);
-	int length = a.length;
-	int mid_index = int(length/2);
-	if ((mid_index % 2) == 1) {
-		return (sorted[mid_index]-sorted[mid_index-1]) / 2;
-	}
-}
-
-float min(fld a) {
-	bool first = true;
-	float min;
-	for (int i = 0; i < a.length; i++) {
-		float current = a.get(i);
-		if (first == true || min > current) {
-			min = current;
+	if (a.type == 1) {
+		float[(a.length)] b_array;
+		fld b = new fld(b_array, "merge");
+		float[] sorted = sort_fld(a, b, a.length);
+		int length = a.length;
+		int mid_index = int(length/2);
+		if ((mid_index % 2) == 1) {
+			return (sorted[mid_index]-sorted[mid_index-1]) / 2;
 		}
+
+		return sorted[mid_index];
 	}
-	return min;
 }
 
-float max(fld a) {
-	bool first = true;
-	float max;
-	for (int i = 0; i < a.length; i++) {
-		float current = a.get(i);
-		if (first == true || max < current) {
-			max = current;
-		}
-	}
-	return max;
-}
-
-float mean(fld a) {
-	float mean = 0.0;
-	for (int i = 0; i < a.length; i++) {
-		mean += a.get(i);
-	}
-	return (mean/a.length);
+fld sort_fld(fld A, fld B, int n) {
+  int w = 1;
+  int i = 0;
+  for (w = 1; w < n; w = 2 * w) {
+      for (i = 0; i < n; i = i + 2 * w) {
+          bupMerge(A, i, compareTo(i+w, n), compareTo(i+2*w, n), B);
+      }
+      cpyArr(B,A,n);
+    }
+  return A;
 }*/
+
+/*
+void bupMerge(fld A, int left, int right, int end, fld B) {
+	if (A.type == 0) {
+		int i = left;
+    int j = right;
+    int k = 0;
+    for (k = left; k < end; k++) {
+    		int q = get_int(A, i);
+    		int r = get_int(A, j);
+        if (i < right && (j >= end || q <= r)) {
+            set_int(B, k, q);
+            i = i + 1;
+        } else {
+            set_int(B, k, r);
+            j = j + 1;    
+        }
+    } 
+	}
+	if (A.type == 1) {
+		int i = left;
+    int j = right;
+    int k = 0;
+    for (k = left; k < end; k++) {
+    		float q = get_float(A, i);
+    		float r = get_float(A, j);
+        if (i < right && (j >= end || q <= r)) {
+            set_float(B, k, q);
+            i = i + 1;
+        } else {
+            set_float(B, k, r);
+            j = j + 1;    
+        }
+    }
+	}
+
+}
+
+void cpyArr (fld B, fld A, int n) {
+  int i = 0;
+
+	if (A.type == 0) {
+		for (i = 0; i < n; i++) {
+        set_float(A, i, i);
+    }
+	}
+	if (A.type == 1) {
+		for (i = 0; i < n; i++) {
+        set_float(A, i, i);
+    }
+	}
+
+}
+
+int compareTo(int a, int b) {
+  if (a>=b) {
+    return b;
+  } else {
+    return a;
+  }
+}
+*/

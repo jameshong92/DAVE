@@ -1,5 +1,5 @@
 exception Main_not_found_err
-exception Duplicate_function_err
+exception Duplicate_function_err of string
 exception Duplicate_variable_err
 exception Stmt_list_err
 exception Not_implemented_err

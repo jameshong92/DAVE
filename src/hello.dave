@@ -27,6 +27,7 @@ int main() {
 }
 
 // test table definition2
+/*
 int test() {
   rec r1 = new rec(age: 22, name:"Yang", GPA:3.50); 
   rec r2 = new rec(age:23, name:"James", GPA:3.88);
@@ -41,4 +42,4 @@ int test() {
 
 void print_int(int a) {
 	print(a);
-}
+}*/
