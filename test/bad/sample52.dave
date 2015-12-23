@@ -1,0 +1,9 @@
+// Failed function definition
+int hello() {
+    print ("Hello World!");
+	return "string";
+}
+int main() {
+    hello();
+    hello();
+}

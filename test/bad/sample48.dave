@@ -1,0 +1,7 @@
+// Failed Rec Definition
+int main() {
+	rec x = rec(age: 22, score: 3.88, name: "unknown");
+	rec y = rec(age: 32, score: 3.67, name: "unknown");
+	print(x);
+
+}

@@ -1,0 +1,6 @@
+// Failed Fld Definition
+int main() {
+	fld x = new fld({"a","b","c","d"}, "alpha");
+	print(x);
+
+}
