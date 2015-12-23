@@ -1,0 +1,6 @@
+height	name	gender	weight	;
+178.1	tom	male	68	;
+195.2	jacky	male	81	;
+175.3	jay	male	77	;
+60.4	janice	female	48	;
+174.5	sammy	female	69	;

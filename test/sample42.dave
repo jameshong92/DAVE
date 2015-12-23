@@ -1,5 +1,0 @@
-# test syntactic analysis
-int main() {
-	string asd = 789;
-    print(asd);
-}

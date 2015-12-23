@@ -1,7 +1,0 @@
-#Testing Semantic Analysis
-#Failed Case Testing
-int main() {
-	str x = "Test";
-	int[] a = [1,2,3];
-	print(a[x]);
-}

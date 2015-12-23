@@ -1,7 +1,0 @@
-#Failed Case Testing
-int main() {
-	int[] x = [1,2,3];
-	print(x[4]);
-
-}
-

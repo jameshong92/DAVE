@@ -8,7 +8,7 @@ int main() {
     print(test1);
     str[] n = ["z", "y", "x", "w", "v"];
     fld t3 = new fld(n, "rev");
-    fld t4 = new fld([1.0, 2.0, 3.0, 4.0, 5.0], "acc");
+    fld t4 = new fld([1.1, 2.2, 3.3, 4.4, 5.5], "acc");
     fld[] t5 = [t3, t4];
     tbl test2 = new tbl(t5);
     print(test2);

@@ -44,7 +44,6 @@ tbl load(string filename) {
         while (buffer[i+j] != ';') {
             if (buffer[i+j] == '\t') {
                 string temp = whole.substr(i, j);
-                cout << temp << endl;
                 element.push_back(temp);
                 i = i+j+1;
                 j = 0;

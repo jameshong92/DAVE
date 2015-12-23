@@ -2,8 +2,8 @@
 int main() {
 	str path = "test.txt";
     tbl test = load(path);
-    test = convert(test, 0, "string");
+    test = convert(test, 0, "double");
     print(test);
-    test = convert(test, 2, "int");
-    print(test);
+    tbl test1 = convert(test, 0, "string");
+    print(test1);
 }

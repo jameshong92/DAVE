@@ -1,5 +1,0 @@
-# test syntactic analysis
-int main() {
-    double _asd = "string";
-    print(_asd);
-}
