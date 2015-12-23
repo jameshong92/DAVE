@@ -80,3 +80,10 @@ done
 echo "SUMMARY"
 echo "Number of tests run: $badrun"
 echo "Number of Bad Cases Passed: $fail"
+
+echo "######################################"
+echo "RESULT:"
+echo "Number of good tests run: $run"
+echo "Number Good Cases Passed: $success"
+echo "Number of bad tests run: $badrun"
+echo "Number of Bad Cases Passed: $fail"
